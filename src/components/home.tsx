@@ -89,11 +89,11 @@ const Home = () => {
 
   return (
     <div
-      className={`min-h-screen ${
+      className={`w-screen h-screen ${
         isDarkMode ? "bg-black text-white" : "bg-white text-black"
-      } flex flex-col items-center justify-center p-4`}
+      } flex items-center justify-center`}
     >
-      <div className="w-full max-w-md mx-auto relative">
+      <div className="w-full h-full flex flex-col items-center justify-center relative">
         <AnimatePresence mode="wait">
           {userData.isFirstTime || !userData.birthDate ? (
             <motion.div
@@ -116,6 +116,7 @@ const Home = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
+              className="w-full h-full flex flex-col items-center justify-center relative"
             >
               <div className="absolute top-4 right-4 flex space-x-2 z-10">
                 <Button
