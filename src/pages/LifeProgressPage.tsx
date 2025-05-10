@@ -72,19 +72,29 @@ export function LifeProgressPage() {
     const newDate = new Date(birthDate);
     newDate.setFullYear(parseInt(year));
     setBirthDate(newDate);
-    setSelectedMonth(newDate);
+    
+    // Update the calendar's month view
+    const newMonth = new Date(selectedMonth);
+    newMonth.setFullYear(parseInt(year));
+    setSelectedMonth(newMonth);
   };
 
   const handleMonthChange = (month: string) => {
     const newDate = new Date(birthDate);
     newDate.setMonth(parseInt(month));
     setBirthDate(newDate);
-    setSelectedMonth(newDate);
+    
+    // Update the calendar's month view
+    const newMonth = new Date(selectedMonth);
+    newMonth.setMonth(parseInt(month));
+    setSelectedMonth(newMonth);
   };
 
   const handleDaySelect = (date: Date | undefined) => {
     if (date) {
       setBirthDate(date);
+      // Also update the month view to match the selected date
+      setSelectedMonth(date);
     }
   };
 
