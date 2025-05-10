@@ -131,7 +131,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                     mode="single"
                     selected={date}
                     onSelect={setDate}
-                    defaultMonth={selectedMonth}
+                    month={selectedMonth}
                     initialFocus
                     disabled={(date) => date > new Date()}
                   />
