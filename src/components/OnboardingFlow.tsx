@@ -47,23 +47,12 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
+    <div className="flex min-h-screen bg-background p-4 justify-center items-center">
       <Card className="w-full max-w-md mx-auto bg-card">
         {step === 1 && (
           <>
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold text-center">
-                Welcome to Life Countdown
-              </CardTitle>
-            </CardHeader>
             <CardContent className="space-y-4 text-center">
-              <p className="text-muted-foreground">
-                This app shows you a real-time countdown of your remaining time
-                based on the global average life expectancy of 73.5 years.
-              </p>
-              <p className="text-muted-foreground">
-                It's a powerful reminder that our time is finite and precious.
-              </p>
+              <p className="text-muted-foreground">Our time is finite.</p>
             </CardContent>
             <CardFooter>
               <Button className="w-full" onClick={handleNext}>

@@ -48,7 +48,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-background sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Settings</DialogTitle>
+          <DialogTitle className="text-xl font-semibold font-mono">
+            Settings
+          </DialogTitle>
         </DialogHeader>
         <div className="grid gap-6 py-4">
           <div className="grid gap-2">
@@ -70,13 +72,65 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  initialFocus
-                  disabled={(date) => date > new Date()}
-                />
+                <div className="p-2">
+                  <div className="flex gap-2 mb-2">
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      value={
+                        date ? date.getFullYear() : new Date().getFullYear()
+                      }
+                      onChange={(e) => {
+                        const newDate = new Date(date || new Date());
+                        newDate.setFullYear(parseInt(e.target.value));
+                        setDate(newDate);
+                      }}
+                    >
+                      {Array.from(
+                        { length: 100 },
+                        (_, i) => new Date().getFullYear() - i,
+                      ).map((year) => (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      value={date ? date.getMonth() : new Date().getMonth()}
+                      onChange={(e) => {
+                        const newDate = new Date(date || new Date());
+                        newDate.setMonth(parseInt(e.target.value));
+                        setDate(newDate);
+                      }}
+                    >
+                      {[
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec",
+                      ].map((month, index) => (
+                        <option key={index} value={index}>
+                          {month}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                    disabled={(date) => date > new Date()}
+                  />
+                </div>
               </PopoverContent>
             </Popover>
           </div>
