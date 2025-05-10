@@ -84,8 +84,8 @@ const CountdownTimer = ({
       transition={{ duration: 0.8 }}
       className="w-full h-full flex flex-col justify-center items-center"
     >
-      <Card className="w-full h-full bg-card">
-        <CardContent className="flex flex-col flex-1 justify-center items-center p-6">
+      <Card className="flex flex-col w-full h-full bg-card">
+        <CardContent className="flex-1 w-full flex flex-col justify-center items-center p-6">
           <h2 className="text-2xl font-bold text-center mb-6 text-foreground font-mono">
             Time Remaining
           </h2>
