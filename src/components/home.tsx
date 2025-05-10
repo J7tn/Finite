@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { LifeProgressPage } from "../pages/LifeProgressPage";
 import CountdownTimer from "./CountdownTimer";
 import SettingsPage from "./SettingsPage";
 import SettingsMenu from "./SettingsMenu";
@@ -12,7 +11,6 @@ interface UserData {
   birthDate: Date | null;
   motto: string;
   isFirstTime: boolean;
-  expectedLifespan: number;
 }
 
 const Home = () => {
@@ -21,12 +19,10 @@ const Home = () => {
     birthDate: null,
     motto: "Make every second count",
     isFirstTime: true,
-    expectedLifespan: 80,
   });
 
   const [showSettings, setShowSettings] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [showLifeProgress, setShowLifeProgress] = useState(false);
 
   // Load user data from localStorage on component mount
   useEffect(() => {
@@ -37,7 +33,6 @@ const Home = () => {
         ...parsedData,
         birthDate: parsedData.birthDate ? new Date(parsedData.birthDate) : null,
         isFirstTime: false,
-        expectedLifespan: parsedData.expectedLifespan || 80,
       });
     }
 
@@ -68,16 +63,16 @@ const Home = () => {
     });
   };
 
-  const handleSettingsUpdate = (birthDate: Date, motto: string) => {
+  const handleSettingsUpdate = (settings: { birthDate: Date; motto: string }) => {
     // Calculate age from birthDate
     const today = new Date();
-    const age = today.getFullYear() - birthDate.getFullYear();
+    const age = today.getFullYear() - settings.birthDate.getFullYear();
 
     setUserData({
       ...userData,
       age,
-      birthDate,
-      motto,
+      birthDate: settings.birthDate,
+      motto: settings.motto,
     });
     setShowSettings(false);
   };
@@ -92,17 +87,13 @@ const Home = () => {
     }
   };
 
-  const toggleLifeProgress = () => {
-    setShowLifeProgress(!showLifeProgress);
-  };
-
   return (
     <div
       className={`min-h-screen ${
         isDarkMode ? "bg-black text-white" : "bg-white text-black"
       } flex flex-col items-center justify-center p-4`}
     >
-      <div className="w-full max-w-4xl mx-auto relative">
+      <div className="w-full max-w-md mx-auto relative">
         <AnimatePresence mode="wait">
           {userData.isFirstTime || !userData.birthDate ? (
             <motion.div
@@ -120,7 +111,7 @@ const Home = () => {
             </motion.div>
           ) : (
             <motion.div
-              key="main"
+              key="countdown"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -128,8 +119,6 @@ const Home = () => {
             >
               <div className="absolute top-4 right-4 flex space-x-2 z-10">
                 <Button
-                  variant="ghost"
-                  size="icon"
                   onClick={toggleDarkMode}
                   className="text-gray-400 hover:text-white"
                 >
@@ -165,44 +154,18 @@ const Home = () => {
                   )}
                 </Button>
                 <Button
-                  variant="ghost"
-                  size="icon"
                   onClick={() => setShowSettings(true)}
                   className="text-gray-400 hover:text-white"
                 >
                   <Settings size={20} />
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleLifeProgress}
-                  className="text-gray-400 hover:text-white"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                  </svg>
-                </Button>
               </div>
 
-              {showLifeProgress ? (
-                <LifeProgressPage />
-              ) : (
-                <CountdownTimer
-                  birthDate={userData.birthDate}
-                  motto={userData.motto}
-                  age={userData.age}
-                />
-              )}
+              <CountdownTimer
+                birthDate={userData.birthDate}
+                motto={userData.motto}
+                age={userData.age}
+              />
 
               {showSettings && (
                 <SettingsMenu

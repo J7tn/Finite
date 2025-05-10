@@ -36,6 +36,21 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
 }) => {
   const [date, setDate] = useState<Date | undefined>(birthDate);
   const [personalMotto, setPersonalMotto] = useState<string>(motto);
+  const [selectedMonth, setSelectedMonth] = useState<Date>(birthDate);
+
+  const handleYearChange = (year: number) => {
+    const newDate = new Date(date || new Date());
+    newDate.setFullYear(year);
+    setDate(newDate);
+    setSelectedMonth(newDate);
+  };
+
+  const handleMonthChange = (month: number) => {
+    const newDate = new Date(date || new Date());
+    newDate.setMonth(month);
+    setDate(newDate);
+    setSelectedMonth(newDate);
+  };
 
   const handleSave = () => {
     if (date) {
@@ -61,9 +76,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
               <PopoverTrigger asChild>
                 <Button
                   id="birthdate"
-                  variant={"outline"}
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
                     !date && "text-muted-foreground",
                   )}
                 >
@@ -76,14 +90,8 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                   <div className="flex gap-2 mb-2">
                     <select
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      value={
-                        date ? date.getFullYear() : new Date().getFullYear()
-                      }
-                      onChange={(e) => {
-                        const newDate = new Date(date || new Date());
-                        newDate.setFullYear(parseInt(e.target.value));
-                        setDate(newDate);
-                      }}
+                      value={date ? date.getFullYear() : new Date().getFullYear()}
+                      onChange={(e) => handleYearChange(parseInt(e.target.value))}
                     >
                       {Array.from(
                         { length: 100 },
@@ -97,11 +105,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                     <select
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       value={date ? date.getMonth() : new Date().getMonth()}
-                      onChange={(e) => {
-                        const newDate = new Date(date || new Date());
-                        newDate.setMonth(parseInt(e.target.value));
-                        setDate(newDate);
-                      }}
+                      onChange={(e) => handleMonthChange(parseInt(e.target.value))}
                     >
                       {[
                         "Jan",
@@ -127,6 +131,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                     mode="single"
                     selected={date}
                     onSelect={setDate}
+                    defaultMonth={selectedMonth}
                     initialFocus
                     disabled={(date) => date > new Date()}
                   />
@@ -147,7 +152,10 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button 
+            className="border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground"
+            onClick={() => onOpenChange(false)}
+          >
             Cancel
           </Button>
           <Button onClick={handleSave}>Save Changes</Button>
