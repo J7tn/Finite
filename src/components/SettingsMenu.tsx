@@ -26,6 +26,7 @@ interface SettingsMenuProps {
   birthDate?: Date;
   motto?: string;
   onSave?: (settings: { birthDate: Date; motto: string }) => void;
+  isDarkMode?: boolean;
 }
 
 const SettingsMenu: React.FC<SettingsMenuProps> = ({
@@ -34,6 +35,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   birthDate = new Date(1990, 0, 1),
   motto = "Make every second count",
   onSave = () => {},
+  isDarkMode = false,
 }) => {
   const [date, setDate] = useState<Date | undefined>(birthDate);
   const [personalMotto, setPersonalMotto] = useState<string>(motto);
@@ -78,7 +80,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                 <Button
                   id="birthdate"
                   className={cn(
-                    "w-full justify-start text-left font-normal border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground text-black placeholder:text-black",
+                    `w-full justify-start text-left font-normal border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground ${isDarkMode ? 'text-white placeholder:text-white' : 'text-black placeholder:text-black'}`,
                     !date && "text-muted-foreground",
                   )}
                 >
@@ -154,7 +156,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
         </div>
         <DialogFooter>
           <Button 
-            className="border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground text-black disabled:text-black"
+            className={`border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground ${isDarkMode ? 'text-white disabled:text-white' : 'text-black disabled:text-black'}`}
             onClick={() => onOpenChange(false)}
           >
             Cancel

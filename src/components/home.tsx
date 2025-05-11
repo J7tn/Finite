@@ -5,6 +5,7 @@ import SettingsMenu from "./SettingsMenu";
 import { Button } from "./ui/button";
 import { Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { StatusBar, Style } from '@capacitor/status-bar';
 
 interface UserData {
   age: number;
@@ -39,6 +40,17 @@ const Home = () => {
     // Check system preference for dark mode
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     setIsDarkMode(prefersDark);
+
+    // Set status bar style and color based on dark mode
+    if ((window as any).Capacitor) {
+      if (isDarkMode) {
+        StatusBar.setStyle({ style: Style.Light });
+        StatusBar.setBackgroundColor({ color: '#000000' });
+      } else {
+        StatusBar.setStyle({ style: Style.Dark });
+        StatusBar.setBackgroundColor({ color: '#ffffff' });
+      }
+    }
   }, []);
 
   // Save user data to localStorage whenever it changes
@@ -118,7 +130,7 @@ const Home = () => {
               transition={{ duration: 0.5 }}
               className="w-full h-full flex flex-col items-center justify-center relative"
             >
-              <div className="absolute top-4 right-4 flex space-x-2 z-10">
+              <div className={`absolute top-12 right-4 flex space-x-2 z-10`}>
                 <Button
                   onClick={toggleDarkMode}
                   className="text-gray-400 hover:text-white"
@@ -175,6 +187,7 @@ const Home = () => {
                   birthDate={userData.birthDate}
                   motto={userData.motto}
                   onSave={handleSettingsUpdate}
+                  isDarkMode={isDarkMode}
                 />
               )}
             </motion.div>

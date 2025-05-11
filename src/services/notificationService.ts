@@ -41,12 +41,14 @@ class NotificationService {
       const remainingTime = calculateRemainingTime(birthDate, expectedLifespan);
       const formattedTime = formatRemainingTime(remainingTime);
 
-      new Notification('Life Progress Reminder', {
+      const notificationOptions = {
         body: `You have ${formattedTime} left.\n\nPersonal message: ${settings.message}`,
         icon: '/logo.svg', // Updated to use SVG logo
         badge: '/logo.svg', // Added badge for better notification appearance
         image: '/logo.svg'  // Added image for rich notifications
-      });
+      } as NotificationOptions & { image?: string };
+
+      new Notification('Life Progress Reminder', notificationOptions);
     };
 
     // Show notification immediately
