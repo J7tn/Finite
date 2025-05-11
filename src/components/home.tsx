@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 interface UserData {
   age: number;
@@ -24,6 +25,7 @@ const Home = () => {
 
   const [showSettings, setShowSettings] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   // Load user data from localStorage on component mount
   useEffect(() => {
@@ -36,20 +38,16 @@ const Home = () => {
         isFirstTime: false,
       });
     }
+    setLoading(false);
+    SplashScreen.hide();
 
     // Check system preference for dark mode
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     setIsDarkMode(prefersDark);
 
-    // Set status bar style and color based on dark mode
+    // Prevent status bar from overlaying the app content
     if ((window as any).Capacitor) {
-      if (isDarkMode) {
-        StatusBar.setStyle({ style: Style.Light });
-        StatusBar.setBackgroundColor({ color: '#000000' });
-      } else {
-        StatusBar.setStyle({ style: Style.Dark });
-        StatusBar.setBackgroundColor({ color: '#ffffff' });
-      }
+      StatusBar.setOverlaysWebView({ overlay: false });
     }
   }, []);
 
@@ -59,6 +57,19 @@ const Home = () => {
       localStorage.setItem("lifeCountdownData", JSON.stringify(userData));
     }
   }, [userData]);
+
+  useEffect(() => {
+    // Set status bar style and color based on dark mode (inverted logic)
+    if ((window as any).Capacitor) {
+      if (isDarkMode) {
+        StatusBar.setStyle({ style: Style.Dark }); // black icons
+        StatusBar.setBackgroundColor({ color: '#ffffff' }); // white background
+      } else {
+        StatusBar.setStyle({ style: Style.Light }); // white icons
+        StatusBar.setBackgroundColor({ color: '#000000' }); // black background
+      }
+    }
+  }, [isDarkMode]);
 
   const handleSettingsComplete = (age: number, motto: string) => {
     // Calculate birth date based on age
@@ -98,6 +109,8 @@ const Home = () => {
       document.documentElement.classList.remove("dark");
     }
   };
+
+  if (loading) return <div className="w-screen h-screen bg-background" />;
 
   return (
     <div
