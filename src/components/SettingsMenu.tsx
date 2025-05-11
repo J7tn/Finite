@@ -78,7 +78,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
                 <Button
                   id="birthdate"
                   className={cn(
-                    "w-full justify-start text-left font-normal border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+                    "w-full justify-start text-left font-normal border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground text-black placeholder:text-black",
                     !date && "text-muted-foreground",
                   )}
                 >
@@ -154,7 +154,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
         </div>
         <DialogFooter>
           <Button 
-            className="border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground"
+            className="border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground text-black disabled:text-black"
             onClick={() => onOpenChange(false)}
           >
             Cancel
