@@ -5,8 +5,6 @@ import SettingsMenu from "./SettingsMenu";
 import { Button } from "./ui/button";
 import { Settings } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { StatusBar, Style } from '@capacitor/status-bar';
-import { SplashScreen } from '@capacitor/splash-screen';
 
 interface UserData {
   age: number;
@@ -39,16 +37,10 @@ const Home = () => {
       });
     }
     setLoading(false);
-    SplashScreen.hide();
 
     // Check system preference for dark mode
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     setIsDarkMode(prefersDark);
-
-    // Prevent status bar from overlaying the app content
-    if ((window as any).Capacitor) {
-      StatusBar.setOverlaysWebView({ overlay: false });
-    }
   }, []);
 
   // Save user data to localStorage whenever it changes
@@ -57,19 +49,6 @@ const Home = () => {
       localStorage.setItem("lifeCountdownData", JSON.stringify(userData));
     }
   }, [userData]);
-
-  useEffect(() => {
-    // Set status bar style and color based on dark mode (inverted logic)
-    if ((window as any).Capacitor) {
-      if (isDarkMode) {
-        StatusBar.setStyle({ style: Style.Dark }); // black icons
-        StatusBar.setBackgroundColor({ color: '#ffffff' }); // white background
-      } else {
-        StatusBar.setStyle({ style: Style.Light }); // white icons
-        StatusBar.setBackgroundColor({ color: '#000000' }); // black background
-      }
-    }
-  }, [isDarkMode]);
 
   const handleSettingsComplete = (age: number, motto: string) => {
     // Calculate birth date based on age

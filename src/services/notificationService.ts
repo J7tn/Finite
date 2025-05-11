@@ -1,5 +1,6 @@
 import { ReminderSettings } from '@/components/ReminderSettings';
 import { calculateRemainingTime, formatRemainingTime } from '@/utils/timeCalculations';
+import { LocalNotifications } from '@capacitor/local-notifications';
 
 class NotificationService {
   private static instance: NotificationService;
@@ -15,19 +16,13 @@ class NotificationService {
   }
 
   async requestPermission(): Promise<boolean> {
-    if (!('Notification' in window)) {
-      console.error('This browser does not support notifications');
-      return false;
-    }
-
-    const permission = await Notification.requestPermission();
-    return permission === 'granted';
+    const perm = await LocalNotifications.requestPermissions();
+    return perm.display === 'granted';
   }
 
-  private scheduleReminder(settings: ReminderSettings, birthDate: Date, expectedLifespan: number) {
-    if (this.reminderInterval) {
-      clearInterval(this.reminderInterval);
-    }
+  private async scheduleReminder(settings: ReminderSettings, birthDate: Date, expectedLifespan: number) {
+    // Cancel all previous notifications
+    await LocalNotifications.cancel({ notifications: [] });
 
     if (!settings.enabled) return;
 
@@ -37,25 +32,26 @@ class NotificationService {
       monthly: 30 * 24 * 60 * 60 * 1000 // 30 days
     };
 
-    const showNotification = () => {
-      const remainingTime = calculateRemainingTime(birthDate, expectedLifespan);
-      const formattedTime = formatRemainingTime(remainingTime);
+    const remainingTime = calculateRemainingTime(birthDate, expectedLifespan);
+    const formattedTime = formatRemainingTime(remainingTime);
+    const now = Date.now();
+    const notificationBody = `You have ${formattedTime} left.\n\nPersonal message: ${settings.message}`;
 
-      const notificationOptions = {
-        body: `You have ${formattedTime} left.\n\nPersonal message: ${settings.message}`,
-        icon: '/logo.svg', // Updated to use SVG logo
-        badge: '/logo.svg', // Added badge for better notification appearance
-        image: '/logo.svg'  // Added image for rich notifications
-      } as NotificationOptions & { image?: string };
-
-      new Notification('Life Progress Reminder', notificationOptions);
-    };
-
-    // Show notification immediately
-    showNotification();
-
-    // Schedule future notifications
-    this.reminderInterval = window.setInterval(showNotification, intervalMap[settings.frequency]);
+    // Schedule the first notification for now + interval
+    const interval = intervalMap[settings.frequency];
+    const notifications = [
+      {
+        id: 1,
+        title: 'Life Progress Reminder',
+        body: notificationBody,
+        schedule: { at: new Date(now + interval) },
+        sound: null,
+        attachments: null,
+        actionTypeId: '',
+        extra: null,
+      },
+    ];
+    await LocalNotifications.schedule({ notifications });
   }
 
   startReminders(settings: ReminderSettings, birthDate: Date, expectedLifespan: number) {
@@ -67,10 +63,7 @@ class NotificationService {
   }
 
   stopReminders() {
-    if (this.reminderInterval) {
-      clearInterval(this.reminderInterval);
-      this.reminderInterval = null;
-    }
+    LocalNotifications.cancel({ notifications: [] });
   }
 }
 

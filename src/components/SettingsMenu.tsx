@@ -25,7 +25,8 @@ interface SettingsMenuProps {
   onOpenChange?: (open: boolean) => void;
   birthDate?: Date;
   motto?: string;
-  onSave?: (settings: { birthDate: Date; motto: string }) => void;
+  frequency?: 'daily' | 'weekly' | 'monthly';
+  onSave?: (settings: { birthDate: Date; motto: string; frequency: 'daily' | 'weekly' | 'monthly' }) => void;
   isDarkMode?: boolean;
 }
 
@@ -34,12 +35,14 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   onOpenChange = () => {},
   birthDate = new Date(1990, 0, 1),
   motto = "Make every second count",
+  frequency = 'daily',
   onSave = () => {},
   isDarkMode = false,
 }) => {
   const [date, setDate] = useState<Date | undefined>(birthDate);
   const [personalMotto, setPersonalMotto] = useState<string>(motto);
   const [selectedMonth, setSelectedMonth] = useState<Date>(birthDate);
+  const [notifFrequency, setNotifFrequency] = useState<'daily' | 'weekly' | 'monthly'>(frequency);
 
   const handleYearChange = (year: number) => {
     const newDate = new Date(date || new Date());
@@ -57,7 +60,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
 
   const handleSave = () => {
     if (date) {
-      onSave({ birthDate: date, motto: personalMotto });
+      onSave({ birthDate: date, motto: personalMotto, frequency: notifFrequency });
       onOpenChange(false);
     }
   };
@@ -152,6 +155,21 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
               onChange={(e) => setPersonalMotto(e.target.value)}
               placeholder="Enter your personal motto"
             />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="frequency" className="text-left">
+              Notification Frequency
+            </Label>
+            <select
+              id="frequency"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              value={notifFrequency}
+              onChange={e => setNotifFrequency(e.target.value as 'daily' | 'weekly' | 'monthly')}
+            >
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+            </select>
           </div>
         </div>
         <DialogFooter>
