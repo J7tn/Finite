@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Block } from '../types/countdown';
 import { BlockManager } from '../services/blockManager';
 import { CountdownTimer } from './CountdownTimer';
-import { LifeCountdown } from './LifeCountdown';
 
 export const BlockContainer: React.FC = () => {
     const [blocks, setBlocks] = useState<Block[]>([]);
@@ -14,7 +13,8 @@ export const BlockContainer: React.FC = () => {
 
     const loadBlocks = () => {
         const blockManager = BlockManager.getInstance();
-        setBlocks(blockManager.getBlocks());
+        // Only show custom blocks
+        setBlocks(blockManager.getBlocks().filter(b => b.type === 'custom'));
     };
 
     const handleDragStart = (blockId: string) => {
@@ -49,34 +49,23 @@ export const BlockContainer: React.FC = () => {
             onDragStart: () => handleDragStart(block.id),
             onDragOver: handleDragOver,
             onDrop: () => handleDrop(block.id),
-            className: "mb-4 transition-transform duration-200 hover:scale-[1.02]"
+            className: "mb-4 transition-transform duration-200 hover:scale-[1.02] bg-white border border-gray-300 rounded-lg shadow-sm"
         };
 
-        switch (block.type) {
-            case 'life':
-                return (
-                    <div {...commonProps}>
-                        <LifeCountdown onDelete={() => handleDeleteBlock(block.id)} />
-                    </div>
-                );
-            case 'custom':
-                return (
-                    <div {...commonProps}>
-                        <CountdownTimer
-                            event={{
-                                id: block.id,
-                                name: "Custom Event",
-                                targetDate: new Date(),
-                                createdAt: new Date(),
-                                type: 'custom'
-                            }}
-                            onDelete={() => handleDeleteBlock(block.id)}
-                        />
-                    </div>
-                );
-            default:
-                return null;
-        }
+        return (
+            <div {...commonProps}>
+                <CountdownTimer
+                    event={{
+                        id: block.id,
+                        name: "Custom Event",
+                        targetDate: new Date(),
+                        createdAt: new Date(),
+                        type: 'custom'
+                    }}
+                    onDelete={() => handleDeleteBlock(block.id)}
+                />
+            </div>
+        );
     };
 
     return (
