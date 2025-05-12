@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import CountdownTimer from "./CountdownTimer";
 import SettingsPage from "./SettingsPage";
 import SettingsMenu from "./SettingsMenu";
+import ExpandableBlock from "./ExpandableBlock";
+import EventForm from "./EventForm";
 import { Button } from "./ui/button";
-import { Settings } from "lucide-react";
+import { Settings, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface UserData {
@@ -11,6 +13,14 @@ interface UserData {
   birthDate: Date | null;
   motto: string;
   isFirstTime: boolean;
+  events: Event[];
+}
+
+interface Event {
+  id: string;
+  name: string;
+  date: Date;
+  motto: string;
 }
 
 const Home = () => {
@@ -19,9 +29,11 @@ const Home = () => {
     birthDate: null,
     motto: "Make every second count",
     isFirstTime: true,
+    events: [],
   });
 
   const [showSettings, setShowSettings] = useState(false);
+  const [showEventForm, setShowEventForm] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +51,9 @@ const Home = () => {
     setLoading(false);
 
     // Check system preference for dark mode
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
     setIsDarkMode(prefersDark);
   }, []);
 
@@ -65,7 +79,10 @@ const Home = () => {
     });
   };
 
-  const handleSettingsUpdate = (settings: { birthDate: Date; motto: string }) => {
+  const handleSettingsUpdate = (settings: {
+    birthDate: Date;
+    motto: string;
+  }) => {
     // Calculate age from birthDate
     const today = new Date();
     const age = today.getFullYear() - settings.birthDate.getFullYear();
@@ -166,11 +183,44 @@ const Home = () => {
                 </Button>
               </div>
 
-              <CountdownTimer
+              <ExpandableBlock
                 birthDate={userData.birthDate}
                 motto={userData.motto}
                 age={userData.age}
+                events={userData.events}
+                onAddEvent={() => setShowEventForm(!showEventForm)}
               />
+
+              <AnimatePresence>
+                {showEventForm && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="w-full max-w-md mx-auto mt-4"
+                  >
+                    <div className="bg-card rounded-lg shadow-lg">
+                      <div className="p-4 border-b border-border">
+                        <h3 className="text-lg font-semibold">Add New Event</h3>
+                      </div>
+                      <EventForm
+                        onSubmit={(eventData) => {
+                          const newEvent = {
+                            ...eventData,
+                            id: Date.now().toString(),
+                          };
+                          setUserData({
+                            ...userData,
+                            events: [...userData.events, newEvent],
+                          });
+                          setShowEventForm(false);
+                        }}
+                        onCancel={() => setShowEventForm(false)}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {showSettings && (
                 <SettingsMenu
