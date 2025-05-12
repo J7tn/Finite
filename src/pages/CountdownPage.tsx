@@ -1,35 +1,34 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BlockContainer } from '../components/BlockContainer';
 import { BlockManager } from '../services/blockManager';
-import { LifeCountdown } from '../components/LifeCountdown';
 
 export const CountdownPage: React.FC = () => {
-    const [_, setRerender] = useState(0);
-
-    const handleAddCustomBlock = () => {
+    const handleAddBlock = (type: 'life' | 'custom') => {
         const blockManager = BlockManager.getInstance();
-        blockManager.addBlock('custom');
-        setRerender(r => r + 1); // force rerender
+        blockManager.addBlock(type);
     };
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="flex flex-col items-center">
-                <div className="w-full max-w-xl mb-4">
-                    <LifeCountdown onDelete={() => {}} />
-                </div>
-                <button
-                    aria-label="Add custom countdown"
-                    onClick={handleAddCustomBlock}
-                    className="mb-6 w-10 h-10 flex items-center justify-center border border-gray-400 rounded-full text-2xl text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400 transition"
-                    style={{ background: 'none' }}
-                >
-                    +
-                </button>
-                <div className="w-full max-w-xl">
-                    <BlockContainer />
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-gray-900">Countdown Blocks</h1>
+                <div className="space-x-4">
+                    <button
+                        onClick={() => handleAddBlock('life')}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    >
+                        Add Life Countdown
+                    </button>
+                    <button
+                        onClick={() => handleAddBlock('custom')}
+                        className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                    >
+                        Add Custom Countdown
+                    </button>
                 </div>
             </div>
+            
+            <BlockContainer />
         </div>
     );
 }; 
