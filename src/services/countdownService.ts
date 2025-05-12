@@ -16,12 +16,19 @@ export class CountdownService {
         return CountdownService.instance;
     }
 
-    public createEvent(name: string, targetDate: Date): CountdownEvent {
+    public createEvent(
+        name: string, 
+        targetDate: Date, 
+        motto?: string, 
+        description?: string
+    ): CountdownEvent {
         const event: CountdownEvent = {
             id: crypto.randomUUID(),
             name,
             targetDate,
-            createdAt: new Date()
+            createdAt: new Date(),
+            motto,
+            description
         };
         
         this.events.push(event);
@@ -40,16 +47,26 @@ export class CountdownService {
 
     public calculateCountdownState(event: CountdownEvent): CountdownState {
         const now = new Date();
-        const totalDuration = event.targetDate.getTime() - event.createdAt.getTime();
-        const elapsed = now.getTime() - event.createdAt.getTime();
-        const remaining = event.targetDate.getTime() - now.getTime();
+        const targetDate = new Date(event.targetDate);
+        const timeRemaining = targetDate.getTime() - now.getTime();
 
-        const progress = Math.min(Math.max(elapsed / totalDuration, 0), 1);
+        if (timeRemaining <= 0) {
+            return {
+                days: 0,
+                hours: 0,
+                minutes: 0,
+                seconds: 0,
+                progress: 1
+            };
+        }
 
-        const days = Math.floor(remaining / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((remaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
+        const totalDuration = targetDate.getTime() - new Date(event.createdAt).getTime();
+        const progress = 1 - (timeRemaining / totalDuration);
+
+        const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
 
         return {
             days,

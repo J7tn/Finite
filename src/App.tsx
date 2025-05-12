@@ -1,12 +1,8 @@
 import React from 'react';
-import { CountdownPage } from './pages/CountdownPage';
+import Home from './components/home';
 
 function App() {
-  return (
-    <div className="App min-h-screen bg-gray-100">
-      <CountdownPage />
-    </div>
-  );
+  return <Home />;
 }
 
 export default App;
