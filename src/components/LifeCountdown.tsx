@@ -3,17 +3,9 @@ import { CountdownState } from '../types/countdown';
 
 interface LifeCountdownProps {
     onDelete: () => void;
-    birthDate: Date;
-    motto: string;
-    expectedLifespan?: number;
 }
 
-export const LifeCountdown: React.FC<LifeCountdownProps> = ({ 
-    onDelete, 
-    birthDate, 
-    motto, 
-    expectedLifespan = 73.5 
-}) => {
+export const LifeCountdown: React.FC<LifeCountdownProps> = ({ onDelete }) => {
     const [countdownState, setCountdownState] = useState<CountdownState>({
         days: 0,
         hours: 0,
@@ -21,6 +13,9 @@ export const LifeCountdown: React.FC<LifeCountdownProps> = ({
         seconds: 0,
         progress: 0
     });
+    const [motto, setMotto] = useState("Make every second count");
+    const [birthDate, setBirthDate] = useState<Date>(new Date(1990, 0, 1));
+    const [expectedLifespan] = useState(73.5); // Global average life expectancy
 
     useEffect(() => {
         const calculateTimeRemaining = () => {
@@ -70,62 +65,45 @@ export const LifeCountdown: React.FC<LifeCountdownProps> = ({
     }, [birthDate, expectedLifespan]);
 
     return (
-        <div className="bg-background border border-border rounded-lg shadow-md p-6">
+        <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-semibold">Life Countdown</h3>
+                <h3 className="text-xl font-semibold text-gray-800">Life Countdown</h3>
                 <button
                     onClick={onDelete}
-                    className="text-foreground hover:text-muted-foreground"
+                    className="text-red-500 hover:text-red-700"
                 >
                     Delete
                 </button>
             </div>
 
-            <div className="grid grid-cols-6 gap-4 mb-4">
+            <div className="grid grid-cols-4 gap-4 mb-4">
                 <div className="text-center">
-                    <div className="text-2xl font-bold">{Math.floor(countdownState.days / 365)}</div>
-                    <div className="text-sm text-muted-foreground">Years</div>
+                    <div className="text-2xl font-bold text-blue-600">{countdownState.days}</div>
+                    <div className="text-sm text-gray-600">Days</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-2xl font-bold">{Math.floor((countdownState.days % 365) / 30)}</div>
-                    <div className="text-sm text-muted-foreground">Months</div>
+                    <div className="text-2xl font-bold text-blue-600">{countdownState.hours}</div>
+                    <div className="text-sm text-gray-600">Hours</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-2xl font-bold">{countdownState.days % 30}</div>
-                    <div className="text-sm text-muted-foreground">Days</div>
+                    <div className="text-2xl font-bold text-blue-600">{countdownState.minutes}</div>
+                    <div className="text-sm text-gray-600">Minutes</div>
                 </div>
                 <div className="text-center">
-                    <div className="text-2xl font-bold">{countdownState.hours}</div>
-                    <div className="text-sm text-muted-foreground">Hours</div>
-                </div>
-                <div className="text-center">
-                    <div className="text-2xl font-bold">{countdownState.minutes}</div>
-                    <div className="text-sm text-muted-foreground">Minutes</div>
-                </div>
-                <div className="text-center">
-                    <div className="text-2xl font-bold">{countdownState.seconds}</div>
-                    <div className="text-sm text-muted-foreground">Seconds</div>
+                    <div className="text-2xl font-bold text-blue-600">{countdownState.seconds}</div>
+                    <div className="text-sm text-gray-600">Seconds</div>
                 </div>
             </div>
 
-            <div className="space-y-2 mb-4">
-                <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">Life Progress</span>
-                    <span className="text-sm font-medium">{(countdownState.progress * 100).toFixed(1)}%</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2.5">
-                    <div
-                        className="bg-primary h-2.5 rounded-full transition-all duration-1000"
-                        style={{ width: `${countdownState.progress * 100}%` }}
-                    ></div>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                    Based on an expected lifespan of {expectedLifespan} years
-                </p>
+            <div className="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                <div
+                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-1000"
+                    style={{ width: `${countdownState.progress * 100}%` }}
+                ></div>
             </div>
 
-            <div className="text-center mt-4 p-4 bg-muted/50 rounded-md">
-                <p className="text-lg italic text-muted-foreground">"{motto}"</p>
+            <div className="text-center mt-4 p-4 bg-gray-50 rounded-md">
+                <p className="text-lg italic text-gray-600">"{motto}"</p>
             </div>
         </div>
     );
