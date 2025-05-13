@@ -161,8 +161,8 @@ const Home = () => {
               {/* Title at top left */}
               <div className="absolute top-12 left-4 flex items-center z-10">
                 <span
-                  className="font-thin uppercase tracking-[.25em] text-6xl h-16 flex items-center text-gray-900 dark:text-white"
-                  style={{ fontFamily: "'Josefin Sans', 'Montserrat', 'Raleway', Arial, sans-serif" }}
+                  className="font-thin uppercase tracking-[.25em] h-16 flex items-center text-gray-900 dark:text-white"
+                  style={{ fontFamily: "'Josefin Sans', 'Montserrat', 'Raleway', Arial, sans-serif", fontSize: '43px' }}
                 >
                   FINITE
                 </span>
