@@ -121,21 +121,6 @@ const ExpandableBlock = ({
                       </p>
                     )}
                   </div>
-
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex justify-center mt-4"
-                  >
-                    <Button
-                      onClick={onAddEvent}
-                      variant="outline"
-                      className="flex items-center gap-1"
-                    >
-                      Add New Event
-                    </Button>
-                  </motion.div>
                 </div>
               </motion.div>
             )}

@@ -188,8 +188,18 @@ const Home = () => {
                 motto={userData.motto}
                 age={userData.age}
                 events={userData.events}
-                onAddEvent={() => setShowEventForm(!showEventForm)}
               />
+
+              {/* Add New Event button always visible below the block */}
+              <div className="flex justify-center mt-4 w-full max-w-md mx-auto">
+                <Button
+                  onClick={() => setShowEventForm(!showEventForm)}
+                  variant="outline"
+                  className="flex items-center gap-1"
+                >
+                  Add New Event
+                </Button>
+              </div>
 
               <AnimatePresence>
                 {showEventForm && (
