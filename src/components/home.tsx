@@ -234,6 +234,7 @@ const Home = () => {
                   onClick={() => setShowEventForm(!showEventForm)}
                   variant="outline"
                   className="flex items-center gap-1"
+                  disabled={expandedBlockId !== null}
                 >
                   Add New Event
                 </Button>
