@@ -159,9 +159,9 @@ const Home = () => {
               className="w-full h-full flex flex-col items-center justify-center relative"
             >
               {/* Title at top left */}
-              <div className="absolute top-6 sm:top-10 left-4 sm:left-8 flex items-center z-10">
+              <div className="absolute top-12 left-4 flex items-center z-10">
                 <span
-                  className="font-thin uppercase tracking-[.25em] flex items-center text-gray-900 dark:text-white text-2xl sm:text-4xl md:text-5xl lg:text-6xl h-12 sm:h-16 md:h-20"
+                  className="font-thin uppercase tracking-[.25em] text-6xl h-16 flex items-center text-gray-900 dark:text-white"
                   style={{ fontFamily: "'Josefin Sans', 'Montserrat', 'Raleway', Arial, sans-serif" }}
                 >
                   FINITE
@@ -169,22 +169,22 @@ const Home = () => {
               </div>
 
               {/* Dark mode toggle at top right */}
-              <div className="absolute top-6 sm:top-10 right-4 sm:right-8 flex space-x-2 z-10 items-center">
+              <div className="absolute top-16 right-4 flex space-x-2 z-10 items-center">
                 <Button
                   onClick={toggleDarkMode}
-                  className="text-gray-400 hover:text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-transparent"
+                  className="text-gray-400 hover:text-white w-10 h-10 flex items-center justify-center bg-transparent"
                 >
                   {isDarkMode ? (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="w-5 h-5 sm:w-6 sm:h-6"
+                      width="24"
+                      height="24"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      style={{ color: 'currentColor' }}
                     >
                       <circle cx="12" cy="12" r="5" />
                       <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
@@ -192,14 +192,14 @@ const Home = () => {
                   ) : (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="w-5 h-5 sm:w-6 sm:h-6"
+                      width="24"
+                      height="24"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      style={{ color: 'currentColor' }}
                     >
                       <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
                     </svg>
