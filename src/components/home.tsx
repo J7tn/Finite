@@ -159,9 +159,9 @@ const Home = () => {
               className="w-full h-full flex flex-col items-center justify-center relative"
             >
               {/* Title at top left */}
-              <div className="absolute top-12 left-4 flex items-center z-10">
+              <div className="absolute top-4 left-4 mt-12 flex items-center z-10">
                 <span
-                  className="font-thin uppercase tracking-[.25em] text-xl h-8 flex items-center text-gray-900 dark:text-white"
+                  className="font-thin uppercase tracking-[.25em] text-4xl h-16 flex items-center text-gray-900 dark:text-white"
                   style={{ fontFamily: "'Josefin Sans', 'Montserrat', 'Raleway', Arial, sans-serif" }}
                 >
                   FINITE
@@ -169,7 +169,7 @@ const Home = () => {
               </div>
 
               {/* Dark mode toggle at top right */}
-              <div className="absolute top-12 right-4 flex space-x-2 z-10 items-center">
+              <div className="absolute top-4 right-4 mt-12 flex space-x-2 z-10 items-center">
                 <Button
                   onClick={toggleDarkMode}
                   className="text-gray-400 hover:text-white"
