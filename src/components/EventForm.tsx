@@ -9,12 +9,16 @@ import { motion } from "framer-motion";
 interface EventFormProps {
   onSubmit: (event: { name: string; date: Date; motto: string }) => void;
   onCancel: () => void;
+  initialName?: string;
+  initialDate?: Date;
+  initialMotto?: string;
+  onDelete?: () => void;
 }
 
-const EventForm = ({ onSubmit, onCancel }: EventFormProps) => {
-  const [name, setName] = useState("");
-  const [date, setDate] = useState<Date | undefined>(undefined);
-  const [motto, setMotto] = useState("");
+const EventForm = ({ onSubmit, onCancel, initialName = "", initialDate, initialMotto = "", onDelete }: EventFormProps) => {
+  const [name, setName] = useState(initialName);
+  const [date, setDate] = useState<Date | undefined>(initialDate);
+  const [motto, setMotto] = useState(initialMotto);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,11 +89,16 @@ const EventForm = ({ onSubmit, onCancel }: EventFormProps) => {
             </div>
 
             <div className="flex justify-end space-x-2 pt-2">
+              {onDelete && (
+                <Button type="button" variant="destructive" onClick={onDelete}>
+                  Delete
+                </Button>
+              )}
               <Button type="button" variant="outline" onClick={onCancel}>
                 Cancel
               </Button>
               <Button type="submit" disabled={!name || !date || !motto}>
-                Create Event
+                {onDelete ? "Save Changes" : "Create Event"}
               </Button>
             </div>
           </form>

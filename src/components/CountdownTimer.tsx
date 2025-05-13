@@ -8,6 +8,7 @@ interface CountdownTimerProps {
   motto?: string;
   age?: number;
   targetDate?: Date;
+  startDate?: Date;
   progressLabel?: string;
 }
 
@@ -16,6 +17,7 @@ const CountdownTimer = ({
   motto = "Make every second count",
   age,
   targetDate,
+  startDate,
   progressLabel,
 }: CountdownTimerProps) => {
   const [timeRemaining, setTimeRemaining] = useState({
@@ -31,7 +33,30 @@ const CountdownTimer = ({
   useEffect(() => {
     const calculateTimeRemaining = () => {
       const now = new Date();
-      if (targetDate) {
+      if (startDate && targetDate) {
+        // Custom event progress: from startDate to targetDate
+        const total = targetDate.getTime() - startDate.getTime();
+        const elapsed = now.getTime() - startDate.getTime();
+        setPercentageLived(Math.min(100, Math.max(0, (elapsed / total) * 100)));
+        const diff = targetDate.getTime() - now.getTime();
+        if (diff <= 0) {
+          setTimeRemaining({ years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 });
+          return;
+        }
+        let remaining = diff / 1000;
+        const years = Math.floor(remaining / (60 * 60 * 24 * 365.25));
+        remaining -= years * 60 * 60 * 24 * 365.25;
+        const months = Math.floor(remaining / (60 * 60 * 24 * 30.44));
+        remaining -= months * 60 * 60 * 24 * 30.44;
+        const days = Math.floor(remaining / (60 * 60 * 24));
+        remaining -= days * 60 * 60 * 24;
+        const hours = Math.floor(remaining / (60 * 60));
+        remaining -= hours * 60 * 60;
+        const minutes = Math.floor(remaining / 60);
+        const seconds = Math.floor(remaining - minutes * 60);
+        setTimeRemaining({ years, months, days, hours, minutes, seconds });
+      } else if (targetDate) {
+        // ... existing event countdown logic ...
         const diff = targetDate.getTime() - now.getTime();
         if (diff <= 0) {
           setTimeRemaining({ years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -54,6 +79,7 @@ const CountdownTimer = ({
         const elapsed = now.getTime() - now.getTime();
         setPercentageLived(Math.min(100, Math.max(0, 100 - (diff / (targetDate.getTime() - now.getTime())) * 100)));
       } else {
+        // ... existing life countdown logic ...
         const ageInMilliseconds = now.getTime() - birthDate.getTime();
         const ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);
         const lifeExpectancy = 73.5;
@@ -80,7 +106,7 @@ const CountdownTimer = ({
     calculateTimeRemaining();
     const interval = setInterval(calculateTimeRemaining, 1000);
     return () => clearInterval(interval);
-  }, [birthDate, targetDate]);
+  }, [birthDate, targetDate, startDate]);
 
   return (
     <motion.div
@@ -105,8 +131,8 @@ const CountdownTimer = ({
           </div>
 
           <LifeProgressBar 
-            birthDate={targetDate ? new Date() : birthDate}
-            expectedLifespan={targetDate ? ((targetDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 * 365.25)) : 73.5}
+            birthDate={startDate && targetDate ? startDate : (targetDate ? new Date() : birthDate)}
+            expectedLifespan={startDate && targetDate ? (targetDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25) : (targetDate ? ((targetDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 * 365.25)) : 73.5)}
             progressLabel={progressLabel}
           />
 

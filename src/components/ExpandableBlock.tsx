@@ -21,6 +21,10 @@ interface ExpandableBlockProps {
   events?: Event[];
   eventName?: string;
   targetDate?: Date;
+  createdAt?: number;
+  isExpanded?: boolean;
+  onExpand?: () => void;
+  onEdit?: () => void;
 }
 
 const ExpandableBlock = ({
@@ -31,12 +35,15 @@ const ExpandableBlock = ({
   events = [],
   eventName,
   targetDate,
+  createdAt,
+  isExpanded = false,
+  onExpand,
+  onEdit,
 }: ExpandableBlockProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
+    if (onExpand) onExpand();
   };
 
   const handleEventSelect = (id: string) => {
@@ -74,9 +81,17 @@ const ExpandableBlock = ({
                     motto={motto}
                     age={age}
                     targetDate={targetDate}
+                    startDate={eventName && createdAt ? new Date(createdAt) : undefined}
                     progressLabel={eventName ? "Current Progress" : undefined}
                   />
                 </div>
+                {eventName && (
+                  <div className="flex justify-end mt-4">
+                    <Button variant="outline" size="sm" onClick={onEdit}>
+                      Edit Event
+                    </Button>
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

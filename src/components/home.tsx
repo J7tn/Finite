@@ -7,6 +7,7 @@ import EventForm from "./EventForm";
 import { Button } from "./ui/button";
 import { Settings, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Dialog, DialogContent } from "./ui/dialog";
 
 interface UserData {
   age: number;
@@ -21,6 +22,7 @@ interface Event {
   name: string;
   date: Date;
   motto: string;
+  createdAt: number;
 }
 
 const Home = () => {
@@ -39,6 +41,8 @@ const Home = () => {
     return stored ? stored === "true" : false;
   });
   const [loading, setLoading] = useState(true);
+  const [expandedBlockId, setExpandedBlockId] = useState<string | null>(null);
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
   // Load user data from localStorage on component mount
   useEffect(() => {
@@ -199,6 +203,8 @@ const Home = () => {
                 motto={userData.motto}
                 age={userData.age}
                 events={userData.events}
+                isExpanded={expandedBlockId === 'main'}
+                onExpand={() => setExpandedBlockId(expandedBlockId === 'main' ? null : 'main')}
               />
 
               {/* Render each event as its own expandable block below the main block */}
@@ -212,6 +218,10 @@ const Home = () => {
                     events={[]}
                     eventName={event.name}
                     targetDate={new Date(event.date)}
+                    createdAt={event.createdAt}
+                    isExpanded={expandedBlockId === event.id}
+                    onExpand={() => setExpandedBlockId(expandedBlockId === event.id ? null : event.id)}
+                    onEdit={() => setEditingEvent(event)}
                   />
                 ))}
               </div>
@@ -244,6 +254,7 @@ const Home = () => {
                           const newEvent = {
                             ...eventData,
                             id: Date.now().toString(),
+                            createdAt: Date.now(),
                           };
                           setUserData({
                             ...userData,
@@ -268,6 +279,36 @@ const Home = () => {
                   isDarkMode={isDarkMode}
                 />
               )}
+
+              {/* Edit Event Modal */}
+              <Dialog open={!!editingEvent} onOpenChange={(open) => { if (!open) setEditingEvent(null); }}>
+                <DialogContent>
+                  {editingEvent && (
+                    <EventForm
+                      initialName={editingEvent.name}
+                      initialDate={new Date(editingEvent.date)}
+                      initialMotto={editingEvent.motto}
+                      onSubmit={(updated) => {
+                        setUserData({
+                          ...userData,
+                          events: userData.events.map(ev =>
+                            ev.id === editingEvent.id ? { ...ev, ...updated, createdAt: ev.createdAt } : ev
+                          ),
+                        });
+                        setEditingEvent(null);
+                      }}
+                      onCancel={() => setEditingEvent(null)}
+                      onDelete={() => {
+                        setUserData({
+                          ...userData,
+                          events: userData.events.filter(ev => ev.id !== editingEvent.id),
+                        });
+                        setEditingEvent(null);
+                      }}
+                    />
+                  )}
+                </DialogContent>
+              </Dialog>
             </motion.div>
           )}
         </AnimatePresence>
