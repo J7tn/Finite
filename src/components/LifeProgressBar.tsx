@@ -4,9 +4,10 @@ import { Progress } from "@/components/ui/progress";
 interface LifeProgressBarProps {
   birthDate: Date;
   expectedLifespan: number; // in years
+  progressLabel?: string; // new prop for editable label
 }
 
-export function LifeProgressBar({ birthDate, expectedLifespan = 80 }: LifeProgressBarProps) {
+export function LifeProgressBar({ birthDate, expectedLifespan = 80, progressLabel = "Life Progress" }: LifeProgressBarProps) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -27,13 +28,10 @@ export function LifeProgressBar({ birthDate, expectedLifespan = 80 }: LifeProgre
   return (
     <div className="w-full space-y-2">
       <div className="flex justify-between items-center">
-        <span className="text-sm font-medium">Life Progress</span>
+        <span className="text-sm font-medium">{progressLabel}</span>
         <span className="text-sm font-medium">{progress.toFixed(1)}%</span>
       </div>
       <Progress value={progress} className="h-2" />
-      <p className="text-xs text-muted-foreground">
-        Based on an expected lifespan of {expectedLifespan} years
-      </p>
     </div>
   );
 } 

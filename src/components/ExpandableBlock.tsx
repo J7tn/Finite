@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import CountdownTimer from "./CountdownTimer";
+import { LifeProgressBar } from "./LifeProgressBar";
 
 interface Event {
   id: string;
@@ -73,59 +74,8 @@ const ExpandableBlock = ({
                     motto={motto}
                     age={age}
                     targetDate={targetDate}
+                    progressLabel={eventName ? "Current Progress" : undefined}
                   />
-
-                  <div className="mt-6">
-                    <h4 className="text-md font-medium mb-2">Your Events</h4>
-                    {events.length > 0 ? (
-                      <div className="space-y-2">
-                        {events.map((event) => (
-                          <Card
-                            key={event.id}
-                            className={`cursor-pointer ${selectedEventId === event.id ? "border-primary" : ""}`}
-                            onClick={() => handleEventSelect(event.id)}
-                          >
-                            <CardContent className="p-3">
-                              <div className="flex justify-between items-center">
-                                <div>
-                                  <h5 className="font-medium">{event.name}</h5>
-                                  <p className="text-sm text-muted-foreground">
-                                    {event.date.toLocaleDateString()}
-                                  </p>
-                                </div>
-                                <ChevronDown
-                                  size={16}
-                                  className={`transition-transform ${selectedEventId === event.id ? "rotate-180" : ""}`}
-                                />
-                              </div>
-
-                              <AnimatePresence>
-                                {selectedEventId === event.id && (
-                                  <motion.div
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: "auto", opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="pt-2"
-                                  >
-                                    <CountdownTimer
-                                      birthDate={new Date()}
-                                      motto={event.motto}
-                                      age={0}
-                                    />
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        No events yet. Add your first event below.
-                      </p>
-                    )}
-                  </div>
                 </div>
               </motion.div>
             )}

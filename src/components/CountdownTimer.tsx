@@ -8,6 +8,7 @@ interface CountdownTimerProps {
   motto?: string;
   age?: number;
   targetDate?: Date;
+  progressLabel?: string;
 }
 
 const CountdownTimer = ({
@@ -15,6 +16,7 @@ const CountdownTimer = ({
   motto = "Make every second count",
   age,
   targetDate,
+  progressLabel,
 }: CountdownTimerProps) => {
   const [timeRemaining, setTimeRemaining] = useState({
     years: 0,
@@ -105,6 +107,7 @@ const CountdownTimer = ({
           <LifeProgressBar 
             birthDate={targetDate ? new Date() : birthDate}
             expectedLifespan={targetDate ? ((targetDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 * 365.25)) : 73.5}
+            progressLabel={progressLabel}
           />
 
           <motion.div
