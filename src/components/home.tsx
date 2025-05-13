@@ -342,10 +342,19 @@ const Home = () => {
               {/* Settings Modal (now triggered by edit button in main block) */}
               <Dialog open={showSettingsModal} onOpenChange={setShowSettingsModal}>
                 <DialogContent>
-                  <SettingsPage
-                    onComplete={handleSettingsComplete}
-                    initialAge={userData.age}
-                    initialMotto={userData.motto}
+                  <SettingsMenu
+                    open={showSettingsModal}
+                    onOpenChange={setShowSettingsModal}
+                    birthDate={userData.birthDate}
+                    motto={userData.motto}
+                    onSave={({ birthDate, motto }) => {
+                      setUserData({
+                        ...userData,
+                        birthDate,
+                        motto,
+                      });
+                      setShowSettingsModal(false);
+                    }}
                   />
                 </DialogContent>
               </Dialog>
