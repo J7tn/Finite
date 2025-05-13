@@ -197,7 +197,11 @@ const Home = () => {
               </div>
 
               {/* Scrollable blocks area */}
-              <div className="w-full max-w-md flex flex-col items-center overflow-y-auto" style={{ maxHeight: '80vh' }}>
+              <div
+                className="w-full max-w-md flex flex-col items-center overflow-y-auto"
+                style={{ maxHeight: '80vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                <style>{`div::-webkit-scrollbar { display: none; }`}</style>
                 <ExpandableBlock
                   birthDate={userData.birthDate}
                   motto={userData.motto}
