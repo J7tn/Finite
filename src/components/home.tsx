@@ -243,7 +243,7 @@ const Home = () => {
                     age={undefined}
                     events={[]}
                     eventName={event.name}
-                    targetDate={event.date}
+                    targetDate={new Date(event.date)}
                   />
                 ))}
               </div>
