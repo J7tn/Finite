@@ -158,7 +158,13 @@ const Home = () => {
               transition={{ duration: 0.5 }}
               className="w-full h-full flex flex-col items-center justify-center relative"
             >
-              <div className="absolute top-12 right-4 flex space-x-2 z-10">
+              <div className="absolute top-12 right-4 flex space-x-2 z-10 items-center">
+                <span
+                  className="font-thin uppercase tracking-[.25em] text-3xl text-gray-900 mr-4"
+                  style={{ fontFamily: "'Josefin Sans', 'Montserrat', 'Raleway', Arial, sans-serif" }}
+                >
+                  FINITE
+                </span>
                 <Button
                   onClick={toggleDarkMode}
                   className="text-gray-400 hover:text-white"
@@ -198,7 +204,7 @@ const Home = () => {
 
               {/* Scrollable blocks area */}
               <div
-                className="w-full max-w-md flex flex-col items-center overflow-y-auto px-2"
+                className="w-full max-w-md flex flex-col items-center overflow-y-auto px-2 mt-16"
                 style={{ maxHeight: '80vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 <style>{`div::-webkit-scrollbar { display: none; }`}</style>
