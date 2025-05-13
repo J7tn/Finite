@@ -18,6 +18,8 @@ interface ExpandableBlockProps {
   age?: number;
   onAddEvent?: () => void;
   events?: Event[];
+  eventName?: string;
+  targetDate?: Date;
 }
 
 const ExpandableBlock = ({
@@ -26,6 +28,8 @@ const ExpandableBlock = ({
   age,
   onAddEvent,
   events = [],
+  eventName,
+  targetDate,
 }: ExpandableBlockProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
@@ -43,7 +47,7 @@ const ExpandableBlock = ({
       <Card className="bg-card mb-4">
         <CardContent className="p-4">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-semibold">Life Countdown</h3>
+            <h3 className="text-lg font-semibold">{eventName || "Life Countdown"}</h3>
             <Button
               variant="ghost"
               size="icon"
@@ -65,9 +69,10 @@ const ExpandableBlock = ({
               >
                 <div className="pt-2">
                   <CountdownTimer
-                    birthDate={birthDate}
+                    birthDate={targetDate ? undefined : birthDate}
                     motto={motto}
                     age={age}
+                    targetDate={targetDate}
                   />
 
                   <div className="mt-6">

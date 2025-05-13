@@ -7,12 +7,14 @@ interface CountdownTimerProps {
   birthDate?: Date;
   motto?: string;
   age?: number;
+  targetDate?: Date;
 }
 
 const CountdownTimer = ({
   birthDate = new Date(1990, 0, 1),
   motto = "Make every second count",
   age,
+  targetDate,
 }: CountdownTimerProps) => {
   const [timeRemaining, setTimeRemaining] = useState({
     years: 0,
@@ -27,55 +29,56 @@ const CountdownTimer = ({
   useEffect(() => {
     const calculateTimeRemaining = () => {
       const now = new Date();
-      const ageInMilliseconds = now.getTime() - birthDate.getTime();
-      const ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);
-
-      // Global average life expectancy is 73.5 years
-      const lifeExpectancy = 73.5;
-      const remainingYears = lifeExpectancy - ageInYears;
-
-      // Calculate percentage of life lived
-      const percentLived = (ageInYears / lifeExpectancy) * 100;
-      setPercentageLived(percentLived);
-
-      if (remainingYears <= 0) {
-        setTimeRemaining({
-          years: 0,
-          months: 0,
-          days: 0,
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        });
-        return;
+      if (targetDate) {
+        const diff = targetDate.getTime() - now.getTime();
+        if (diff <= 0) {
+          setTimeRemaining({ years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 });
+          setPercentageLived(100);
+          return;
+        }
+        let remaining = diff / 1000;
+        const years = Math.floor(remaining / (60 * 60 * 24 * 365.25));
+        remaining -= years * 60 * 60 * 24 * 365.25;
+        const months = Math.floor(remaining / (60 * 60 * 24 * 30.44));
+        remaining -= months * 60 * 60 * 24 * 30.44;
+        const days = Math.floor(remaining / (60 * 60 * 24));
+        remaining -= days * 60 * 60 * 24;
+        const hours = Math.floor(remaining / (60 * 60));
+        remaining -= hours * 60 * 60;
+        const minutes = Math.floor(remaining / 60);
+        const seconds = Math.floor(remaining - minutes * 60);
+        setTimeRemaining({ years, months, days, hours, minutes, seconds });
+        const total = targetDate.getTime() - now.getTime() + (now.getTime() - now.getTime());
+        const elapsed = now.getTime() - now.getTime();
+        setPercentageLived(Math.min(100, Math.max(0, 100 - (diff / (targetDate.getTime() - now.getTime())) * 100)));
+      } else {
+        const ageInMilliseconds = now.getTime() - birthDate.getTime();
+        const ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);
+        const lifeExpectancy = 73.5;
+        const remainingYears = lifeExpectancy - ageInYears;
+        const percentLived = (ageInYears / lifeExpectancy) * 100;
+        setPercentageLived(percentLived);
+        if (remainingYears <= 0) {
+          setTimeRemaining({ years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0 });
+          return;
+        }
+        const years = Math.floor(remainingYears);
+        const monthsDecimal = (remainingYears - years) * 12;
+        const months = Math.floor(monthsDecimal);
+        const daysDecimal = (monthsDecimal - months) * 30.44;
+        const days = Math.floor(daysDecimal);
+        const hoursDecimal = (daysDecimal - days) * 24;
+        const hours = Math.floor(hoursDecimal);
+        const minutesDecimal = (hoursDecimal - hours) * 60;
+        const minutes = Math.floor(minutesDecimal);
+        const seconds = Math.floor((minutesDecimal - minutes) * 60);
+        setTimeRemaining({ years, months, days, hours, minutes, seconds });
       }
-
-      const years = Math.floor(remainingYears);
-      const monthsDecimal = (remainingYears - years) * 12;
-      const months = Math.floor(monthsDecimal);
-      const daysDecimal = (monthsDecimal - months) * 30.44; // Average days in a month
-      const days = Math.floor(daysDecimal);
-      const hoursDecimal = (daysDecimal - days) * 24;
-      const hours = Math.floor(hoursDecimal);
-      const minutesDecimal = (hoursDecimal - hours) * 60;
-      const minutes = Math.floor(minutesDecimal);
-      const seconds = Math.floor((minutesDecimal - minutes) * 60);
-
-      setTimeRemaining({
-        years,
-        months,
-        days,
-        hours,
-        minutes,
-        seconds,
-      });
     };
-
     calculateTimeRemaining();
     const interval = setInterval(calculateTimeRemaining, 1000);
-
     return () => clearInterval(interval);
-  }, [birthDate]);
+  }, [birthDate, targetDate]);
 
   return (
     <motion.div
@@ -99,7 +102,10 @@ const CountdownTimer = ({
             <TimeUnit value={timeRemaining.seconds} label="Seconds" highlight />
           </div>
 
-          <LifeProgressBar birthDate={birthDate} expectedLifespan={73.5} />
+          <LifeProgressBar 
+            birthDate={targetDate ? new Date() : birthDate}
+            expectedLifespan={targetDate ? ((targetDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 * 365.25)) : 73.5}
+          />
 
           <motion.div
             initial={{ opacity: 0 }}

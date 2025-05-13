@@ -233,6 +233,21 @@ const Home = () => {
                 )}
               </AnimatePresence>
 
+              {/* Render each event as its own expandable block below the main block and add event button */}
+              <div className="w-full flex flex-col items-center mt-4">
+                {userData.events.map((event) => (
+                  <ExpandableBlock
+                    key={event.id}
+                    birthDate={undefined}
+                    motto={event.motto}
+                    age={undefined}
+                    events={[]}
+                    eventName={event.name}
+                    targetDate={event.date}
+                  />
+                ))}
+              </div>
+
               {showSettings && (
                 <SettingsMenu
                   open={showSettings}
