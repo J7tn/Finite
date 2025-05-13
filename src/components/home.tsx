@@ -159,26 +159,25 @@ const Home = () => {
               className="w-full h-full flex flex-col items-center justify-center relative"
             >
               {/* Title at top left */}
-              <div className="absolute top-12 left-4 flex items-center z-10">
+              <div className="absolute top-6 sm:top-10 left-4 sm:left-8 flex items-center z-10">
                 <span
-                  className="font-thin uppercase tracking-[.25em] h-16 flex items-center text-gray-900 dark:text-white"
-                  style={{ fontFamily: "'Josefin Sans', 'Montserrat', 'Raleway', Arial, sans-serif", fontSize: '43px' }}
+                  className="font-thin uppercase tracking-[.25em] flex items-center text-gray-900 dark:text-white text-2xl sm:text-4xl md:text-5xl lg:text-6xl h-12 sm:h-16 md:h-20"
+                  style={{ fontFamily: "'Josefin Sans', 'Montserrat', 'Raleway', Arial, sans-serif" }}
                 >
                   FINITE
                 </span>
               </div>
 
               {/* Dark mode toggle at top right */}
-              <div className="absolute top-16 right-4 flex space-x-2 z-10 items-center">
+              <div className="absolute top-6 sm:top-10 right-4 sm:right-8 flex space-x-2 z-10 items-center">
                 <Button
                   onClick={toggleDarkMode}
-                  className="text-gray-400 hover:text-white"
+                  className="text-gray-400 hover:text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center"
                 >
                   {isDarkMode ? (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
+                      className="w-5 h-5 sm:w-6 sm:h-6"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -192,8 +191,7 @@ const Home = () => {
                   ) : (
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
+                      className="w-5 h-5 sm:w-6 sm:h-6"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
