@@ -34,7 +34,10 @@ const Home = () => {
 
   const [showSettings, setShowSettings] = useState(false);
   const [showEventForm, setShowEventForm] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const stored = localStorage.getItem("darkMode");
+    return stored ? stored === "true" : false;
+  });
   const [loading, setLoading] = useState(true);
 
   // Load user data from localStorage on component mount
@@ -50,12 +53,6 @@ const Home = () => {
       });
     }
     setLoading(false);
-
-    // Check system preference for dark mode
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
-    setIsDarkMode(prefersDark);
   }, []);
 
   // Save user data to localStorage whenever it changes
@@ -64,6 +61,15 @@ const Home = () => {
       localStorage.setItem("lifeCountdownData", JSON.stringify(userData));
     }
   }, [userData]);
+
+  // On mount, apply dark mode class if needed
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
 
   const handleSettingsComplete = (age: number, motto: string) => {
     // Calculate birth date based on age
@@ -98,13 +104,17 @@ const Home = () => {
   };
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    // Apply dark mode class to document
-    if (!isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    setIsDarkMode((prev) => {
+      const newValue = !prev;
+      localStorage.setItem("darkMode", newValue.toString());
+      // Apply dark mode class to document
+      if (newValue) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+      return newValue;
+    });
   };
 
   if (loading) return <div className="w-screen h-screen bg-background" />;
@@ -191,7 +201,22 @@ const Home = () => {
                 events={userData.events}
               />
 
-              {/* Add New Event button always visible below the block */}
+              {/* Render each event as its own expandable block below the main block */}
+              <div className="w-full flex flex-col items-center mt-4">
+                {userData.events.map((event) => (
+                  <ExpandableBlock
+                    key={event.id}
+                    birthDate={undefined}
+                    motto={event.motto}
+                    age={undefined}
+                    events={[]}
+                    eventName={event.name}
+                    targetDate={new Date(event.date)}
+                  />
+                ))}
+              </div>
+
+              {/* Add New Event button always visible below the event blocks */}
               <div className="flex justify-center mt-4 w-full max-w-md mx-auto">
                 <Button
                   onClick={() => setShowEventForm(!showEventForm)}
@@ -232,21 +257,6 @@ const Home = () => {
                   </motion.div>
                 )}
               </AnimatePresence>
-
-              {/* Render each event as its own expandable block below the main block and add event button */}
-              <div className="w-full flex flex-col items-center mt-4">
-                {userData.events.map((event) => (
-                  <ExpandableBlock
-                    key={event.id}
-                    birthDate={undefined}
-                    motto={event.motto}
-                    age={undefined}
-                    events={[]}
-                    eventName={event.name}
-                    targetDate={new Date(event.date)}
-                  />
-                ))}
-              </div>
 
               {showSettings && (
                 <SettingsMenu
