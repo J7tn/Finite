@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 import { Settings, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent } from "./ui/dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } from "./ui/alert-dialog";
 
 interface UserData {
   age: number;
@@ -43,6 +44,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [expandedBlockId, setExpandedBlockId] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Load user data from localStorage on component mount
   useEffect(() => {
@@ -198,17 +200,16 @@ const Home = () => {
                 </Button>
               </div>
 
-              <ExpandableBlock
-                birthDate={userData.birthDate}
-                motto={userData.motto}
-                age={userData.age}
-                events={userData.events}
-                isExpanded={expandedBlockId === 'main'}
-                onExpand={() => setExpandedBlockId(expandedBlockId === 'main' ? null : 'main')}
-              />
-
-              {/* Render each event as its own expandable block below the main block */}
-              <div className="w-full flex flex-col items-center mt-4">
+              {/* Scrollable blocks area */}
+              <div className="w-full max-w-md flex flex-col items-center overflow-y-auto" style={{ maxHeight: '80vh' }}>
+                <ExpandableBlock
+                  birthDate={userData.birthDate}
+                  motto={userData.motto}
+                  age={userData.age}
+                  events={userData.events}
+                  isExpanded={expandedBlockId === 'main'}
+                  onExpand={() => setExpandedBlockId(expandedBlockId === 'main' ? null : 'main')}
+                />
                 {userData.events.map((event) => (
                   <ExpandableBlock
                     key={event.id}
@@ -298,17 +299,42 @@ const Home = () => {
                         setEditingEvent(null);
                       }}
                       onCancel={() => setEditingEvent(null)}
-                      onDelete={() => {
-                        setUserData({
-                          ...userData,
-                          events: userData.events.filter(ev => ev.id !== editingEvent.id),
-                        });
-                        setEditingEvent(null);
-                      }}
+                      onDelete={() => setShowDeleteConfirm(true)}
                     />
                   )}
                 </DialogContent>
               </Dialog>
+
+              {/* Delete Confirmation Dialog */}
+              <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action cannot be undone. Do you want to delete this event?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel asChild>
+                      <button type="button">No</button>
+                    </AlertDialogCancel>
+                    <AlertDialogAction asChild>
+                      <button type="button" onClick={() => {
+                        if (editingEvent) {
+                          setUserData({
+                            ...userData,
+                            events: userData.events.filter(ev => ev.id !== editingEvent.id),
+                          });
+                          setEditingEvent(null);
+                        }
+                        setShowDeleteConfirm(false);
+                      }}>
+                        Yes
+                      </button>
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </motion.div>
           )}
         </AnimatePresence>
