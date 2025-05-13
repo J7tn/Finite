@@ -198,7 +198,7 @@ const Home = () => {
 
               {/* Scrollable blocks area */}
               <div
-                className="w-full max-w-md flex flex-col items-center overflow-y-auto"
+                className="w-full max-w-md flex flex-col items-center overflow-y-auto px-2"
                 style={{ maxHeight: '80vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
               >
                 <style>{`div::-webkit-scrollbar { display: none; }`}</style>
