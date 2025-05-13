@@ -46,6 +46,7 @@ const Home = () => {
         ...parsedData,
         birthDate: parsedData.birthDate ? new Date(parsedData.birthDate) : null,
         isFirstTime: false,
+        events: Array.isArray(parsedData.events) ? parsedData.events : [],
       });
     }
     setLoading(false);
@@ -221,7 +222,7 @@ const Home = () => {
                           };
                           setUserData({
                             ...userData,
-                            events: [...userData.events, newEvent],
+                            events: [...(userData.events || []), newEvent],
                           });
                           setShowEventForm(false);
                         }}
