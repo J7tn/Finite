@@ -7,18 +7,20 @@ import { Calendar } from "@/components/ui/calendar";
 import { motion } from "framer-motion";
 
 interface EventFormProps {
-  onSubmit: (event: { name: string; date: Date; motto: string }) => void;
+  onSubmit: (event: { name: string; date: Date; motto: string; notificationFrequency: string }) => void;
   onCancel: () => void;
   initialName?: string;
   initialDate?: Date;
   initialMotto?: string;
+  initialNotificationFrequency?: string;
   onDelete?: () => void;
 }
 
-const EventForm = ({ onSubmit, onCancel, initialName = "", initialDate, initialMotto = "", onDelete }: EventFormProps) => {
+const EventForm = ({ onSubmit, onCancel, initialName = "", initialDate, initialMotto = "", initialNotificationFrequency = "daily", onDelete }: EventFormProps) => {
   const [name, setName] = useState(initialName);
   const [date, setDate] = useState<Date | undefined>(initialDate);
   const [motto, setMotto] = useState(initialMotto);
+  const [notificationFrequency, setNotificationFrequency] = useState(initialNotificationFrequency);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,6 +30,7 @@ const EventForm = ({ onSubmit, onCancel, initialName = "", initialDate, initialM
       name,
       date,
       motto,
+      notificationFrequency,
     });
   };
 
@@ -86,6 +89,21 @@ const EventForm = ({ onSubmit, onCancel, initialName = "", initialDate, initialM
                 placeholder="Enter a custom motto for this event"
                 required
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1">
+                Notification Frequency
+              </label>
+              <select
+                className="w-full border rounded-md p-2 bg-background"
+                value={notificationFrequency}
+                onChange={e => setNotificationFrequency(e.target.value)}
+              >
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
             </div>
 
             <div className="flex justify-end space-x-2 pt-2">

@@ -24,6 +24,7 @@ interface Event {
   date: Date;
   motto: string;
   createdAt: number;
+  notificationFrequency: string;
 }
 
 const Home = () => {
@@ -45,6 +46,7 @@ const Home = () => {
   const [expandedBlockId, setExpandedBlockId] = useState<string | null>(null);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   // Load user data from localStorage on component mount
   useEffect(() => {
@@ -156,7 +158,7 @@ const Home = () => {
               transition={{ duration: 0.5 }}
               className="w-full h-full flex flex-col items-center justify-center relative"
             >
-              <div className={`absolute top-12 right-4 flex space-x-2 z-10`}>
+              <div className="absolute top-12 right-4 flex space-x-2 z-10">
                 <Button
                   onClick={toggleDarkMode}
                   className="text-gray-400 hover:text-white"
@@ -192,12 +194,6 @@ const Home = () => {
                     </svg>
                   )}
                 </Button>
-                <Button
-                  onClick={() => setShowSettings(true)}
-                  className="text-gray-400 hover:text-white"
-                >
-                  <Settings size={20} />
-                </Button>
               </div>
 
               {/* Scrollable blocks area */}
@@ -209,6 +205,7 @@ const Home = () => {
                   events={userData.events}
                   isExpanded={expandedBlockId === 'main'}
                   onExpand={() => setExpandedBlockId(expandedBlockId === 'main' ? null : 'main')}
+                  onEdit={() => setShowSettingsModal(true)}
                 />
                 {userData.events.map((event) => (
                   <ExpandableBlock
@@ -256,6 +253,7 @@ const Home = () => {
                             ...eventData,
                             id: Date.now().toString(),
                             createdAt: Date.now(),
+                            notificationFrequency: "daily",
                           };
                           setUserData({
                             ...userData,
@@ -289,6 +287,7 @@ const Home = () => {
                       initialName={editingEvent.name}
                       initialDate={new Date(editingEvent.date)}
                       initialMotto={editingEvent.motto}
+                      initialNotificationFrequency={editingEvent.notificationFrequency || "daily"}
                       onSubmit={(updated) => {
                         setUserData({
                           ...userData,
@@ -335,6 +334,17 @@ const Home = () => {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+
+              {/* Settings Modal (now triggered by edit button in main block) */}
+              <Dialog open={showSettingsModal} onOpenChange={setShowSettingsModal}>
+                <DialogContent>
+                  <SettingsPage
+                    onComplete={handleSettingsComplete}
+                    initialAge={userData.age}
+                    initialMotto={userData.motto}
+                  />
+                </DialogContent>
+              </Dialog>
             </motion.div>
           )}
         </AnimatePresence>

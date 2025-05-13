@@ -85,10 +85,11 @@ const ExpandableBlock = ({
                     progressLabel={eventName ? "Current Progress" : undefined}
                   />
                 </div>
-                {eventName && (
+                {/* Edit Event button for custom event blocks, Edit button for main block */}
+                {isExpanded && (
                   <div className="flex justify-end mt-4">
                     <Button variant="outline" size="sm" onClick={onEdit}>
-                      Edit Event
+                      Edit {eventName ? "Event" : "Life Countdown"}
                     </Button>
                   </div>
                 )}
