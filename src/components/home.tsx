@@ -209,10 +209,18 @@ const Home = () => {
 
               {/* Scrollable blocks area */}
               <div
-                className="w-full max-w-md flex flex-col items-center overflow-y-auto px-2 mt-16"
-                style={{ maxHeight: '80vh', scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                className="w-full max-w-md flex flex-col items-center overflow-y-auto px-2 mt-16 touch-pan-y"
+                style={{ 
+                  maxHeight: '80vh', 
+                  scrollbarWidth: 'none', 
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch'
+                }}
               >
-                <style>{`div::-webkit-scrollbar { display: none; }`}</style>
+                <style>{`
+                  div::-webkit-scrollbar { display: none; }
+                  .touch-pan-y { touch-action: pan-y; }
+                `}</style>
                 <ExpandableBlock
                   birthDate={userData.birthDate}
                   motto={userData.motto}
