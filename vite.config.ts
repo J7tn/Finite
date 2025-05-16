@@ -22,8 +22,12 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@radix-ui/react-*'],
-          'capacitor': ['@capacitor/*'],
+          'capacitor': [
+            '@capacitor/core',
+            '@capacitor/local-notifications',
+            '@capacitor/splash-screen',
+            '@capacitor/status-bar'
+          ],
         },
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
