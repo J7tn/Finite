@@ -132,17 +132,8 @@ const Home: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Button
-          variant="outline"
-          className="w-full flex items-center justify-center gap-2"
-          onClick={() => setShowEventForm(true)}
-        >
-          <Plus className="h-5 w-5" />
-          Add New Event
-        </Button>
-
-        {/* Scrollable events list */}
-        <div className="max-h-[60vh] overflow-y-auto space-y-4">
+        {/* Custom Event Blocks */}
+        <div className="space-y-4">
           {events.map(event => (
             <Card key={event.id} className="bg-card">
               <CardContent className="p-4">
@@ -183,6 +174,16 @@ const Home: React.FC = () => {
             </Card>
           ))}
         </div>
+
+        {/* Add New Event Button */}
+        <Button
+          variant="outline"
+          className="w-full flex items-center justify-center gap-2"
+          onClick={() => setShowEventForm(true)}
+        >
+          <Plus className="h-5 w-5" />
+          Add New Event
+        </Button>
 
         <Dialog open={showEventForm} onOpenChange={setShowEventForm}>
           <DialogContent>
