@@ -41,7 +41,7 @@ const EventForm = ({ onSubmit, onCancel, initialName = "", initialDate, initialM
       exit={{ opacity: 0, y: 20 }}
       className="w-full"
     >
-      <Card className="bg-card">
+      <Card>
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -57,6 +57,7 @@ const EventForm = ({ onSubmit, onCancel, initialName = "", initialDate, initialM
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter event name"
                 required
+                className="w-full"
               />
             </div>
 
@@ -88,6 +89,7 @@ const EventForm = ({ onSubmit, onCancel, initialName = "", initialDate, initialM
                 onChange={(e) => setMotto(e.target.value)}
                 placeholder="Enter a custom motto for this event"
                 required
+                className="w-full"
               />
             </div>
 

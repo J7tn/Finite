@@ -85,17 +85,16 @@ const ExpandableBlock = ({
                     progressLabel={eventName ? "Current Progress" : undefined}
                   />
                 </div>
-                {/* Edit Event button for custom event blocks, Edit button for main block */}
-                {isExpanded && (
-                  <div className="flex justify-center mt-4">
-                    <Button variant="outline" size="sm" onClick={onEdit}>
-                      Edit {eventName ? "Event" : "Life Countdown"}
-                    </Button>
-                  </div>
-                )}
               </motion.div>
             )}
           </AnimatePresence>
+          {isExpanded && (
+            <div className="flex justify-center mt-4">
+              <Button variant="outline" size="sm" onClick={onEdit}>
+                Edit {eventName ? "Event" : "Life Countdown"}
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

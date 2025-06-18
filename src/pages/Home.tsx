@@ -113,14 +113,6 @@ const Home: React.FC = () => {
                   className="overflow-hidden"
                 >
                   <div className="pt-2">
-                    <div className="p-6 bg-card rounded-lg shadow-sm">
-                      <LifeProgressBar
-                        birthDate={birthDate}
-                        expectedLifespan={80}
-                        progressLabel="Life Progress"
-                      />
-                    </div>
-
                     <CountdownTimer
                       birthDate={birthDate}
                       motto={motto}
@@ -186,7 +178,7 @@ const Home: React.FC = () => {
         </Button>
 
         <Dialog open={showEventForm} onOpenChange={setShowEventForm}>
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
             <EventForm
               onSubmit={handleAddEvent}
               onCancel={() => setShowEventForm(false)}
