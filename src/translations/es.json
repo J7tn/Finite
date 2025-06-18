@@ -1,0 +1,70 @@
+{
+  "app": {
+    "title": "Finite",
+    "darkMode": "Modo Oscuro",
+    "lightMode": "Modo Claro"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "selectLanguage": "Seleccionar Idioma",
+    "saveChanges": "Guardar Cambios"
+  },
+  "lifeCountdown": {
+    "title": "Cuenta Regresiva de Vida",
+    "birthDate": "Fecha de Nacimiento",
+    "motto": "Lema de Vida",
+    "edit": "Editar Cuenta Regresiva de Vida",
+    "reminderFrequency": "Frecuencia de Recordatorio",
+    "frequencies": {
+      "daily": "Diario",
+      "monthly": "Mensual",
+      "yearly": "Anual"
+    }
+  },
+  "events": {
+    "title": "Eventos",
+    "addNew": "Agregar Nuevo Evento",
+    "edit": "Editar Evento",
+    "delete": "Eliminar Evento",
+    "name": "Nombre del Evento",
+    "date": "Fecha del Evento",
+    "birthDate": "Fecha de Nacimiento",
+    "motto": "Lema Personalizado",
+    "reminderFrequency": "Frecuencia de Recordatorio",
+    "selectFrequency": "Seleccionar Frecuencia",
+    "frequencies": {
+      "daily": "Diario",
+      "weekly": "Semanal",
+      "monthly": "Mensual"
+    },
+    "editEvent": "Editar Evento",
+    "editLifeCountdown": "Editar Cuenta Regresiva de Vida",
+    "lifeCountdown": "Cuenta Regresiva de Vida",
+    "lifeProgress": "Progreso de Vida",
+    "type": "Tipo de Evento",
+    "selectType": "Seleccionar Tipo de Evento",
+    "types": {
+      "custom": "Evento Personalizado",
+      "lifeCountdown": "Cuenta Regresiva de Vida"
+    },
+    "lifeExpectancy": "Esperanza de Vida (años)"
+  },
+  "common": {
+    "years": "Años",
+    "months": "Meses",
+    "days": "Días",
+    "hours": "Horas",
+    "minutes": "Minutos",
+    "seconds": "Segundos",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "create": "Crear",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "year": "Año",
+    "month": "Mes",
+    "day": "Día",
+    "language": "Idioma"
+  }
+} 

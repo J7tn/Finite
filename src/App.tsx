@@ -1,6 +1,7 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { measurePerformance } from '@/utils/performance';
+import { initializeLanguage } from './services/translation';
 
 // Lazy load components
 const Home = lazy(() => import('@/pages/Home'));
@@ -17,8 +18,9 @@ const LoadingFallback = () => (
 const App: React.FC = () => {
   const endMeasure = measurePerformance('App Initial Render');
 
-  React.useEffect(() => {
+  useEffect(() => {
     endMeasure();
+    initializeLanguage();
   }, []);
 
   return (

@@ -1,0 +1,70 @@
+{
+  "app": {
+    "title": "Finite",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "selectLanguage": "Select Language",
+    "saveChanges": "Save Changes"
+  },
+  "lifeCountdown": {
+    "title": "Life Countdown",
+    "birthDate": "Birth Date",
+    "motto": "Life Motto",
+    "edit": "Edit Life Countdown",
+    "reminderFrequency": "Reminder Frequency",
+    "frequencies": {
+      "daily": "Daily",
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    }
+  },
+  "events": {
+    "title": "Events",
+    "addNew": "Add New Event",
+    "edit": "Edit Event",
+    "delete": "Delete Event",
+    "name": "Event Name",
+    "date": "Event Date",
+    "birthDate": "Birth Date",
+    "motto": "Custom Motto",
+    "reminderFrequency": "Reminder Frequency",
+    "selectFrequency": "Select Frequency",
+    "frequencies": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "editEvent": "Edit Event",
+    "editLifeCountdown": "Edit Life Countdown",
+    "lifeCountdown": "Life Countdown",
+    "lifeProgress": "Life Progress",
+    "type": "Event Type",
+    "selectType": "Select Event Type",
+    "types": {
+      "custom": "Custom Event",
+      "lifeCountdown": "Life Countdown"
+    },
+    "lifeExpectancy": "Life Expectancy (years)"
+  },
+  "common": {
+    "years": "Years",
+    "months": "Months",
+    "days": "Days",
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "delete": "Delete",
+    "edit": "Edit",
+    "year": "Year",
+    "month": "Month",
+    "day": "Day",
+    "language": "Language"
+  }
+} 

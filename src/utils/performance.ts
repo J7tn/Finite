@@ -1,7 +1,10 @@
 export const measurePerformance = (label: string) => {
   if (process.env.NODE_ENV === 'development') {
-    console.time(label);
-    return () => console.timeEnd(label);
+    const start = performance.now();
+    return () => {
+      const end = performance.now();
+      console.log(`${label}: ${end - start}ms`);
+    };
   }
   return () => {};
 };

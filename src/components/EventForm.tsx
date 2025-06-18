@@ -3,34 +3,76 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
+import { t } from "@/services/translation";
+import { Label } from "@/components/ui/label";
 
 interface EventFormProps {
-  onSubmit: (event: { name: string; date: Date; motto: string; notificationFrequency: string }) => void;
+  onSubmit: (data: {
+    name: string;
+    date: Date;
+    motto: string;
+    notificationFrequency: string;
+    type: string;
+    lifeExpectancy?: number;
+  }) => void;
   onCancel: () => void;
-  initialName?: string;
-  initialDate?: Date;
-  initialMotto?: string;
-  initialNotificationFrequency?: string;
   onDelete?: () => void;
+  initialData?: {
+    name: string;
+    date: Date;
+    motto: string;
+    notificationFrequency: string;
+    type?: string;
+    lifeExpectancy?: number;
+  };
 }
 
-const EventForm = ({ onSubmit, onCancel, initialName = "", initialDate, initialMotto = "", initialNotificationFrequency = "daily", onDelete }: EventFormProps) => {
-  const [name, setName] = useState(initialName);
-  const [date, setDate] = useState<Date | undefined>(initialDate);
-  const [motto, setMotto] = useState(initialMotto);
-  const [notificationFrequency, setNotificationFrequency] = useState(initialNotificationFrequency);
+const EventForm: React.FC<EventFormProps> = ({
+  onSubmit,
+  onCancel,
+  onDelete,
+  initialData
+}) => {
+  const [name, setName] = useState(initialData?.name || '');
+  const [motto, setMotto] = useState(initialData?.motto || '');
+  const [notificationFrequency, setNotificationFrequency] = useState(initialData?.notificationFrequency || 'monthly');
+  const [type, setType] = useState(initialData?.type || 'custom');
+  const [lifeExpectancy, setLifeExpectancy] = useState(initialData?.lifeExpectancy?.toString() || '80');
+  
+  const [year, setYear] = useState(initialData?.date ? initialData.date.getFullYear() : new Date().getFullYear());
+  const [month, setMonth] = useState(initialData?.date ? initialData.date.getMonth() + 1 : new Date().getMonth() + 1);
+  const [day, setDay] = useState(initialData?.date ? initialData.date.getDate() : new Date().getDate());
+
+  const generateYearOptions = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let year = currentYear - 100; year <= currentYear + 100; year++) {
+      years.push(year);
+    }
+    return years;
+  };
+
+  const generateMonthOptions = () => {
+    return Array.from({ length: 12 }, (_, i) => i + 1);
+  };
+
+  const generateDayOptions = (year: number, month: number) => {
+    const daysInMonth = new Date(year, month, 0).getDate();
+    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !date || !motto) return;
-
+    const date = new Date(year, month - 1, day);
     onSubmit({
       name,
       date,
       motto,
       notificationFrequency,
+      type,
+      lifeExpectancy: type === 'lifeCountdown' ? parseInt(lifeExpectancy) : undefined
     });
   };
 
@@ -44,81 +86,133 @@ const EventForm = ({ onSubmit, onCancel, initialName = "", initialDate, initialM
       <Card>
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="event-name"
-                className="block text-sm font-medium text-foreground mb-1"
-              >
-                Event Name
-              </label>
+            <div className="space-y-2">
+              <Label>{t('events.type')}</Label>
+              <Select value={type} onValueChange={setType}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('events.selectType')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="custom">{t('events.types.custom')}</SelectItem>
+                  <SelectItem value="lifeCountdown">{t('events.types.lifeCountdown')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t('events.name')}</Label>
               <Input
-                id="event-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Enter event name"
+                placeholder={t('events.name')}
                 required
-                className="w-full"
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Event Date
-              </label>
-              <div className="border rounded-md p-2">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={setDate}
-                  disabled={(date) => date < new Date()}
-                  className="rounded-md border-0"
+            {type === 'lifeCountdown' && (
+              <div className="space-y-2">
+                <Label>{t('events.lifeExpectancy')}</Label>
+                <Input
+                  type="number"
+                  value={lifeExpectancy}
+                  onChange={(e) => setLifeExpectancy(e.target.value)}
+                  placeholder={t('events.lifeExpectancy')}
+                  min="1"
+                  max="150"
+                  required
                 />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="date">
+                {type === 'lifeCountdown' ? t('events.birthDate') : t('events.date')}
+              </Label>
+              <div className="grid grid-cols-3 gap-2">
+                <Select
+                  value={year.toString()}
+                  onValueChange={(value) => setYear(parseInt(value))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('common.year')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {generateYearOptions().map((year) => (
+                      <SelectItem key={year} value={year.toString()}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={month.toString()}
+                  onValueChange={(value) => setMonth(parseInt(value))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('common.month')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {generateMonthOptions().map((month) => (
+                      <SelectItem key={month} value={month.toString()}>
+                        {month}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select
+                  value={day.toString()}
+                  onValueChange={(value) => setDay(parseInt(value))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('common.day')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {generateDayOptions(year, month).map((day) => (
+                      <SelectItem key={day} value={day.toString()}>
+                        {day}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
-            <div>
-              <label
-                htmlFor="event-motto"
-                className="block text-sm font-medium text-foreground mb-1"
-              >
-                Custom Motto
-              </label>
+            <div className="space-y-2">
+              <Label>{t('events.motto')}</Label>
               <Textarea
-                id="event-motto"
                 value={motto}
                 onChange={(e) => setMotto(e.target.value)}
-                placeholder="Enter a custom motto for this event"
-                required
-                className="w-full"
+                placeholder={t('events.motto')}
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Notification Frequency
-              </label>
-              <select
-                className="w-full border rounded-md p-2 bg-background"
-                value={notificationFrequency}
-                onChange={e => setNotificationFrequency(e.target.value)}
-              >
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-              </select>
+            <div className="space-y-2">
+              <Label>{t('events.reminderFrequency')}</Label>
+              <Select value={notificationFrequency} onValueChange={setNotificationFrequency}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('events.selectFrequency')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="daily">{t('events.frequencies.daily')}</SelectItem>
+                  <SelectItem value="weekly">{t('events.frequencies.weekly')}</SelectItem>
+                  <SelectItem value="monthly">{t('events.frequencies.monthly')}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="flex justify-end space-x-2 pt-2">
+            <div className="flex justify-end gap-4">
               {onDelete && (
                 <Button type="button" variant="destructive" onClick={onDelete}>
-                  Delete
+                  {t('common.delete')}
                 </Button>
               )}
               <Button type="button" variant="outline" onClick={onCancel}>
-                Cancel
+                {t('common.cancel')}
               </Button>
-              <Button type="submit" disabled={!name || !date || !motto}>
-                {onDelete ? "Save Changes" : "Create Event"}
+              <Button type="submit">
+                {initialData ? t('common.save') : t('common.create')}
               </Button>
             </div>
           </form>
