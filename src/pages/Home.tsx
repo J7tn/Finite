@@ -14,6 +14,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { t } from '@/services/translation';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface Event {
   id: string;
@@ -43,6 +46,22 @@ const setLocalStorageItem = (key: string, value: any) => {
   }
 };
 
+// Sortable wrapper for ExpandableBlock
+function SortableExpandableBlock({ id, ...props }: any) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 100 : 'auto',
+  };
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <ExpandableBlock {...props} />
+    </div>
+  );
+}
+
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [birthDate, setBirthDate] = useState<Date>(() => {
@@ -60,7 +79,11 @@ const Home: React.FC = () => {
   });
   const [showEventForm, setShowEventForm] = useState(false);
   const [events, setEvents] = useState<Event[]>(() => {
-    return getLocalStorageItem('events', []);
+    const rawEvents = getLocalStorageItem('events', []);
+    return rawEvents.map((event: any) => ({
+      ...event,
+      date: event.date ? new Date(event.date) : new Date(),
+    }));
   });
   const [expandedBlocks, setExpandedBlocks] = useState<Set<string>>(new Set(['life']));
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
@@ -68,6 +91,9 @@ const Home: React.FC = () => {
   const [tempBirthDate, setTempBirthDate] = useState<Date>(birthDate);
   const [tempMotto, setTempMotto] = useState<string>(motto);
   const [tempNotificationFrequency, setTempNotificationFrequency] = useState<string>(notificationFrequency);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
 
   useEffect(() => {
     setLocalStorageItem('birthDate', birthDate.toISOString());
@@ -154,6 +180,17 @@ const Home: React.FC = () => {
     setTempBirthDate(newDate);
   };
 
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event;
+    if (active.id !== over?.id) {
+      const oldIndex = events.findIndex(e => e.id === active.id);
+      const newIndex = events.findIndex(e => e.id === over.id);
+      const newEvents = arrayMove(events, oldIndex, newIndex);
+      setEvents(newEvents);
+      setLocalStorageItem('events', newEvents);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
@@ -173,25 +210,37 @@ const Home: React.FC = () => {
           targetDate={birthDate}
           eventType="lifeCountdown"
           lifeExpectancy={80}
-          onExpand={() => {}}
-          onEdit={() => setIsEditingLife(true)}
+          isExpanded={expandedBlocks.has('life')}
+          onExpand={() => toggleBlock('life')}
+          onEdit={() => {
+            setTempBirthDate(birthDate);
+            setTempMotto(motto);
+            setTempNotificationFrequency(notificationFrequency);
+            setIsEditingLife(true);
+          }}
         />
 
-        {/* Custom Event Blocks */}
-        <div className="space-y-4">
-          {events.map((event) => (
-            <ExpandableBlock
-              key={event.id}
-              eventName={event.name}
-              motto={event.motto}
-              targetDate={event.date}
-              eventType={event.type}
-              lifeExpectancy={event.lifeExpectancy}
-              onExpand={() => toggleBlock(event.id)}
-              onEdit={() => setEditingEvent(event)}
-            />
-          ))}
-        </div>
+        {/* Custom Event Blocks with DnD */}
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={events.map(e => e.id)} strategy={verticalListSortingStrategy}>
+            <div className="space-y-4">
+              {events.map((event) => (
+                <SortableExpandableBlock
+                  key={event.id}
+                  id={event.id}
+                  eventName={event.name}
+                  motto={event.motto}
+                  targetDate={event.date}
+                  eventType={event.type}
+                  lifeExpectancy={event.lifeExpectancy}
+                  isExpanded={expandedBlocks.has(event.id)}
+                  onExpand={() => toggleBlock(event.id)}
+                  onEdit={() => setEditingEvent(event)}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
 
         {/* Add New Event Button */}
         <Button
@@ -309,7 +358,7 @@ const Home: React.FC = () => {
 
         {/* Event Form Dialog */}
         <Dialog open={showEventForm} onOpenChange={setShowEventForm}>
-          <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogContent hideClose={true} className="max-h-[90vh] overflow-y-auto">
             <EventForm
               onSubmit={handleAddEvent}
               onCancel={() => setShowEventForm(false)}

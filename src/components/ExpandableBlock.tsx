@@ -20,6 +20,7 @@ interface ExpandableBlockProps {
   targetDate: Date;
   eventType?: string;
   lifeExpectancy?: number;
+  isExpanded: boolean;
   onExpand: () => void;
   onEdit: () => void;
 }
@@ -30,10 +31,10 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
   targetDate,
   eventType = 'custom',
   lifeExpectancy,
+  isExpanded,
   onExpand,
   onEdit
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
     years: 0,
     months: 0,
@@ -93,11 +94,6 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
     return () => clearInterval(timer);
   }, [targetDate]);
 
-  const handleExpand = () => {
-    setIsExpanded(!isExpanded);
-    onExpand();
-  };
-
   const calculateLifeProgress = () => {
     if (eventType !== 'lifeCountdown' || !lifeExpectancy) return null;
 
@@ -109,6 +105,13 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
   };
 
   const lifeProgress = calculateLifeProgress();
+
+  // Calculate target date for custom life countdown
+  let countdownTargetDate = targetDate;
+  if (eventType === 'lifeCountdown' && lifeExpectancy && targetDate instanceof Date) {
+    countdownTargetDate = new Date(targetDate);
+    countdownTargetDate.setFullYear(targetDate.getFullYear() + lifeExpectancy);
+  }
 
   return (
     <Card className="w-full">
@@ -123,7 +126,7 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleExpand}
+            onClick={onExpand}
             className="ml-2"
           >
             {isExpanded ? (
@@ -144,50 +147,22 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
               className="overflow-hidden"
             >
               <div className="mt-4 space-y-4">
-                {eventType === 'lifeCountdown' && lifeProgress !== null && (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>{t('events.lifeProgress')}</span>
-                      <span>{lifeProgress.toFixed(1)}%</span>
-                    </div>
-                    <div className="h-2 bg-secondary rounded-full">
-                      <div
-                        className="h-full bg-primary rounded-full transition-all duration-500"
-                        style={{ width: `${lifeProgress}%` }}
-                      />
-                    </div>
-                  </div>
+                {eventName === t('events.lifeCountdown') ? (
+                  <CountdownTimer
+                    birthDate={targetDate}
+                    expectedLifespan={73.5}
+                    motto={motto}
+                  />
+                ) : eventType === 'lifeCountdown' ? (
+                  <CountdownTimer
+                    birthDate={targetDate}
+                    targetDate={countdownTargetDate}
+                    expectedLifespan={lifeExpectancy}
+                    motto={motto}
+                  />
+                ) : (
+                  <CountdownTimer targetDate={targetDate} motto={motto} />
                 )}
-
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className="text-2xl font-bold">{timeLeft.years}</div>
-                    <div className="text-sm text-muted-foreground">{t('common.years')}</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">{timeLeft.months}</div>
-                    <div className="text-sm text-muted-foreground">{t('common.months')}</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">{timeLeft.days}</div>
-                    <div className="text-sm text-muted-foreground">{t('common.days')}</div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className="text-2xl font-bold">{timeLeft.hours}</div>
-                    <div className="text-sm text-muted-foreground">{t('common.hours')}</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">{timeLeft.minutes}</div>
-                    <div className="text-sm text-muted-foreground">{t('common.minutes')}</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold">{timeLeft.seconds}</div>
-                    <div className="text-sm text-muted-foreground">{t('common.seconds')}</div>
-                  </div>
-                </div>
               </div>
             </motion.div>
           )}

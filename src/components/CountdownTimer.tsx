@@ -10,6 +10,7 @@ interface CountdownTimerProps {
   targetDate?: Date;
   startDate?: Date;
   progressLabel?: string;
+  expectedLifespan?: number;
 }
 
 const CountdownTimer = ({
@@ -19,6 +20,7 @@ const CountdownTimer = ({
   targetDate,
   startDate,
   progressLabel,
+  expectedLifespan = 73.5,
 }: CountdownTimerProps) => {
   const [timeRemaining, setTimeRemaining] = useState({
     years: 0,
@@ -131,8 +133,8 @@ const CountdownTimer = ({
           </div>
 
           <LifeProgressBar 
-            birthDate={startDate && targetDate ? startDate : (targetDate ? new Date() : birthDate)}
-            expectedLifespan={startDate && targetDate ? (targetDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25) : (targetDate ? ((targetDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 * 365.25)) : 73.5)}
+            birthDate={birthDate}
+            expectedLifespan={expectedLifespan}
             progressLabel={progressLabel}
           />
 
