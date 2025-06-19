@@ -54,6 +54,7 @@ function SortableExpandableBlock({ id, ...props }: any) {
     transition,
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 100 : 'auto',
+    cursor: 'grab',
   };
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
@@ -92,7 +93,7 @@ const Home: React.FC = () => {
   const [tempMotto, setTempMotto] = useState<string>(motto);
   const [tempNotificationFrequency, setTempNotificationFrequency] = useState<string>(notificationFrequency);
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+    useSensor(PointerSensor)
   );
 
   useEffect(() => {
@@ -223,22 +224,21 @@ const Home: React.FC = () => {
         {/* Custom Event Blocks with DnD */}
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={events.map(e => e.id)} strategy={verticalListSortingStrategy}>
-            <div className="space-y-4">
-              {events.map((event) => (
-                <SortableExpandableBlock
-                  key={event.id}
-                  id={event.id}
-                  eventName={event.name}
-                  motto={event.motto}
-                  targetDate={event.date}
-                  eventType={event.type}
-                  lifeExpectancy={event.lifeExpectancy}
-                  isExpanded={expandedBlocks.has(event.id)}
-                  onExpand={() => toggleBlock(event.id)}
-                  onEdit={() => setEditingEvent(event)}
-                />
-              ))}
-            </div>
+            {events.map((event) => (
+              <SortableExpandableBlock
+                key={event.id}
+                id={event.id}
+                eventName={event.name}
+                motto={event.motto}
+                targetDate={event.date}
+                eventType={event.type}
+                lifeExpectancy={event.lifeExpectancy}
+                isExpanded={expandedBlocks.has(event.id)}
+                onExpand={() => toggleBlock(event.id)}
+                onEdit={() => setEditingEvent(event)}
+                style={{ marginBottom: 16 }}
+              />
+            ))}
           </SortableContext>
         </DndContext>
 
