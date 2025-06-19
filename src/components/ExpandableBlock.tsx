@@ -23,6 +23,7 @@ interface ExpandableBlockProps {
   isExpanded: boolean;
   onExpand: () => void;
   onEdit: () => void;
+  dragHandleProps?: { attributes: any; listeners: any };
 }
 
 const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
@@ -33,7 +34,8 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
   lifeExpectancy,
   isExpanded,
   onExpand,
-  onEdit
+  onEdit,
+  dragHandleProps
 }) => {
   const [timeLeft, setTimeLeft] = useState({
     years: 0,
@@ -116,7 +118,7 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
   return (
     <div style={{ background: '#fff', border: '1px solid #ccc', borderRadius: 8, padding: 16, width: '100%' }}>
       <div className="flex items-center justify-between">
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <h3 className="text-lg font-semibold">
             {eventName || t('events.lifeCountdown')}
           </h3>
@@ -125,8 +127,9 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
         <Button
           variant="ghost"
           size="icon"
-          onClick={onExpand}
-          className="ml-2"
+          onClick={e => { e.stopPropagation(); onExpand(); }}
+          className="ml-2 expand-btn"
+          style={{ position: 'relative', zIndex: 10 }}
         >
           {isExpanded ? (
             <ChevronUp className="h-4 w-4" />

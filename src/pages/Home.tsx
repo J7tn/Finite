@@ -54,11 +54,10 @@ function SortableExpandableBlock({ id, ...props }: any) {
     transition,
     opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 100 : 'auto',
-    cursor: 'grab',
   };
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <ExpandableBlock {...props} />
+    <div ref={setNodeRef} style={style}>
+      <ExpandableBlock {...props} dragHandleProps={{ attributes, listeners }} />
     </div>
   );
 }
