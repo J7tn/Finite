@@ -114,73 +114,71 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
   }
 
   return (
-    <Card className="w-full">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold">
-              {eventName || t('events.lifeCountdown')}
-            </h3>
-            {motto && <p className="text-sm text-muted-foreground mt-1">{motto}</p>}
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onExpand}
-            className="ml-2"
+    <div style={{ background: '#fff', border: '1px solid #ccc', borderRadius: 8, padding: 16, width: '100%' }}>
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
+          <h3 className="text-lg font-semibold">
+            {eventName || t('events.lifeCountdown')}
+          </h3>
+          {motto && <p className="text-sm text-muted-foreground mt-1">{motto}</p>}
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onExpand}
+          className="ml-2"
+        >
+          {isExpanded ? (
+            <ChevronUp className="h-4 w-4" />
+          ) : (
+            <ChevronDown className="h-4 w-4" />
+          )}
+        </Button>
+      </div>
+
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
           >
-            {isExpanded ? (
-              <ChevronUp className="h-4 w-4" />
-            ) : (
-              <ChevronDown className="h-4 w-4" />
-            )}
+            <div className="mt-4 space-y-4">
+              {eventName === t('events.lifeCountdown') ? (
+                <CountdownTimer
+                  birthDate={targetDate}
+                  expectedLifespan={73.5}
+                  motto={motto}
+                />
+              ) : eventType === 'lifeCountdown' ? (
+                <CountdownTimer
+                  birthDate={targetDate}
+                  targetDate={countdownTargetDate}
+                  expectedLifespan={lifeExpectancy}
+                  motto={motto}
+                />
+              ) : (
+                <CountdownTimer targetDate={targetDate} motto={motto} />
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {isExpanded && (
+        <div className="flex justify-end mt-4">
+          <Button
+            variant="outline"
+            onClick={onEdit}
+            className="w-full"
+          >
+            {eventName ? t('events.editEvent') : t('events.editLifeCountdown')}
           </Button>
         </div>
-
-        <AnimatePresence>
-          {isExpanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="mt-4 space-y-4">
-                {eventName === t('events.lifeCountdown') ? (
-                  <CountdownTimer
-                    birthDate={targetDate}
-                    expectedLifespan={73.5}
-                    motto={motto}
-                  />
-                ) : eventType === 'lifeCountdown' ? (
-                  <CountdownTimer
-                    birthDate={targetDate}
-                    targetDate={countdownTargetDate}
-                    expectedLifespan={lifeExpectancy}
-                    motto={motto}
-                  />
-                ) : (
-                  <CountdownTimer targetDate={targetDate} motto={motto} />
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {isExpanded && (
-          <div className="flex justify-end mt-4">
-            <Button
-              variant="outline"
-              onClick={onEdit}
-              className="w-full"
-            >
-              {eventName ? t('events.editEvent') : t('events.editLifeCountdown')}
-            </Button>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
 };
 

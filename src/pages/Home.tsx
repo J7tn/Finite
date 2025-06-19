@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { t } from '@/services/translation';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, closestCenter, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
@@ -93,7 +93,7 @@ const Home: React.FC = () => {
   const [tempMotto, setTempMotto] = useState<string>(motto);
   const [tempNotificationFrequency, setTempNotificationFrequency] = useState<string>(notificationFrequency);
   const sensors = useSensors(
-    useSensor(PointerSensor)
+    useSensor(TouchSensor)
   );
 
   useEffect(() => {
@@ -189,6 +189,7 @@ const Home: React.FC = () => {
       const newEvents = arrayMove(events, oldIndex, newIndex);
       setEvents(newEvents);
       setLocalStorageItem('events', newEvents);
+      console.log('New order:', newEvents.map(e => e.id));
     }
   };
 
@@ -391,7 +392,11 @@ const Home: React.FC = () => {
                   <Input
                     id="date"
                     type="date"
-                    value={editingEvent.date ? new Date(editingEvent.date).toISOString().split('T')[0] : ''}
+                    value={
+                      editingEvent?.date && !isNaN(new Date(editingEvent.date).getTime())
+                        ? new Date(editingEvent.date).toISOString().split('T')[0]
+                        : ''
+                    }
                     onChange={(e) => {
                       if (editingEvent) {
                         const newDate = new Date(e.target.value);
