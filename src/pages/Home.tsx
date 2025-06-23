@@ -48,7 +48,7 @@ const setLocalStorageItem = (key: string, value: any) => {
 
 // Sortable wrapper for ExpandableBlock
 function SortableExpandableBlock({ id, ...props }: any) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const { setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -57,7 +57,7 @@ function SortableExpandableBlock({ id, ...props }: any) {
   };
   return (
     <div ref={setNodeRef} style={style}>
-      <ExpandableBlock {...props} dragHandleProps={{ attributes, listeners }} />
+      <ExpandableBlock {...props} />
     </div>
   );
 }

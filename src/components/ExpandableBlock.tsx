@@ -23,7 +23,6 @@ interface ExpandableBlockProps {
   isExpanded: boolean;
   onExpand: () => void;
   onEdit: () => void;
-  dragHandleProps?: { attributes: any; listeners: any };
 }
 
 const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
@@ -34,8 +33,7 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
   lifeExpectancy,
   isExpanded,
   onExpand,
-  onEdit,
-  dragHandleProps
+  onEdit
 }) => {
   const [timeLeft, setTimeLeft] = useState({
     years: 0,
