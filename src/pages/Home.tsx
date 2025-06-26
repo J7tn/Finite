@@ -14,9 +14,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { t } from '@/services/translation';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
-import { DndContext, closestCenter, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 
 interface Event {
   id: string;
@@ -46,27 +43,12 @@ const setLocalStorageItem = (key: string, value: any) => {
   }
 };
 
-// Sortable wrapper for ExpandableBlock
-function SortableExpandableBlock({ id, ...props }: any) {
-  const { setNodeRef, transform, transition, isDragging } = useSortable({ id });
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 100 : 'auto',
-  };
-  return (
-    <div ref={setNodeRef} style={style}>
-      <ExpandableBlock {...props} />
-    </div>
-  );
-}
-
 const Home: React.FC = () => {
   const navigate = useNavigate();
   const [birthDate, setBirthDate] = useState<Date>(() => {
     const savedDate = getLocalStorageItem('birthDate', null);
-    return savedDate ? new Date(savedDate) : new Date(1990, 0, 1);
+    const date = savedDate ? new Date(savedDate) : new Date(1990, 0, 1);
+    return date instanceof Date && !isNaN(date.getTime()) ? date : new Date(1990, 0, 1);
   });
   const [motto, setMotto] = useState<string>(() => {
     return getLocalStorageItem('motto', 'Make every second count');
@@ -91,12 +73,11 @@ const Home: React.FC = () => {
   const [tempBirthDate, setTempBirthDate] = useState<Date>(birthDate);
   const [tempMotto, setTempMotto] = useState<string>(motto);
   const [tempNotificationFrequency, setTempNotificationFrequency] = useState<string>(notificationFrequency);
-  const sensors = useSensors(
-    useSensor(TouchSensor)
-  );
 
   useEffect(() => {
-    setLocalStorageItem('birthDate', birthDate.toISOString());
+    if (birthDate instanceof Date && !isNaN(birthDate.getTime())) {
+      setLocalStorageItem('birthDate', birthDate.toISOString());
+    }
     setLocalStorageItem('motto', motto);
     setLocalStorageItem('lifeNotificationFrequency', notificationFrequency);
   }, [birthDate, motto, notificationFrequency]);
@@ -180,18 +161,6 @@ const Home: React.FC = () => {
     setTempBirthDate(newDate);
   };
 
-  const handleDragEnd = (event: any) => {
-    const { active, over } = event;
-    if (active.id !== over?.id) {
-      const oldIndex = events.findIndex(e => e.id === active.id);
-      const newIndex = events.findIndex(e => e.id === over.id);
-      const newEvents = arrayMove(events, oldIndex, newIndex);
-      setEvents(newEvents);
-      setLocalStorageItem('events', newEvents);
-      console.log('New order:', newEvents.map(e => e.id));
-    }
-  };
-
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
@@ -221,26 +190,20 @@ const Home: React.FC = () => {
           }}
         />
 
-        {/* Custom Event Blocks with DnD */}
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={events.map(e => e.id)} strategy={verticalListSortingStrategy}>
-            {events.map((event) => (
-              <SortableExpandableBlock
-                key={event.id}
-                id={event.id}
-                eventName={event.name}
-                motto={event.motto}
-                targetDate={event.date}
-                eventType={event.type}
-                lifeExpectancy={event.lifeExpectancy}
-                isExpanded={expandedBlocks.has(event.id)}
-                onExpand={() => toggleBlock(event.id)}
-                onEdit={() => setEditingEvent(event)}
-                style={{ marginBottom: 16 }}
-              />
-            ))}
-          </SortableContext>
-        </DndContext>
+        {/* Custom Event Blocks */}
+        {events.map((event) => (
+          <ExpandableBlock
+            key={event.id}
+            eventName={event.name}
+            motto={event.motto}
+            targetDate={event.date}
+            eventType={event.type}
+            lifeExpectancy={event.lifeExpectancy}
+            isExpanded={expandedBlocks.has(event.id)}
+            onExpand={() => toggleBlock(event.id)}
+            onEdit={() => setEditingEvent(event)}
+          />
+        ))}
 
         {/* Add New Event Button */}
         <Button

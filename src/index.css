@@ -74,3 +74,32 @@
       @apply bg-background text-foreground;
     }
   }
+
+  /* Hide any possible drag handle or accessibility dots in all blocks */
+  div[role="button"]::before,
+  div[role="button"]::after,
+  [aria-label="Drag handle"],
+  [aria-label="Reorder"],
+  [aria-label="Move"],
+  [aria-label="Handle"] {
+    display: none !important;
+    content: none !important;
+  }
+
+  /* Hide all elements that look like drag handles */
+  div:has(> .drag-handle),
+  .drag-handle,
+  div[aria-label*="drag"],
+  div[aria-label*="handle"] {
+    display: none !important;
+  }
+
+  svg[aria-label="Drag handle"] {
+    display: none !important;
+  }
+
+  /* Hide specific drag handle icons from Radix UI */
+  [data-radix-drag-handle] svg,
+  [data-radix-resize-handle] svg {
+    display: none !important;
+  }
