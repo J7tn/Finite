@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { Device } from '@capacitor/device';
 import { measurePerformance } from '@/utils/performance';
 import { initializeLanguage } from './services/translation';
 
@@ -19,8 +20,20 @@ const App: React.FC = () => {
   const endMeasure = measurePerformance('App Initial Render');
 
   useEffect(() => {
-    endMeasure();
-    initializeLanguage();
+    const setLanguage = async () => {
+      try {
+        const lang = await Device.getLanguageCode();
+        const supportedLanguages = ['en', 'es'];
+        const languageToSet = supportedLanguages.includes(lang.value) ? lang.value : 'en';
+        await initializeLanguage(languageToSet);
+      } catch (error) {
+        console.error('Failed to get device language, defaulting to English.', error);
+        await initializeLanguage('en');
+      }
+      endMeasure();
+    };
+
+    setLanguage();
   }, []);
 
   return (

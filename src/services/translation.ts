@@ -20,9 +20,12 @@ export const setLanguage = (language: Language) => {
   localStorage.setItem('language', language);
 };
 
-export const initializeLanguage = () => {
+export const initializeLanguage = (language?: string) => {
   const savedLanguage = localStorage.getItem('language') as Language;
-  if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'es')) {
+  if (language && (language === 'en' || language === 'es')) {
+    currentLanguage = language as Language;
+    localStorage.setItem('language', currentLanguage);
+  } else if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'es')) {
     currentLanguage = savedLanguage;
   } else {
     // Get device language
