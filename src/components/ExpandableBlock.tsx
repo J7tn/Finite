@@ -114,10 +114,10 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
   }
 
   return (
-    <div style={{ background: '#fff', border: '1px solid #ccc', borderRadius: 8, padding: 16, width: '100%' }}>
+    <div className="bg-card border border-border rounded-lg p-4 w-full">
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold">
+          <h3 className="text-lg font-semibold text-zinc-900 dark:text-white">
             {eventName || t('events.lifeCountdown')}
           </h3>
           {motto && <p className="text-sm text-muted-foreground mt-1">{motto}</p>}
