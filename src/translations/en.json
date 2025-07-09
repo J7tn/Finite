@@ -48,7 +48,8 @@
       "custom": "Custom Event",
       "lifeCountdown": "Life Countdown"
     },
-    "lifeExpectancy": "Life Expectancy (years)"
+    "lifeExpectancy": "Life Expectancy (years)",
+    "errorSameDay": "Event date cannot be today. Please select a future date."
   },
   "common": {
     "years": "Years",

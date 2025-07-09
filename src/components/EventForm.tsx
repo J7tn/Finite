@@ -40,6 +40,7 @@ const EventForm: React.FC<EventFormProps> = ({
   const [notificationFrequency, setNotificationFrequency] = useState(initialData?.notificationFrequency || 'monthly');
   const [type, setType] = useState(initialData?.type || 'custom');
   const [lifeExpectancy, setLifeExpectancy] = useState(initialData?.lifeExpectancy?.toString() || '80');
+  const [error, setError] = useState<string | null>(null);
   
   const [year, setYear] = useState(initialData?.date ? initialData.date.getFullYear() : new Date().getFullYear());
   const [month, setMonth] = useState(initialData?.date ? initialData.date.getMonth() + 1 : new Date().getMonth() + 1);
@@ -66,6 +67,14 @@ const EventForm: React.FC<EventFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const date = new Date(year, month - 1, day);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
+    if (type === 'custom' && date.getTime() === today.getTime()) {
+      setError(t('events.errorSameDay'));
+      return;
+    }
+    setError(null);
     onSubmit({
       name,
       date,
@@ -86,6 +95,9 @@ const EventForm: React.FC<EventFormProps> = ({
       <Card>
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="text-red-500 text-sm mb-2">{error}</div>
+            )}
             <div className="space-y-2">
               <Label>{t('events.type')}</Label>
               <Select value={type} onValueChange={setType}>
@@ -169,11 +181,22 @@ const EventForm: React.FC<EventFormProps> = ({
                     <SelectValue placeholder={t('common.day')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {generateDayOptions(year, month).map((day) => (
-                      <SelectItem key={day} value={day.toString()}>
-                        {day}
-                      </SelectItem>
-                    ))}
+                    {generateDayOptions(year, month).map((d) => {
+                      const isToday = (() => {
+                        const today = new Date();
+                        return (
+                          type === 'custom' &&
+                          year === today.getFullYear() &&
+                          month === today.getMonth() + 1 &&
+                          d === today.getDate()
+                        );
+                      })();
+                      return (
+                        <SelectItem key={d} value={d.toString()} disabled={isToday}>
+                          {d}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>
