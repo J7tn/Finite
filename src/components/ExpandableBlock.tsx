@@ -152,6 +152,7 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
                   birthDate={targetDate}
                   expectedLifespan={73.5}
                   motto={motto}
+                  eventType={eventType}
                 />
               ) : eventType === 'lifeCountdown' ? (
                 <CountdownTimer
@@ -159,9 +160,10 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
                   targetDate={countdownTargetDate}
                   expectedLifespan={lifeExpectancy}
                   motto={motto}
+                  eventType={eventType}
                 />
               ) : (
-                <CountdownTimer targetDate={targetDate} motto={motto} />
+                <CountdownTimer targetDate={targetDate} motto={motto} eventName={eventName} eventId={eventName} eventType={eventType} />
               )}
             </div>
           </motion.div>

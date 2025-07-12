@@ -1,0 +1,84 @@
+{
+  "app": {
+    "title": "Finite",
+    "darkMode": "Dunkler Modus",
+    "lightMode": "Heller Modus"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "selectLanguage": "Sprache auswählen",
+    "saveChanges": "Änderungen speichern"
+  },
+  "lifeCountdown": {
+    "title": "Lebens-Countdown",
+    "birthDate": "Geburtsdatum",
+    "motto": "Lebensmotto",
+    "edit": "Lebens-Countdown bearbeiten",
+    "reminderFrequency": "Erinnerungsfrequenz",
+    "frequencies": {
+      "daily": "Täglich",
+      "monthly": "Monatlich",
+      "yearly": "Jährlich"
+    }
+  },
+  "events": {
+    "title": "Ereignisse",
+    "addNew": "Neues Ereignis hinzufügen",
+    "edit": "Ereignis bearbeiten",
+    "delete": "Ereignis löschen",
+    "name": "Ereignisname",
+    "date": "Ereignisdatum",
+    "birthDate": "Geburtsdatum",
+    "motto": "Persönliches Motto",
+    "reminderFrequency": "Erinnerungsfrequenz",
+    "selectFrequency": "Frequenz auswählen",
+    "frequencies": {
+      "daily": "Täglich",
+      "weekly": "Wöchentlich",
+      "monthly": "Monatlich"
+    },
+    "editEvent": "Ereignis bearbeiten",
+    "editLifeCountdown": "Lebens-Countdown bearbeiten",
+    "lifeCountdown": "Lebens-Countdown",
+    "lifeProgress": "Lebensfortschritt",
+    "type": "Ereignistyp",
+    "selectType": "Ereignistyp auswählen",
+    "types": {
+      "custom": "Benutzerdefiniertes Ereignis",
+      "lifeCountdown": "Lebens-Countdown"
+    },
+    "lifeExpectancy": "Lebenserwartung (Jahre)",
+    "errorSameDay": "Das Ereignisdatum kann nicht heute sein. Bitte wählen Sie ein zukünftiges Datum.",
+    "suggestions": {
+      "title": "Brauchen Sie Inspiration?",
+      "subtitle": "Hier sind einige Ideen für Ihren Countdown:",
+      "spouseBirthday": "Wie wäre es mit einem Countdown zum Geburtstag Ihres Partners?",
+      "spouseAnniversary": "Ein Countdown zu Ihrem Hochzeitstag?",
+      "specialDay": "Ein Countdown zu einem besonderen Tag?",
+      "vacation": "Countdown zu Ihrem nächsten Urlaub?",
+      "retirement": "Countdown zur Rente?",
+      "graduation": "Countdown zum Abschluss?",
+      "milestone": "Countdown zu einem Meilenstein-Geburtstag?",
+      "holiday": "Countdown zu Ihrem Lieblingsfeiertag?",
+      "dismiss": "Nein danke"
+    }
+  },
+  "common": {
+    "years": "Jahre",
+    "months": "Monate",
+    "days": "Tage",
+    "hours": "Stunden",
+    "minutes": "Minuten",
+    "seconds": "Sekunden",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "create": "Erstellen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "year": "Jahr",
+    "month": "Monat",
+    "day": "Tag",
+    "language": "Sprache"
+  }
+} 

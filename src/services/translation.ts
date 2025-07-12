@@ -1,12 +1,26 @@
 import en from '../translations/en.json';
 import es from '../translations/es.json';
+import fr from '../translations/fr.json';
+import de from '../translations/de.json';
+import zh from '../translations/zh.json';
+import ja from '../translations/ja.json';
+import ko from '../translations/ko.json';
+import pt from '../translations/pt.json';
+import it from '../translations/it.json';
 
 type TranslationKey = keyof typeof en;
-type Language = 'en' | 'es';
+type Language = 'en' | 'es' | 'fr' | 'de' | 'zh' | 'ja' | 'ko' | 'pt' | 'it';
 
 const translations = {
   en,
   es,
+  fr,
+  de,
+  zh,
+  ja,
+  ko,
+  pt,
+  it,
 };
 
 let currentLanguage: Language = 'en';
@@ -20,17 +34,19 @@ export const setLanguage = (language: Language) => {
   localStorage.setItem('language', language);
 };
 
-export const initializeLanguage = (language?: string) => {
+export const initializeLanguage = async (language?: string) => {
   const savedLanguage = localStorage.getItem('language') as Language;
-  if (language && (language === 'en' || language === 'es')) {
+  const supportedLanguages: Language[] = ['en', 'es', 'fr', 'de', 'zh', 'ja', 'ko', 'pt', 'it'];
+  
+  if (language && supportedLanguages.includes(language as Language)) {
     currentLanguage = language as Language;
     localStorage.setItem('language', currentLanguage);
-  } else if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'es')) {
+  } else if (savedLanguage && supportedLanguages.includes(savedLanguage)) {
     currentLanguage = savedLanguage;
   } else {
     // Get device language
     const deviceLanguage = navigator.language.split('-')[0];
-    currentLanguage = deviceLanguage === 'es' ? 'es' : 'en';
+    currentLanguage = supportedLanguages.includes(deviceLanguage as Language) ? deviceLanguage as Language : 'en';
     localStorage.setItem('language', currentLanguage);
   }
 };

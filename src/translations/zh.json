@@ -1,0 +1,84 @@
+{
+  "app": {
+    "title": "Finite",
+    "darkMode": "深色模式",
+    "lightMode": "浅色模式"
+  },
+  "settings": {
+    "title": "设置",
+    "language": "语言",
+    "selectLanguage": "选择语言",
+    "saveChanges": "保存更改"
+  },
+  "lifeCountdown": {
+    "title": "生命倒计时",
+    "birthDate": "出生日期",
+    "motto": "人生格言",
+    "edit": "编辑生命倒计时",
+    "reminderFrequency": "提醒频率",
+    "frequencies": {
+      "daily": "每日",
+      "monthly": "每月",
+      "yearly": "每年"
+    }
+  },
+  "events": {
+    "title": "事件",
+    "addNew": "添加新事件",
+    "edit": "编辑事件",
+    "delete": "删除事件",
+    "name": "事件名称",
+    "date": "事件日期",
+    "birthDate": "出生日期",
+    "motto": "自定义格言",
+    "reminderFrequency": "提醒频率",
+    "selectFrequency": "选择频率",
+    "frequencies": {
+      "daily": "每日",
+      "weekly": "每周",
+      "monthly": "每月"
+    },
+    "editEvent": "编辑事件",
+    "editLifeCountdown": "编辑生命倒计时",
+    "lifeCountdown": "生命倒计时",
+    "lifeProgress": "生命进度",
+    "type": "事件类型",
+    "selectType": "选择事件类型",
+    "types": {
+      "custom": "自定义事件",
+      "lifeCountdown": "生命倒计时"
+    },
+    "lifeExpectancy": "预期寿命（年）",
+    "errorSameDay": "事件日期不能是今天。请选择未来的日期。",
+    "suggestions": {
+      "title": "需要灵感？",
+      "subtitle": "以下是一些倒计时建议：",
+      "spouseBirthday": "为配偶的生日创建倒计时如何？",
+      "spouseAnniversary": "结婚纪念日倒计时？",
+      "specialDay": "特殊日子的倒计时？",
+      "vacation": "下次假期的倒计时？",
+      "retirement": "退休倒计时？",
+      "graduation": "毕业倒计时？",
+      "milestone": "重要生日的倒计时？",
+      "holiday": "最喜欢的节日的倒计时？",
+      "dismiss": "不用了"
+    }
+  },
+  "common": {
+    "years": "年",
+    "months": "月",
+    "days": "天",
+    "hours": "小时",
+    "minutes": "分钟",
+    "seconds": "秒",
+    "save": "保存",
+    "cancel": "取消",
+    "create": "创建",
+    "delete": "删除",
+    "edit": "编辑",
+    "year": "年",
+    "month": "月",
+    "day": "日",
+    "language": "语言"
+  }
+} 

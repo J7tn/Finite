@@ -65,6 +65,19 @@ class NotificationService {
   stopReminders() {
     LocalNotifications.cancel({ notifications: [] });
   }
+
+  async sendEventArrivedNotification(eventName: string) {
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: Date.now(),
+          title: 'Event Arrived',
+          body: `Your event "${eventName}" has arrived!`,
+          schedule: null,
+        },
+      ],
+    });
+  }
 }
 
 export const notificationService = NotificationService.getInstance(); 

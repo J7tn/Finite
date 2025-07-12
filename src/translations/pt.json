@@ -1,0 +1,84 @@
+{
+  "app": {
+    "title": "Finite",
+    "darkMode": "Modo Escuro",
+    "lightMode": "Modo Claro"
+  },
+  "settings": {
+    "title": "Configurações",
+    "language": "Idioma",
+    "selectLanguage": "Selecionar Idioma",
+    "saveChanges": "Salvar Alterações"
+  },
+  "lifeCountdown": {
+    "title": "Contagem Regressiva da Vida",
+    "birthDate": "Data de Nascimento",
+    "motto": "Lema da Vida",
+    "edit": "Editar Contagem Regressiva da Vida",
+    "reminderFrequency": "Frequência de Lembretes",
+    "frequencies": {
+      "daily": "Diário",
+      "monthly": "Mensal",
+      "yearly": "Anual"
+    }
+  },
+  "events": {
+    "title": "Eventos",
+    "addNew": "Adicionar Novo Evento",
+    "edit": "Editar Evento",
+    "delete": "Excluir Evento",
+    "name": "Nome do Evento",
+    "date": "Data do Evento",
+    "birthDate": "Data de Nascimento",
+    "motto": "Lema Personalizado",
+    "reminderFrequency": "Frequência de Lembretes",
+    "selectFrequency": "Selecionar Frequência",
+    "frequencies": {
+      "daily": "Diário",
+      "weekly": "Semanal",
+      "monthly": "Mensal"
+    },
+    "editEvent": "Editar Evento",
+    "editLifeCountdown": "Editar Contagem Regressiva da Vida",
+    "lifeCountdown": "Contagem Regressiva da Vida",
+    "lifeProgress": "Progresso da Vida",
+    "type": "Tipo de Evento",
+    "selectType": "Selecionar Tipo de Evento",
+    "types": {
+      "custom": "Evento Personalizado",
+      "lifeCountdown": "Contagem Regressiva da Vida"
+    },
+    "lifeExpectancy": "Expectativa de Vida (anos)",
+    "errorSameDay": "A data do evento não pode ser hoje. Por favor, selecione uma data futura.",
+    "suggestions": {
+      "title": "Precisa de inspiração?",
+      "subtitle": "Aqui estão algumas ideias para sua contagem regressiva:",
+      "spouseBirthday": "Que tal uma contagem regressiva para o aniversário do seu cônjuge?",
+      "spouseAnniversary": "Uma contagem regressiva para seu aniversário de casamento?",
+      "specialDay": "Uma contagem regressiva para um dia especial?",
+      "vacation": "Contagem regressiva para suas próximas férias?",
+      "retirement": "Contagem regressiva para a aposentadoria?",
+      "graduation": "Contagem regressiva para a formatura?",
+      "milestone": "Contagem regressiva para um aniversário importante?",
+      "holiday": "Contagem regressiva para seu feriado favorito?",
+      "dismiss": "Não, obrigado"
+    }
+  },
+  "common": {
+    "years": "Anos",
+    "months": "Meses",
+    "days": "Dias",
+    "hours": "Horas",
+    "minutes": "Minutos",
+    "seconds": "Segundos",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "create": "Criar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "year": "Ano",
+    "month": "Mês",
+    "day": "Dia",
+    "language": "Idioma"
+  }
+} 

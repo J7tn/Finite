@@ -1,0 +1,84 @@
+{
+  "app": {
+    "title": "Finite",
+    "darkMode": "다크 모드",
+    "lightMode": "라이트 모드"
+  },
+  "settings": {
+    "title": "설정",
+    "language": "언어",
+    "selectLanguage": "언어 선택",
+    "saveChanges": "변경사항 저장"
+  },
+  "lifeCountdown": {
+    "title": "인생 카운트다운",
+    "birthDate": "생년월일",
+    "motto": "인생 모토",
+    "edit": "인생 카운트다운 편집",
+    "reminderFrequency": "알림 빈도",
+    "frequencies": {
+      "daily": "매일",
+      "monthly": "매월",
+      "yearly": "매년"
+    }
+  },
+  "events": {
+    "title": "이벤트",
+    "addNew": "새 이벤트 추가",
+    "edit": "이벤트 편집",
+    "delete": "이벤트 삭제",
+    "name": "이벤트 이름",
+    "date": "이벤트 날짜",
+    "birthDate": "생년월일",
+    "motto": "사용자 정의 모토",
+    "reminderFrequency": "알림 빈도",
+    "selectFrequency": "빈도 선택",
+    "frequencies": {
+      "daily": "매일",
+      "weekly": "매주",
+      "monthly": "매월"
+    },
+    "editEvent": "이벤트 편집",
+    "editLifeCountdown": "인생 카운트다운 편집",
+    "lifeCountdown": "인생 카운트다운",
+    "lifeProgress": "인생 진행률",
+    "type": "이벤트 유형",
+    "selectType": "이벤트 유형 선택",
+    "types": {
+      "custom": "사용자 정의 이벤트",
+      "lifeCountdown": "인생 카운트다운"
+    },
+    "lifeExpectancy": "기대 수명 (년)",
+    "errorSameDay": "이벤트 날짜는 오늘일 수 없습니다. 미래 날짜를 선택해 주세요.",
+    "suggestions": {
+      "title": "영감이 필요하신가요?",
+      "subtitle": "카운트다운을 위한 몇 가지 아이디어입니다:",
+      "spouseBirthday": "배우자의 생일을 위한 카운트다운은 어떠신가요?",
+      "spouseAnniversary": "결혼 기념일 카운트다운?",
+      "specialDay": "특별한 날을 위한 카운트다운?",
+      "vacation": "다음 휴가까지의 카운트다운?",
+      "retirement": "은퇴까지의 카운트다운?",
+      "graduation": "졸업까지의 카운트다운?",
+      "milestone": "중요한 생일까지의 카운트다운?",
+      "holiday": "좋아하는 휴일까지의 카운트다운?",
+      "dismiss": "괜찮습니다"
+    }
+  },
+  "common": {
+    "years": "년",
+    "months": "개월",
+    "days": "일",
+    "hours": "시간",
+    "minutes": "분",
+    "seconds": "초",
+    "save": "저장",
+    "cancel": "취소",
+    "create": "생성",
+    "delete": "삭제",
+    "edit": "편집",
+    "year": "년",
+    "month": "월",
+    "day": "일",
+    "language": "언어"
+  }
+} 

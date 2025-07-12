@@ -4,6 +4,38 @@
     "darkMode": "Modo Oscuro",
     "lightMode": "Modo Claro"
   },
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenido.",
+      "subtitle": "El tiempo es lo más honesto que tenemos. No miente, no se detiene, ni negocia. Y el tuyo está transcurriendo.",
+      "timeMessage": "Esta aplicación no está aquí para alarmarte—está aquí para despertarte."
+    },
+    "reality": {
+      "title": "La Realidad",
+      "subtitle": "Cada minuto que se desliza es uno que nunca volverás a tocar. Entonces, ¿qué harás con lo que queda?",
+      "daysMessage": "días en una vida humana promedio"
+    },
+    "truth": {
+      "title": "La Verdad",
+      "subtitle": "Todos los días, las personas se mienten a sí mismas—'Lo haré mañana.' Pero mañana no está prometido. Te han vendido una mentira: Que siempre hay más tiempo.",
+      "lieMessage": "La verdad es dura e implacable. Cada segundo que esperas se ha ido para siempre."
+    },
+    "action": {
+      "title": "Vive Intencionalmente",
+      "subtitle": "Esto no se trata de presión. Se trata de claridad. Porque al final, solo dos preguntas importarán: ¿Prestaste atención? ¿Significó algo?",
+      "liveIntentionally": "Vive Intencionalmente",
+      "loveDeliberately": "Ama Deliberadamente",
+      "chooseBoldly": "Elige Audazmente"
+    },
+    "begin": {
+      "title": "El Tiempo No Espera",
+      "message": "En este momento, alguien más está haciendo el trabajo que has pospuesto. Están construyendo la vida que aún estás soñando.",
+      "subtitle": "Lo que sea que te trajo aquí, esta aplicación es un espejo. Un temporizador. Una llamada de atención. No solo cuenta regresivamente la vida—cuenta lo que haces con ella."
+    },
+    "skip": "Saltar",
+    "next": "Siguiente",
+    "start": "Comenzar Ahora"
+  },
   "settings": {
     "title": "Configuración",
     "language": "Idioma",
@@ -48,7 +80,21 @@
       "custom": "Evento Personalizado",
       "lifeCountdown": "Cuenta Regresiva de Vida"
     },
-    "lifeExpectancy": "Esperanza de Vida (años)"
+    "lifeExpectancy": "Esperanza de Vida (años)",
+    "errorSameDay": "La fecha del evento no puede ser hoy. Por favor selecciona una fecha futura.",
+    "suggestions": {
+      "title": "¿Necesitas inspiración?",
+      "subtitle": "Aquí tienes algunas ideas para tu cuenta regresiva:",
+      "spouseBirthday": "¿Qué tal una cuenta regresiva para el cumpleaños de tu pareja?",
+      "spouseAnniversary": "¿Una cuenta regresiva para tu aniversario de boda?",
+      "specialDay": "¿Una cuenta regresiva para un día especial?",
+      "vacation": "¿Cuenta regresiva para tus próximas vacaciones?",
+      "retirement": "¿Cuenta regresiva para la jubilación?",
+      "graduation": "¿Cuenta regresiva para la graduación?",
+      "milestone": "¿Cuenta regresiva para un cumpleaños importante?",
+      "holiday": "¿Cuenta regresiva para tu festividad favorita?",
+      "dismiss": "No gracias"
+    }
   },
   "common": {
     "years": "Años",

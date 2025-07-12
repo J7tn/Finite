@@ -1,0 +1,84 @@
+{
+  "app": {
+    "title": "Finite",
+    "darkMode": "Modalità Scura",
+    "lightMode": "Modalità Chiara"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "language": "Lingua",
+    "selectLanguage": "Seleziona Lingua",
+    "saveChanges": "Salva Modifiche"
+  },
+  "lifeCountdown": {
+    "title": "Conto alla Rovescia della Vita",
+    "birthDate": "Data di Nascita",
+    "motto": "Motto della Vita",
+    "edit": "Modifica Conto alla Rovescia della Vita",
+    "reminderFrequency": "Frequenza Promemoria",
+    "frequencies": {
+      "daily": "Giornaliero",
+      "monthly": "Mensile",
+      "yearly": "Annuale"
+    }
+  },
+  "events": {
+    "title": "Eventi",
+    "addNew": "Aggiungi Nuovo Evento",
+    "edit": "Modifica Evento",
+    "delete": "Elimina Evento",
+    "name": "Nome Evento",
+    "date": "Data Evento",
+    "birthDate": "Data di Nascita",
+    "motto": "Motto Personalizzato",
+    "reminderFrequency": "Frequenza Promemoria",
+    "selectFrequency": "Seleziona Frequenza",
+    "frequencies": {
+      "daily": "Giornaliero",
+      "weekly": "Settimanale",
+      "monthly": "Mensile"
+    },
+    "editEvent": "Modifica Evento",
+    "editLifeCountdown": "Modifica Conto alla Rovescia della Vita",
+    "lifeCountdown": "Conto alla Rovescia della Vita",
+    "lifeProgress": "Progresso della Vita",
+    "type": "Tipo di Evento",
+    "selectType": "Seleziona Tipo di Evento",
+    "types": {
+      "custom": "Evento Personalizzato",
+      "lifeCountdown": "Conto alla Rovescia della Vita"
+    },
+    "lifeExpectancy": "Aspettativa di Vita (anni)",
+    "errorSameDay": "La data dell'evento non può essere oggi. Seleziona una data futura.",
+    "suggestions": {
+      "title": "Hai bisogno di ispirazione?",
+      "subtitle": "Ecco alcune idee per il tuo conto alla rovescia:",
+      "spouseBirthday": "Che ne dici di un conto alla rovescia per il compleanno del tuo coniuge?",
+      "spouseAnniversary": "Un conto alla rovescia per il tuo anniversario di matrimonio?",
+      "specialDay": "Un conto alla rovescia per un giorno speciale?",
+      "vacation": "Conto alla rovescia per le tue prossime vacanze?",
+      "retirement": "Conto alla rovescia per la pensione?",
+      "graduation": "Conto alla rovescia per la laurea?",
+      "milestone": "Conto alla rovescia per un compleanno importante?",
+      "holiday": "Conto alla rovescia per la tua festa preferita?",
+      "dismiss": "No grazie"
+    }
+  },
+  "common": {
+    "years": "Anni",
+    "months": "Mesi",
+    "days": "Giorni",
+    "hours": "Ore",
+    "minutes": "Minuti",
+    "seconds": "Secondi",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "create": "Crea",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "year": "Anno",
+    "month": "Mese",
+    "day": "Giorno",
+    "language": "Lingua"
+  }
+} 

@@ -1,0 +1,84 @@
+{
+  "app": {
+    "title": "Finite",
+    "darkMode": "Mode Sombre",
+    "lightMode": "Mode Clair"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": "Langue",
+    "selectLanguage": "Sélectionner la Langue",
+    "saveChanges": "Enregistrer les Modifications"
+  },
+  "lifeCountdown": {
+    "title": "Compte à Rebours de Vie",
+    "birthDate": "Date de Naissance",
+    "motto": "Devise de Vie",
+    "edit": "Modifier le Compte à Rebours de Vie",
+    "reminderFrequency": "Fréquence des Rappels",
+    "frequencies": {
+      "daily": "Quotidien",
+      "monthly": "Mensuel",
+      "yearly": "Annuel"
+    }
+  },
+  "events": {
+    "title": "Événements",
+    "addNew": "Ajouter un Nouvel Événement",
+    "edit": "Modifier l'Événement",
+    "delete": "Supprimer l'Événement",
+    "name": "Nom de l'Événement",
+    "date": "Date de l'Événement",
+    "birthDate": "Date de Naissance",
+    "motto": "Devise Personnalisée",
+    "reminderFrequency": "Fréquence des Rappels",
+    "selectFrequency": "Sélectionner la Fréquence",
+    "frequencies": {
+      "daily": "Quotidien",
+      "weekly": "Hebdomadaire",
+      "monthly": "Mensuel"
+    },
+    "editEvent": "Modifier l'Événement",
+    "editLifeCountdown": "Modifier le Compte à Rebours de Vie",
+    "lifeCountdown": "Compte à Rebours de Vie",
+    "lifeProgress": "Progrès de Vie",
+    "type": "Type d'Événement",
+    "selectType": "Sélectionner le Type d'Événement",
+    "types": {
+      "custom": "Événement Personnalisé",
+      "lifeCountdown": "Compte à Rebours de Vie"
+    },
+    "lifeExpectancy": "Espérance de Vie (années)",
+    "errorSameDay": "La date de l'événement ne peut pas être aujourd'hui. Veuillez sélectionner une date future.",
+    "suggestions": {
+      "title": "Besoin d'inspiration ?",
+      "subtitle": "Voici quelques idées pour votre compte à rebours :",
+      "spouseBirthday": "Et si vous créiez un compte à rebours pour l'anniversaire de votre conjoint ?",
+      "spouseAnniversary": "Un compte à rebours vers votre anniversaire de mariage ?",
+      "specialDay": "Un compte à rebours vers un jour spécial ?",
+      "vacation": "Compte à rebours vers vos prochaines vacances ?",
+      "retirement": "Compte à rebours vers la retraite ?",
+      "graduation": "Compte à rebours vers la remise de diplôme ?",
+      "milestone": "Compte à rebours vers un anniversaire important ?",
+      "holiday": "Compte à rebours vers votre fête préférée ?",
+      "dismiss": "Non merci"
+    }
+  },
+  "common": {
+    "years": "Années",
+    "months": "Mois",
+    "days": "Jours",
+    "hours": "Heures",
+    "minutes": "Minutes",
+    "seconds": "Secondes",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "create": "Créer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "year": "Année",
+    "month": "Mois",
+    "day": "Jour",
+    "language": "Langue"
+  }
+} 

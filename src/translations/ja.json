@@ -1,0 +1,84 @@
+{
+  "app": {
+    "title": "Finite",
+    "darkMode": "ダークモード",
+    "lightMode": "ライトモード"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "言語",
+    "selectLanguage": "言語を選択",
+    "saveChanges": "変更を保存"
+  },
+  "lifeCountdown": {
+    "title": "人生カウントダウン",
+    "birthDate": "生年月日",
+    "motto": "人生のモットー",
+    "edit": "人生カウントダウンを編集",
+    "reminderFrequency": "リマインダー頻度",
+    "frequencies": {
+      "daily": "毎日",
+      "monthly": "毎月",
+      "yearly": "毎年"
+    }
+  },
+  "events": {
+    "title": "イベント",
+    "addNew": "新しいイベントを追加",
+    "edit": "イベントを編集",
+    "delete": "イベントを削除",
+    "name": "イベント名",
+    "date": "イベント日",
+    "birthDate": "生年月日",
+    "motto": "カスタムモットー",
+    "reminderFrequency": "リマインダー頻度",
+    "selectFrequency": "頻度を選択",
+    "frequencies": {
+      "daily": "毎日",
+      "weekly": "毎週",
+      "monthly": "毎月"
+    },
+    "editEvent": "イベントを編集",
+    "editLifeCountdown": "人生カウントダウンを編集",
+    "lifeCountdown": "人生カウントダウン",
+    "lifeProgress": "人生の進歩",
+    "type": "イベントタイプ",
+    "selectType": "イベントタイプを選択",
+    "types": {
+      "custom": "カスタムイベント",
+      "lifeCountdown": "人生カウントダウン"
+    },
+    "lifeExpectancy": "平均寿命（年）",
+    "errorSameDay": "イベント日は今日にすることはできません。将来の日付を選択してください。",
+    "suggestions": {
+      "title": "インスピレーションが必要ですか？",
+      "subtitle": "カウントダウンのアイデアをご紹介します：",
+      "spouseBirthday": "配偶者の誕生日のカウントダウンはいかがですか？",
+      "spouseAnniversary": "結婚記念日のカウントダウン？",
+      "specialDay": "特別な日のカウントダウン？",
+      "vacation": "次の休暇のカウントダウン？",
+      "retirement": "退職のカウントダウン？",
+      "graduation": "卒業のカウントダウン？",
+      "milestone": "節目の誕生日のカウントダウン？",
+      "holiday": "お気に入りの祝日のカウントダウン？",
+      "dismiss": "結構です"
+    }
+  },
+  "common": {
+    "years": "年",
+    "months": "月",
+    "days": "日",
+    "hours": "時間",
+    "minutes": "分",
+    "seconds": "秒",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "create": "作成",
+    "delete": "削除",
+    "edit": "編集",
+    "year": "年",
+    "month": "月",
+    "day": "日",
+    "language": "言語"
+  }
+} 
