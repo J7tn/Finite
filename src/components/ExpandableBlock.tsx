@@ -163,6 +163,7 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
                   motto={motto}
                   eventType={eventType}
                   ticking={isExpanded}
+                  showLifeExpectancyNote={false}
                 />
               ) : (
                 <CountdownTimer targetDate={targetDate} motto={motto} eventName={eventName} eventId={eventName} eventType={eventType} 

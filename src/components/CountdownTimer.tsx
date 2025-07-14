@@ -16,6 +16,7 @@ interface CountdownTimerProps {
   eventId?: string;   // For notification uniqueness
   eventType?: string; // To distinguish lifeCountdown types
   ticking?: boolean; // Whether to play ticking sound
+  showLifeExpectancyNote?: boolean; // Whether to show the lifespan note
 }
 
 const CountdownTimer = ({
@@ -30,6 +31,7 @@ const CountdownTimer = ({
   eventId,
   eventType,
   ticking = false,
+  showLifeExpectancyNote = true,
 }: CountdownTimerProps) => {
   const [timeRemaining, setTimeRemaining] = useState({
     years: 0,
@@ -284,6 +286,11 @@ const CountdownTimer = ({
             expectedLifespan={expectedLifespan}
             progressLabel={progressLabel}
           />
+          {isLifeCountdown && showLifeExpectancyNote && (
+            <div className="text-xs italic text-muted-foreground mt-2 text-center">
+              Based on the average global lifespan of 73.5 years.
+            </div>
+          )}
 
           <motion.div
             initial={{ opacity: 0 }}
