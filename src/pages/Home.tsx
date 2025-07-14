@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LifeProgressBar } from '@/components/LifeProgressBar';
 import CountdownTimer from '@/components/CountdownTimer';
 import { Button } from '@/components/ui/button';
-import { Moon, Plus, ChevronDown, ChevronUp, Settings } from 'lucide-react';
+import { Moon, Plus, ChevronDown, ChevronUp, Settings, Volume2, VolumeX } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import EventForm from '@/components/EventForm';
 import { Card, CardContent } from '@/components/ui/card';
@@ -43,7 +43,12 @@ const setLocalStorageItem = (key: string, value: any) => {
   }
 };
 
-const Home: React.FC = () => {
+interface HomeProps {
+  isMuted: boolean;
+  setIsMuted: (muted: boolean) => void;
+}
+
+const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
   const navigate = useNavigate();
   const [birthDate, setBirthDate] = useState<Date>(() => {
     const savedDate = getLocalStorageItem('birthDate', null);
@@ -175,6 +180,9 @@ const Home: React.FC = () => {
         <div className="flex justify-end gap-2 pt-2" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 4px)' }}>
           <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
             <Moon className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={() => setIsMuted(!isMuted)} aria-label={isMuted ? 'Unmute ambience' : 'Mute ambience'}>
+            {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
           </Button>
           <Button variant="ghost" size="icon" onClick={() => navigate('/settings')}>
             <Settings className="h-5 w-5" />

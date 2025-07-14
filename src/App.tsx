@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState, useRef } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Device } from '@capacitor/device';
 import { measurePerformance } from '@/utils/performance';
@@ -26,6 +26,10 @@ const App: React.FC = () => {
   const [isLanguageInitialized, setIsLanguageInitialized] = useState(false);
   const [splashVisible, setSplashVisible] = useState(true);
   const [splashFade, setSplashFade] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [audioStarted, setAudioStarted] = useState(false);
+  const radioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const setLanguage = async () => {
@@ -96,6 +100,48 @@ const App: React.FC = () => {
     setShowOnboarding(false);
   };
 
+  // Start audio after first user gesture (required by browsers)
+  useEffect(() => {
+    const startAudio = () => {
+      if (!audioStarted && audioRef.current && radioRef.current) {
+        audioRef.current.volume = 0.6;
+        audioRef.current.play().catch(() => {});
+        radioRef.current.volume = 0.15;
+        radioRef.current.play().catch(() => {});
+        setAudioStarted(true);
+      }
+    };
+    window.addEventListener('pointerdown', startAudio, { once: true });
+    return () => window.removeEventListener('pointerdown', startAudio);
+  }, [audioStarted]);
+
+  // Mute/unmute logic
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
+  // Fade in audio volume from 0 to 0.6 over 2 seconds
+  const fadeInAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0;
+      const targetVolume = 0.6;
+      const duration = 2000; // ms
+      const steps = 20;
+      const stepTime = duration / steps;
+      let currentStep = 0;
+      const fade = () => {
+        currentStep++;
+        audioRef.current!.volume = Math.min(targetVolume, (currentStep / steps) * targetVolume);
+        if (currentStep < steps) {
+          setTimeout(fade, stepTime);
+        }
+      };
+      fade();
+    }
+  };
+
   // Show loading while language is being initialized
   if (!isLanguageInitialized) {
     return <LoadingFallback />;
@@ -103,7 +149,7 @@ const App: React.FC = () => {
 
   // Show onboarding for first-time users
   if (showOnboarding) {
-    return <OnboardingFlow onComplete={handleOnboardingComplete} />;
+    return <OnboardingFlow onComplete={handleOnboardingComplete} fadeInAudio={fadeInAudio} />;
   }
 
   return (
@@ -119,10 +165,28 @@ const App: React.FC = () => {
         zIndex: 9999,
         pointerEvents: 'none',
       }} />
+      {/* Ambience audio (debug: visible, with error/play handlers) */}
+      <audio
+        ref={audioRef}
+        src="/meditation-ambient-music-354473.mp3"
+        loop
+        preload="auto"
+        style={{ display: 'none' }}
+        onError={() => console.error('Audio failed to load or play')}
+        onPlay={() => console.log('Audio playback started')}
+      />
+      <audio
+        ref={radioRef}
+        src="/am-radio-static-60183.mp3"
+        loop
+        preload="auto"
+        style={{ display: 'none' }}
+        onError={() => console.error('Radio static failed to load or play')}
+      />
       {/* Main app content */}
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home isMuted={isMuted} setIsMuted={setIsMuted} />} />
           <Route path="/about" element={<About />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>

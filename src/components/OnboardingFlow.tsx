@@ -7,6 +7,7 @@ import { Clock, Heart, Target, Zap } from 'lucide-react';
 
 interface OnboardingFlowProps {
   onComplete: () => void;
+  fadeInAudio?: () => void;
 }
 
 const prologueSentences = [
@@ -15,9 +16,13 @@ const prologueSentences = [
   'When you do, use this app as a reminder.'
 ];
 
-const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete }) => {
+const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, fadeInAudio }) => {
   const [visibleCount, setVisibleCount] = useState(0);
   const [showButton, setShowButton] = useState(false);
+
+  useEffect(() => {
+    if (fadeInAudio) fadeInAudio();
+  }, [fadeInAudio]);
 
   useEffect(() => {
     if (visibleCount < prologueSentences.length) {

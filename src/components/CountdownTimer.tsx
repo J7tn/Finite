@@ -15,6 +15,7 @@ interface CountdownTimerProps {
   eventName?: string; // For notification message
   eventId?: string;   // For notification uniqueness
   eventType?: string; // To distinguish lifeCountdown types
+  ticking?: boolean; // Whether to play ticking sound
 }
 
 const CountdownTimer = ({
@@ -28,6 +29,7 @@ const CountdownTimer = ({
   eventName,
   eventId,
   eventType,
+  ticking = false,
 }: CountdownTimerProps) => {
   const [timeRemaining, setTimeRemaining] = useState({
     years: 0,
@@ -41,6 +43,75 @@ const CountdownTimer = ({
   const [percentageLived, setPercentageLived] = useState(0);
   const [expired, setExpired] = useState(false);
   const notificationSentRef = useRef(false);
+  const tickingRef = useRef<HTMLAudioElement>(null);
+  const TICKING_VOLUME = 0.25;
+  const minuteTickRef = useRef<HTMLAudioElement>(null);
+  const prevMinuteRef = useRef<number | null>(null);
+  const didMountRef = useRef(false);
+
+  const fadeTicking = (to: number, duration = 1000) => {
+    if (!tickingRef.current) return;
+    const from = tickingRef.current.volume;
+    const steps = 20;
+    const stepTime = duration / steps;
+    let currentStep = 0;
+    const fade = () => {
+      currentStep++;
+      tickingRef.current!.volume = from + (to * TICKING_VOLUME - from) * (currentStep / steps);
+      if (currentStep < steps) setTimeout(fade, stepTime);
+      else tickingRef.current!.volume = to * TICKING_VOLUME;
+    };
+    fade();
+  };
+
+  // Sync ticking with seconds
+  useEffect(() => {
+    if (!tickingRef.current) return;
+    let interval: NodeJS.Timeout | null = null;
+    let timeout: NodeJS.Timeout | null = null;
+    if (ticking) {
+      tickingRef.current.currentTime = 0;
+      tickingRef.current.volume = 0;
+      tickingRef.current.play().catch(() => {});
+      fadeTicking(1, 1000);
+      // Calculate ms until next second boundary
+      const msToNextSecond = 1000 - (Date.now() % 1000);
+      timeout = setTimeout(() => {
+        if (tickingRef.current) {
+          tickingRef.current.currentTime = 0;
+          tickingRef.current.play().catch(() => {});
+        }
+        interval = setInterval(() => {
+          if (tickingRef.current) {
+            tickingRef.current.currentTime = 0;
+            tickingRef.current.play().catch(() => {});
+          }
+        }, 1000);
+      }, msToNextSecond);
+    } else {
+      fadeTicking(0, 700);
+      setTimeout(() => tickingRef.current?.pause(), 700);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+      if (timeout) clearTimeout(timeout);
+      tickingRef.current?.pause();
+      tickingRef.current && (tickingRef.current.volume = 0);
+    };
+  }, [ticking]);
+
+  // Play minute tick sound when minute changes
+  useEffect(() => {
+    if (!minuteTickRef.current) return;
+    const currentMinute = timeRemaining.minutes;
+    if (didMountRef.current && prevMinuteRef.current !== null && currentMinute !== prevMinuteRef.current) {
+      minuteTickRef.current.currentTime = 0;
+      minuteTickRef.current.volume = 0.3;
+      minuteTickRef.current.play().catch(() => {});
+    }
+    prevMinuteRef.current = currentMinute;
+    didMountRef.current = true;
+  }, [timeRemaining.minutes]);
 
   // Helper to check if this is a life countdown (should keep counting after 0)
   const isLifeCountdown = eventType === 'lifeCountdown' || eventName === 'Life Countdown';
@@ -165,6 +236,18 @@ const CountdownTimer = ({
       transition={{ duration: 0.8 }}
       className="w-full h-full flex flex-col justify-center items-center"
     >
+      <audio
+        ref={tickingRef}
+        src="/clockSecondsTicking.mp3"
+        preload="auto"
+        style={{ display: 'none' }}
+      />
+      <audio
+        ref={minuteTickRef}
+        src="/clockMinuteTick.mp3"
+        preload="auto"
+        style={{ display: 'none' }}
+      />
       <Card className="flex flex-col w-full h-full bg-card">
         <CardContent className="flex-1 w-full flex flex-col justify-center items-center p-6">
           <h2 className="text-2xl font-bold text-center mb-6 text-foreground font-mono">
