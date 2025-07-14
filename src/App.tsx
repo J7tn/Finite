@@ -26,7 +26,10 @@ const App: React.FC = () => {
   const [isLanguageInitialized, setIsLanguageInitialized] = useState(false);
   const [splashVisible, setSplashVisible] = useState(true);
   const [splashFade, setSplashFade] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(() => {
+    const stored = localStorage.getItem('isMuted');
+    return stored === 'true';
+  });
   const audioRef = useRef<HTMLAudioElement>(null);
   const [audioStarted, setAudioStarted] = useState(false);
   const radioRef = useRef<HTMLAudioElement>(null);
@@ -120,6 +123,7 @@ const App: React.FC = () => {
     if (audioRef.current) {
       audioRef.current.muted = isMuted;
     }
+    localStorage.setItem('isMuted', isMuted ? 'true' : 'false');
   }, [isMuted]);
 
   // Fade in audio volume from 0 to 0.6 over 2 seconds

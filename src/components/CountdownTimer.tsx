@@ -17,6 +17,7 @@ interface CountdownTimerProps {
   eventType?: string; // To distinguish lifeCountdown types
   ticking?: boolean; // Whether to play ticking sound
   showLifeExpectancyNote?: boolean; // Whether to show the lifespan note
+  muted?: boolean; // Whether to mute all sounds
 }
 
 const CountdownTimer = ({
@@ -32,6 +33,7 @@ const CountdownTimer = ({
   eventType,
   ticking = false,
   showLifeExpectancyNote = true,
+  muted = false,
 }: CountdownTimerProps) => {
   const [timeRemaining, setTimeRemaining] = useState({
     years: 0,
@@ -124,6 +126,12 @@ const CountdownTimer = ({
     didMountRef.current = true;
     hasPlayedMinuteTickRef.current = false;
   }, []);
+
+  // Mute/unmute all sounds
+  useEffect(() => {
+    if (tickingRef.current) tickingRef.current.muted = muted;
+    if (minuteTickRef.current) minuteTickRef.current.muted = muted;
+  }, [muted]);
 
   // Helper to check if this is a life countdown (should keep counting after 0)
   const isLifeCountdown = eventType === 'lifeCountdown' || eventName === 'Life Countdown';

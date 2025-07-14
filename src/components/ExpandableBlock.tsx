@@ -23,6 +23,7 @@ interface ExpandableBlockProps {
   isExpanded: boolean;
   onExpand: () => void;
   onEdit: () => void;
+  isMuted?: boolean;
 }
 
 const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
@@ -33,7 +34,8 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
   lifeExpectancy,
   isExpanded,
   onExpand,
-  onEdit
+  onEdit,
+  isMuted
 }) => {
   const [timeLeft, setTimeLeft] = useState({
     years: 0,
@@ -154,6 +156,7 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
                   motto={motto}
                   eventType={eventType}
                   ticking={isExpanded}
+                  muted={isMuted}
                 />
               ) : eventType === 'lifeCountdown' ? (
                 <CountdownTimer
@@ -164,10 +167,12 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
                   eventType={eventType}
                   ticking={isExpanded}
                   showLifeExpectancyNote={false}
+                  muted={isMuted}
                 />
               ) : (
                 <CountdownTimer targetDate={targetDate} motto={motto} eventName={eventName} eventId={eventName} eventType={eventType} 
                   ticking={isExpanded}
+                  muted={isMuted}
                 />
               )}
             </div>

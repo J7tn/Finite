@@ -204,6 +204,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
             setTempNotificationFrequency(notificationFrequency);
             setIsEditingLife(true);
           }}
+          isMuted={isMuted}
         />
 
         {/* Custom Event Blocks */}
@@ -218,6 +219,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
             isExpanded={expandedBlocks.has(event.id)}
             onExpand={() => toggleBlock(event.id)}
             onEdit={() => setEditingEvent(event)}
+            isMuted={isMuted}
           />
         ))}
 
