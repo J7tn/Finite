@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { motion } from "framer-motion";
 import { t } from "@/services/translation";
 import { Label } from "@/components/ui/label";
-import EventSuggestions from "./EventSuggestions";
+// Removed: import EventSuggestions from "./EventSuggestions";
 
 interface EventFormProps {
   onSubmit: (data: {
@@ -42,29 +42,14 @@ const EventForm: React.FC<EventFormProps> = ({
   const [type, setType] = useState(initialData?.type || 'custom');
   const [lifeExpectancy, setLifeExpectancy] = useState(initialData?.lifeExpectancy?.toString() || '80');
   const [error, setError] = useState<string | null>(null);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  // Removed: const [showSuggestions, setShowSuggestions] = useState(false);
   
   const [year, setYear] = useState(initialData?.date ? initialData.date.getFullYear() : new Date().getFullYear());
   const [month, setMonth] = useState(initialData?.date ? initialData.date.getMonth() + 1 : new Date().getMonth() + 1);
   const [day, setDay] = useState(initialData?.date ? initialData.date.getDate() : new Date().getDate());
 
-  // Show suggestions when form opens for new events and name is empty
-  useEffect(() => {
-    if (!initialData && type === 'custom' && name.trim() === '') {
-      // Delay showing suggestions to give user time to start typing
-      const timer = setTimeout(() => {
-        setShowSuggestions(true);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [initialData, type, name]);
-
-  // Hide suggestions when user starts typing
-  useEffect(() => {
-    if (name.trim() !== '') {
-      setShowSuggestions(false);
-    }
-  }, [name]);
+  // Removed: useEffect for showing suggestions
+  // Removed: useEffect for hiding suggestions
 
   const generateYearOptions = () => {
     const currentYear = new Date().getFullYear();
@@ -84,22 +69,7 @@ const EventForm: React.FC<EventFormProps> = ({
     return Array.from({ length: daysInMonth }, (_, i) => i + 1);
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    // Extract a meaningful name from the suggestion
-    const suggestionMap: { [key: string]: string } = {
-      [t('events.suggestions.spouseBirthday')]: "Spouse's Birthday",
-      [t('events.suggestions.spouseAnniversary')]: "Wedding Anniversary",
-      [t('events.suggestions.specialDay')]: "Special Day",
-      [t('events.suggestions.vacation')]: "Next Vacation",
-      [t('events.suggestions.retirement')]: "Retirement",
-      [t('events.suggestions.graduation')]: "Graduation",
-      [t('events.suggestions.milestone')]: "Milestone Birthday",
-      [t('events.suggestions.holiday')]: "Favorite Holiday"
-    };
-    
-    setName(suggestionMap[suggestion] || suggestion);
-    setShowSuggestions(false);
-  };
+  // Removed: handleSuggestionClick
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -160,13 +130,7 @@ const EventForm: React.FC<EventFormProps> = ({
             </div>
 
             {/* Show suggestions for custom events when name is empty */}
-            {type === 'custom' && !initialData && (
-              <EventSuggestions
-                onSuggestionClick={handleSuggestionClick}
-                onDismiss={() => setShowSuggestions(false)}
-                isVisible={showSuggestions}
-              />
-            )}
+            {/* Removed EventSuggestions UI */}
 
             {type === 'lifeCountdown' && (
               <div className="space-y-2">
