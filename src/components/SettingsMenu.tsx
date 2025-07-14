@@ -43,6 +43,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
   const [personalMotto, setPersonalMotto] = useState<string>(motto);
   const [selectedMonth, setSelectedMonth] = useState<Date>(birthDate);
   const [notifFrequency, setNotifFrequency] = useState<'daily' | 'weekly' | 'monthly'>(frequency);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const handleYearChange = (year: number) => {
     const newDate = new Date(date || new Date());
@@ -171,6 +172,27 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({
               <option value="monthly">Monthly</option>
             </select>
           </div>
+        </div>
+        <div className="my-4 p-4 border rounded-lg bg-muted">
+          <button
+            type="button"
+            className="w-full text-left font-medium text-blue-700 dark:text-blue-300 hover:underline focus:outline-none"
+            onClick={() => setShowSuggestions((prev) => !prev)}
+          >
+            Need suggestions?
+          </button>
+          {showSuggestions && (
+            <ul className="mt-3 space-y-2 text-sm text-blue-900 dark:text-blue-100">
+              <li>Spouse's Birthday</li>
+              <li>Wedding Anniversary</li>
+              <li>Special Day</li>
+              <li>Next Vacation</li>
+              <li>Retirement</li>
+              <li>Graduation</li>
+              <li>Milestone Birthday</li>
+              <li>Favorite Holiday</li>
+            </ul>
+          )}
         </div>
         <DialogFooter>
           <Button 

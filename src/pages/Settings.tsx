@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Save, X, RotateCcw } from 'lucide-react';
+import { Save, X, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { setLanguage, getCurrentLanguage } from '@/services/translation';
 import { t } from '@/services/translation';
@@ -24,6 +24,7 @@ const languageNames: Record<Language, string> = {
 const Settings: React.FC = () => {
   const navigate = useNavigate();
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(getCurrentLanguage() as Language);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const handleLanguageChange = (value: Language) => {
     setSelectedLanguage(value);
@@ -70,22 +71,31 @@ const Settings: React.FC = () => {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>App Settings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Button
-              variant="outline"
-              onClick={handleResetOnboarding}
-              className="flex items-center gap-2"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Reset Onboarding
-            </Button>
-            <p className="text-sm text-gray-500 mt-2">
-              Show the introduction flow again (for testing)
-            </p>
-          </CardContent>
+          <div className="cursor-pointer" onClick={() => setShowSuggestions((prev) => !prev)}>
+            <CardHeader className="flex flex-row items-center justify-between p-4">
+              <CardTitle className="text-base">Need suggestions?</CardTitle>
+              {showSuggestions ? (
+                <ChevronUp className="h-5 w-5 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-muted-foreground" />
+              )}
+            </CardHeader>
+            {showSuggestions && (
+              <CardContent>
+                <ul className="mt-1 space-y-2 text-sm">
+                  <li>Spouse's Birthday</li>
+                  <li>Wedding Anniversary</li>
+                  <li>Special Day</li>
+                  <li>Next Vacation</li>
+                  <li>Retirement</li>
+                  <li>Graduation</li>
+                  <li>Milestone Birthday</li>
+                  <li>Favorite Holiday</li>
+                  <li>A countdown for your pet's life</li>
+                </ul>
+              </CardContent>
+            )}
+          </div>
         </Card>
 
         <div className="flex justify-end gap-4">
