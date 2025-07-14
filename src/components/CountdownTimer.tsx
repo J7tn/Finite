@@ -110,8 +110,12 @@ const CountdownTimer = ({
       minuteTickRef.current.play().catch(() => {});
     }
     prevMinuteRef.current = currentMinute;
-    didMountRef.current = true;
   }, [timeRemaining.minutes]);
+
+  // Set didMountRef.current to true after first render
+  useEffect(() => {
+    didMountRef.current = true;
+  }, []);
 
   // Helper to check if this is a life countdown (should keep counting after 0)
   const isLifeCountdown = eventType === 'lifeCountdown' || eventName === 'Life Countdown';
