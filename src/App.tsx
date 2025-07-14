@@ -108,6 +108,18 @@ const App: React.FC = () => {
 
   return (
     <>
+      {/* Black status bar background */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: 'env(safe-area-inset-top, 24px)',
+        background: '#000',
+        zIndex: 9999,
+        pointerEvents: 'none',
+      }} />
+      {/* Main app content */}
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route path="/" element={<Home />} />
