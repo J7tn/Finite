@@ -170,7 +170,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8" style={{ minHeight: '100vh' }}>
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex justify-end gap-2 pt-2" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 4px)' }}>
           <Button variant="ghost" size="icon" onClick={toggleDarkMode}>

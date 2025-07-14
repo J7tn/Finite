@@ -70,7 +70,7 @@ class NotificationService {
     await LocalNotifications.schedule({
       notifications: [
         {
-          id: Date.now(),
+          id: 9999,
           title: 'Event Arrived',
           body: `Your event "${eventName}" has arrived!`,
           schedule: null,

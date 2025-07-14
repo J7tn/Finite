@@ -103,3 +103,21 @@
   [data-radix-resize-handle] svg {
     display: none !important;
   }
+
+.splash-overlay {
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.8s;
+  pointer-events: none;
+}
+.splash-fade-out {
+  opacity: 0;
+}

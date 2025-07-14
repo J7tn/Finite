@@ -4,6 +4,9 @@ import { Device } from '@capacitor/device';
 import { measurePerformance } from '@/utils/performance';
 import { initializeLanguage } from './services/translation';
 import OnboardingFlow from './components/OnboardingFlow';
+import { SplashScreen } from '@capacitor/splash-screen';
+import splashImg from './splash.png';
+import { StatusBar, Style } from '@capacitor/status-bar';
 
 // Lazy load components
 const Home = lazy(() => import('@/pages/Home'));
@@ -21,6 +24,8 @@ const App: React.FC = () => {
   const endMeasure = measurePerformance('App Initial Render');
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
   const [isLanguageInitialized, setIsLanguageInitialized] = useState(false);
+  const [splashVisible, setSplashVisible] = useState(true);
+  const [splashFade, setSplashFade] = useState(false);
 
   useEffect(() => {
     const setLanguage = async () => {
@@ -61,6 +66,22 @@ const App: React.FC = () => {
     setLanguage();
   }, []);
 
+  // Splash fade logic
+  useEffect(() => {
+    if (isLanguageInitialized && showOnboarding !== null) {
+      // Wait a bit, then fade out splash
+      setTimeout(() => setSplashFade(true), 400); // Start fade after 400ms
+    }
+  }, [isLanguageInitialized, showOnboarding]);
+
+  // Remove splash overlay after fade-out transition ends
+  const handleSplashTransitionEnd = () => {
+    if (splashFade) {
+      setSplashVisible(false);
+      SplashScreen.hide();
+    }
+  };
+
   useEffect(() => {
     if (isLanguageInitialized) {
       // Check if user has seen onboarding before
@@ -86,13 +107,33 @@ const App: React.FC = () => {
   }
 
   return (
-    <Suspense fallback={<LoadingFallback />}>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/settings" element={<Settings />} />
-      </Routes>
-    </Suspense>
+    <>
+      <Suspense fallback={<LoadingFallback />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
+      </Suspense>
+      {splashVisible && (
+        <div
+          className={`splash-overlay${splashFade ? ' splash-fade-out' : ''}`}
+          onTransitionEnd={handleSplashTransitionEnd}
+        >
+          <img
+            src={splashImg}
+            alt="Splash"
+            style={{
+              maxWidth: '80vw',
+              maxHeight: '80vh',
+              objectFit: 'contain',
+              borderRadius: 24,
+              boxShadow: '0 4px 32px rgba(0,0,0,0.08)',
+            }}
+          />
+        </div>
+      )}
+    </>
   );
 };
 
