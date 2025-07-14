@@ -48,6 +48,7 @@ const CountdownTimer = ({
   const minuteTickRef = useRef<HTMLAudioElement>(null);
   const prevMinuteRef = useRef<number | null>(null);
   const didMountRef = useRef(false);
+  const hasPlayedMinuteTickRef = useRef(false);
 
   const fadeTicking = (to: number, duration = 1000) => {
     if (!tickingRef.current) return;
@@ -105,9 +106,13 @@ const CountdownTimer = ({
     if (!minuteTickRef.current) return;
     const currentMinute = timeRemaining.minutes;
     if (didMountRef.current && prevMinuteRef.current !== null && currentMinute !== prevMinuteRef.current) {
-      minuteTickRef.current.currentTime = 0;
-      minuteTickRef.current.volume = 0.3;
-      minuteTickRef.current.play().catch(() => {});
+      if (hasPlayedMinuteTickRef.current) {
+        minuteTickRef.current.currentTime = 0;
+        minuteTickRef.current.volume = 0.3;
+        minuteTickRef.current.play().catch(() => {});
+      } else {
+        hasPlayedMinuteTickRef.current = true;
+      }
     }
     prevMinuteRef.current = currentMinute;
   }, [timeRemaining.minutes]);
@@ -115,6 +120,7 @@ const CountdownTimer = ({
   // Set didMountRef.current to true after first render
   useEffect(() => {
     didMountRef.current = true;
+    hasPlayedMinuteTickRef.current = false;
   }, []);
 
   // Helper to check if this is a life countdown (should keep counting after 0)
