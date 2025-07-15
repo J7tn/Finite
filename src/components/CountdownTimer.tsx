@@ -69,43 +69,142 @@ const CountdownTimer = ({
     fade();
   };
 
-  // Sync ticking with seconds
+  // Unified timer for ticking sound and countdown update
   useEffect(() => {
     if (!tickingRef.current) return;
     let interval: NodeJS.Timeout | null = null;
     let timeout: NodeJS.Timeout | null = null;
-    if (ticking) {
-      tickingRef.current.currentTime = 0;
-      tickingRef.current.volume = 0;
-      tickingRef.current.play().catch(() => {});
-      fadeTicking(1, 1000);
-      // Calculate ms until next second boundary
-      const msToNextSecond = 1000 - (Date.now() % 1000);
-      timeout = setTimeout(() => {
-        if (tickingRef.current) {
-          tickingRef.current.currentTime = 0;
-          tickingRef.current.play().catch(() => {});
+    let stopped = false;
+
+    const isLifeCountdown = eventType === 'lifeCountdown' || eventName === 'Life Countdown';
+    const localStorageKey = eventId ? `event_notified_${eventId}` : undefined;
+
+    const calculateAndUpdate = async () => {
+      const now = new Date();
+      let expiredFlag = false;
+      let tr = { years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0, isNegative: false };
+      let percent = 0;
+      if (startDate && targetDate) {
+        const total = targetDate.getTime() - startDate.getTime();
+        const elapsed = now.getTime() - startDate.getTime();
+        percent = Math.min(100, Math.max(0, (elapsed / total) * 100));
+        const diff = targetDate.getTime() - now.getTime();
+        let isNegative = false;
+        let absDiff = diff;
+        if (isLifeCountdown && diff < 0) {
+          isNegative = true;
+          absDiff = Math.abs(diff);
         }
-        interval = setInterval(() => {
-          if (tickingRef.current) {
-            tickingRef.current.currentTime = 0;
-            tickingRef.current.play().catch(() => {});
+        if (!isLifeCountdown && diff <= 0) {
+          expiredFlag = true;
+          if (!notificationSentRef.current && localStorageKey && !localStorage.getItem(localStorageKey)) {
+            notificationSentRef.current = true;
+            localStorage.setItem(localStorageKey, 'true');
+            await notificationService.requestPermission();
+            await notificationService.sendEventArrivedNotification(eventName || "Your event");
           }
-        }, 1000);
-      }, msToNextSecond);
-    } else {
-      fadeTicking(0, 700);
-      setTimeout(() => tickingRef.current?.pause(), 700);
-    }
+        }
+        let remaining = absDiff / 1000;
+        const years = Math.floor(remaining / (60 * 60 * 24 * 365.25));
+        remaining -= years * 60 * 60 * 24 * 365.25;
+        const months = Math.floor(remaining / (60 * 60 * 24 * 30.44));
+        remaining -= months * 60 * 60 * 24 * 30.44;
+        const days = Math.floor(remaining / (60 * 60 * 24));
+        remaining -= days * 60 * 60 * 24;
+        const hours = Math.floor(remaining / (60 * 60));
+        remaining -= hours * 60 * 60;
+        const minutes = Math.floor(remaining / 60);
+        const seconds = Math.floor(remaining - minutes * 60);
+        tr = { years, months, days, hours, minutes, seconds, isNegative };
+      } else if (targetDate) {
+        const diff = targetDate.getTime() - now.getTime();
+        let isNegative = false;
+        let absDiff = diff;
+        if (isLifeCountdown && diff < 0) {
+          isNegative = true;
+          absDiff = Math.abs(diff);
+        }
+        if (!isLifeCountdown && diff <= 0) {
+          expiredFlag = true;
+        }
+        let remaining = absDiff / 1000;
+        const years = Math.floor(remaining / (60 * 60 * 24 * 365.25));
+        remaining -= years * 60 * 60 * 24 * 365.25;
+        const months = Math.floor(remaining / (60 * 60 * 24 * 30.44));
+        remaining -= months * 60 * 60 * 24 * 30.44;
+        const days = Math.floor(remaining / (60 * 60 * 24));
+        remaining -= days * 60 * 60 * 24;
+        const hours = Math.floor(remaining / (60 * 60));
+        remaining -= hours * 60 * 60;
+        const minutes = Math.floor(remaining / 60);
+        const seconds = Math.floor(remaining - minutes * 60);
+        tr = { years, months, days, hours, minutes, seconds, isNegative };
+        percent = Math.min(100, Math.max(0, 100 - (diff / (targetDate.getTime() - now.getTime())) * 100));
+      } else {
+        const ageInMilliseconds = now.getTime() - birthDate.getTime();
+        const ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);
+        const lifeExpectancy = 73.5;
+        const remainingYears = lifeExpectancy - ageInYears;
+        percent = (ageInYears / lifeExpectancy) * 100;
+        let isNegative = false;
+        let absYears = remainingYears;
+        if (isLifeCountdown && remainingYears < 0) {
+          isNegative = true;
+          absYears = Math.abs(remainingYears);
+        }
+        if (!isLifeCountdown && remainingYears <= 0) {
+          expiredFlag = true;
+        }
+        const years = Math.floor(absYears);
+        const monthsDecimal = (absYears - years) * 12;
+        const months = Math.floor(monthsDecimal);
+        const daysDecimal = (monthsDecimal - months) * 30.44;
+        const days = Math.floor(daysDecimal);
+        const hoursDecimal = (daysDecimal - days) * 24;
+        const hours = Math.floor(hoursDecimal);
+        const minutesDecimal = (hoursDecimal - hours) * 60;
+        const minutes = Math.floor(minutesDecimal);
+        const seconds = Math.floor((minutesDecimal - minutes) * 60);
+        tr = { years, months, days, hours, minutes, seconds, isNegative };
+      }
+      setTimeRemaining(tr);
+      setPercentageLived(percent);
+      setExpired(expiredFlag);
+    };
+
+    const tick = async () => {
+      await calculateAndUpdate();
+      if (ticking && tickingRef.current) {
+        tickingRef.current.currentTime = 0;
+        tickingRef.current.volume = TICKING_VOLUME;
+        tickingRef.current.play().catch(() => {});
+      }
+    };
+
+    // Initial update
+    calculateAndUpdate();
+
+    // Calculate ms until next second boundary
+    const msToNextSecond = 1000 - (Date.now() % 1000);
+    timeout = setTimeout(() => {
+      if (stopped) return;
+      tick();
+      interval = setInterval(tick, 1000);
+    }, msToNextSecond);
+
     return () => {
+      stopped = true;
       if (interval) clearInterval(interval);
       if (timeout) clearTimeout(timeout);
-      tickingRef.current?.pause();
-      tickingRef.current && (tickingRef.current.volume = 0);
+      if (tickingRef.current) {
+        tickingRef.current.pause();
+        tickingRef.current.volume = 0;
+      }
     };
-  }, [ticking]);
+  // Only rerun if these change
+  }, [birthDate, targetDate, startDate, eventName, eventId, eventType, ticking]);
 
-  // Play minute tick sound when minute changes
+  // Play minute tick sound when minute changes (unchanged)
   useEffect(() => {
     if (!minuteTickRef.current) return;
     const currentMinute = timeRemaining.minutes;
@@ -121,13 +220,13 @@ const CountdownTimer = ({
     prevMinuteRef.current = currentMinute;
   }, [timeRemaining.minutes]);
 
-  // Set didMountRef.current to true after first render
+  // Set didMountRef.current to true after first render (unchanged)
   useEffect(() => {
     didMountRef.current = true;
     hasPlayedMinuteTickRef.current = false;
   }, []);
 
-  // Mute/unmute all sounds
+  // Mute/unmute all sounds (unchanged)
   useEffect(() => {
     if (tickingRef.current) tickingRef.current.muted = muted;
     if (minuteTickRef.current) minuteTickRef.current.muted = muted;
@@ -135,119 +234,6 @@ const CountdownTimer = ({
 
   // Helper to check if this is a life countdown (should keep counting after 0)
   const isLifeCountdown = eventType === 'lifeCountdown' || eventName === 'Life Countdown';
-
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-    const localStorageKey = eventId ? `event_notified_${eventId}` : undefined;
-
-    const calculateTimeRemaining = async () => {
-      const now = new Date();
-      if (startDate && targetDate) {
-        // Custom event progress: from startDate to targetDate
-        const total = targetDate.getTime() - startDate.getTime();
-        const elapsed = now.getTime() - startDate.getTime();
-        setPercentageLived(Math.min(100, Math.max(0, (elapsed / total) * 100)));
-        const diff = targetDate.getTime() - now.getTime();
-        let isNegative = false;
-        let absDiff = diff;
-        if (isLifeCountdown && diff < 0) {
-          isNegative = true;
-          absDiff = Math.abs(diff);
-        }
-        if (!isLifeCountdown && diff <= 0) {
-          setTimeRemaining({ years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0, isNegative: false });
-          setExpired(true);
-          // Only send notification once
-          if (!notificationSentRef.current && localStorageKey && !localStorage.getItem(localStorageKey)) {
-            notificationSentRef.current = true;
-            localStorage.setItem(localStorageKey, 'true');
-            await notificationService.requestPermission();
-            await notificationService.sendEventArrivedNotification(eventName || "Your event");
-          }
-          if (interval) clearInterval(interval);
-          return;
-        }
-        let remaining = absDiff / 1000;
-        const years = Math.floor(remaining / (60 * 60 * 24 * 365.25));
-        remaining -= years * 60 * 60 * 24 * 365.25;
-        const months = Math.floor(remaining / (60 * 60 * 24 * 30.44));
-        remaining -= months * 60 * 60 * 24 * 30.44;
-        const days = Math.floor(remaining / (60 * 60 * 24));
-        remaining -= days * 60 * 60 * 24;
-        const hours = Math.floor(remaining / (60 * 60));
-        remaining -= hours * 60 * 60;
-        const minutes = Math.floor(remaining / 60);
-        const seconds = Math.floor(remaining - minutes * 60);
-        setTimeRemaining({ years, months, days, hours, minutes, seconds, isNegative });
-        setExpired(false);
-      } else if (targetDate) {
-        // ... existing event countdown logic ...
-        const diff = targetDate.getTime() - now.getTime();
-        let isNegative = false;
-        let absDiff = diff;
-        if (isLifeCountdown && diff < 0) {
-          isNegative = true;
-          absDiff = Math.abs(diff);
-        }
-        if (!isLifeCountdown && diff <= 0) {
-          setTimeRemaining({ years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0, isNegative: false });
-          setPercentageLived(100);
-          setExpired(true);
-          return;
-        }
-        let remaining = absDiff / 1000;
-        const years = Math.floor(remaining / (60 * 60 * 24 * 365.25));
-        remaining -= years * 60 * 60 * 24 * 365.25;
-        const months = Math.floor(remaining / (60 * 60 * 24 * 30.44));
-        remaining -= months * 60 * 60 * 24 * 30.44;
-        const days = Math.floor(remaining / (60 * 60 * 24));
-        remaining -= days * 60 * 60 * 24;
-        const hours = Math.floor(remaining / (60 * 60));
-        remaining -= hours * 60 * 60;
-        const minutes = Math.floor(remaining / 60);
-        const seconds = Math.floor(remaining - minutes * 60);
-        setTimeRemaining({ years, months, days, hours, minutes, seconds, isNegative });
-        const total = targetDate.getTime() - now.getTime() + (now.getTime() - now.getTime());
-        const elapsed = now.getTime() - now.getTime();
-        setPercentageLived(Math.min(100, Math.max(0, 100 - (diff / (targetDate.getTime() - now.getTime())) * 100)));
-        setExpired(false);
-      } else {
-        // ... existing life countdown logic ...
-        const ageInMilliseconds = now.getTime() - birthDate.getTime();
-        const ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);
-        const lifeExpectancy = 73.5;
-        const remainingYears = lifeExpectancy - ageInYears;
-        const percentLived = (ageInYears / lifeExpectancy) * 100;
-        setPercentageLived(percentLived);
-        let isNegative = false;
-        let absYears = remainingYears;
-        if (isLifeCountdown && remainingYears < 0) {
-          isNegative = true;
-          absYears = Math.abs(remainingYears);
-        }
-        if (!isLifeCountdown && remainingYears <= 0) {
-          setTimeRemaining({ years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0, isNegative: false });
-          setExpired(true);
-          return;
-        }
-        const years = Math.floor(absYears);
-        const monthsDecimal = (absYears - years) * 12;
-        const months = Math.floor(monthsDecimal);
-        const daysDecimal = (monthsDecimal - months) * 30.44;
-        const days = Math.floor(daysDecimal);
-        const hoursDecimal = (daysDecimal - days) * 24;
-        const hours = Math.floor(hoursDecimal);
-        const minutesDecimal = (hoursDecimal - hours) * 60;
-        const minutes = Math.floor(minutesDecimal);
-        const seconds = Math.floor((minutesDecimal - minutes) * 60);
-        setTimeRemaining({ years, months, days, hours, minutes, seconds, isNegative });
-        setExpired(false);
-      }
-    };
-    calculateTimeRemaining();
-    interval = setInterval(calculateTimeRemaining, 1000);
-    return () => interval && clearInterval(interval);
-  }, [birthDate, targetDate, startDate, eventName, eventId, eventType]);
 
   return (
     <motion.div

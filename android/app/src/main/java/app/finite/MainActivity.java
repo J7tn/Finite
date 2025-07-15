@@ -21,12 +21,18 @@ public class MainActivity extends BridgeActivity {
             // Dark mode: use light icons, transparent status bar
             insetsController.setAppearanceLightStatusBars(false);
             insetsController.setAppearanceLightNavigationBars(false);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
+            // Only set status bar color on Android < 15 (API < 35)
+            if (android.os.Build.VERSION.SDK_INT < 35) {
+                getWindow().setStatusBarColor(Color.TRANSPARENT);
+            }
         } else {
             // Light mode: use dark icons, white status bar
             insetsController.setAppearanceLightStatusBars(true);
             insetsController.setAppearanceLightNavigationBars(true);
-            getWindow().setStatusBarColor(Color.WHITE);
+            // Only set status bar color on Android < 15 (API < 35)
+            if (android.os.Build.VERSION.SDK_INT < 35) {
+                getWindow().setStatusBarColor(Color.WHITE);
+            }
         }
     }
 }
