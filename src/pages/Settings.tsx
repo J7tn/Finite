@@ -25,6 +25,7 @@ const Settings: React.FC = () => {
   const navigate = useNavigate();
   const [selectedLanguage, setSelectedLanguage] = useState<Language>(getCurrentLanguage() as Language);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   const handleLanguageChange = (value: Language) => {
     setSelectedLanguage(value);
@@ -93,6 +94,26 @@ const Settings: React.FC = () => {
                   <li>Favorite Holiday</li>
                   <li>A countdown for your pet's life</li>
                 </ul>
+              </CardContent>
+            )}
+          </div>
+        </Card>
+
+        <Card>
+          <div className="cursor-pointer" onClick={() => setShowContact((prev) => !prev)}>
+            <CardHeader className="flex flex-row items-center justify-between p-4">
+              <CardTitle className="text-base">Contact</CardTitle>
+              {showContact ? (
+                <ChevronUp className="h-5 w-5 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-muted-foreground" />
+              )}
+            </CardHeader>
+            {showContact && (
+              <CardContent>
+                <p className="mt-1 text-sm">
+                  If you have any questions, comments, or concerns, feel free to reach out to me at <a href="mailto:jntnnn4@gmail.com" className="underline text-blue-600">jntnnn4@gmail.com</a>
+                </p>
               </CardContent>
             )}
           </div>
