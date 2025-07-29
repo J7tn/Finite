@@ -111,6 +111,7 @@
     "year": "Year",
     "month": "Month",
     "day": "Day",
-    "language": "Language"
+    "language": "Language",
+    "progress": "Progress"
   }
 } 

@@ -79,6 +79,7 @@
     "year": "Anno",
     "month": "Mese",
     "day": "Giorno",
-    "language": "Lingua"
+    "language": "Lingua",
+    "progress": "Progresso"
   }
 } 

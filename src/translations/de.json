@@ -79,6 +79,7 @@
     "year": "Jahr",
     "month": "Monat",
     "day": "Tag",
-    "language": "Sprache"
+    "language": "Sprache",
+    "progress": "Fortschritt"
   }
 } 

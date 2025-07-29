@@ -32,7 +32,6 @@ const App: React.FC = () => {
   });
   const audioRef = useRef<HTMLAudioElement>(null);
   const [audioStarted, setAudioStarted] = useState(false);
-  const radioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const setLanguage = async () => {
@@ -106,11 +105,9 @@ const App: React.FC = () => {
   // Start audio after first user gesture (required by browsers)
   useEffect(() => {
     const startAudio = () => {
-      if (!audioStarted && audioRef.current && radioRef.current) {
+      if (!audioStarted && audioRef.current) {
         audioRef.current.volume = 0.6;
         audioRef.current.play().catch(() => {});
-        radioRef.current.volume = 0.15;
-        radioRef.current.play().catch(() => {});
         setAudioStarted(true);
       }
     };
@@ -179,14 +176,7 @@ const App: React.FC = () => {
         onError={() => console.error('Audio failed to load or play')}
         onPlay={() => console.log('Audio playback started')}
       />
-      <audio
-        ref={radioRef}
-        src="/am-radio-static-60183.mp3"
-        loop
-        preload="auto"
-        style={{ display: 'none' }}
-        onError={() => console.error('Radio static failed to load or play')}
-      />
+      {/* Radio static audio removed - file doesn't exist */}
       {/* Main app content */}
       <Suspense fallback={<LoadingFallback />}>
         <Routes>

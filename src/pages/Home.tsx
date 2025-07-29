@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { LifeProgressBar } from '@/components/LifeProgressBar';
 import CountdownTimer from '@/components/CountdownTimer';
 import { Button } from '@/components/ui/button';
 import { Moon, Plus, ChevronDown, ChevronUp, Settings, Volume2, VolumeX } from 'lucide-react';
@@ -133,6 +132,12 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
     setShowEventForm(false);
   };
 
+  const handleDeleteEvent = (eventId: string) => {
+    const updatedEvents = events.filter(event => event.id !== eventId);
+    setEvents(updatedEvents);
+    localStorage.setItem('events', JSON.stringify(updatedEvents));
+  };
+
   const toggleBlock = (id: string) => {
     setExpandedBlocks(prev => {
       const newSet = new Set<string>();
@@ -219,6 +224,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
             isExpanded={expandedBlocks.has(event.id)}
             onExpand={() => toggleBlock(event.id)}
             onEdit={() => setEditingEvent(event)}
+            onDelete={() => handleDeleteEvent(event.id)}
             isMuted={isMuted}
           />
         ))}
@@ -369,21 +375,76 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="date">{t('events.birthDate')}</Label>
-                  <Input
-                    id="date"
-                    type="date"
-                    value={
-                      editingEvent?.date && !isNaN(new Date(editingEvent.date).getTime())
-                        ? new Date(editingEvent.date).toISOString().split('T')[0]
-                        : ''
-                    }
-                    onChange={(e) => {
-                      if (editingEvent) {
-                        const newDate = new Date(e.target.value);
-                        setEditingEvent({ ...editingEvent, date: newDate });
-                      }
-                    }}
-                  />
+                  <div className="grid grid-cols-3 gap-2">
+                    <Select
+                      value={editingEvent?.date ? editingEvent.date.getFullYear().toString() : new Date().getFullYear().toString()}
+                      onValueChange={(value) => {
+                        if (editingEvent) {
+                          const newDate = new Date(editingEvent.date);
+                          newDate.setFullYear(parseInt(value));
+                          setEditingEvent({ ...editingEvent, date: newDate });
+                        }
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('common.year')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {generateYearOptions().map((year) => (
+                          <SelectItem key={year} value={year.toString()}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <Select
+                      value={editingEvent?.date ? (editingEvent.date.getMonth() + 1).toString() : (new Date().getMonth() + 1).toString()}
+                      onValueChange={(value) => {
+                        if (editingEvent) {
+                          const newDate = new Date(editingEvent.date);
+                          newDate.setMonth(parseInt(value) - 1);
+                          setEditingEvent({ ...editingEvent, date: newDate });
+                        }
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('common.month')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {generateMonthOptions().map((month) => (
+                          <SelectItem key={month} value={month.toString()}>
+                            {month}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    <Select
+                      value={editingEvent?.date ? editingEvent.date.getDate().toString() : new Date().getDate().toString()}
+                      onValueChange={(value) => {
+                        if (editingEvent) {
+                          const newDate = new Date(editingEvent.date);
+                          newDate.setDate(parseInt(value));
+                          setEditingEvent({ ...editingEvent, date: newDate });
+                        }
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('common.day')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {generateDayOptions(
+                          editingEvent?.date ? editingEvent.date.getFullYear() : new Date().getFullYear(),
+                          editingEvent?.date ? editingEvent.date.getMonth() + 1 : new Date().getMonth() + 1
+                        ).map((day) => (
+                          <SelectItem key={day} value={day.toString()}>
+                            {day}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lifeExpectancy">{t('events.lifeExpectancy')}</Label>

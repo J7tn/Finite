@@ -79,6 +79,7 @@
     "year": "년",
     "month": "월",
     "day": "일",
-    "language": "언어"
+    "language": "언어",
+    "progress": "진행률"
   }
 } 

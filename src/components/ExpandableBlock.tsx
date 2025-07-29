@@ -23,6 +23,7 @@ interface ExpandableBlockProps {
   isExpanded: boolean;
   onExpand: () => void;
   onEdit: () => void;
+  onDelete?: () => void;
   isMuted?: boolean;
 }
 
@@ -35,6 +36,7 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
   isExpanded,
   onExpand,
   onEdit,
+  onDelete,
   isMuted
 }) => {
   const [timeLeft, setTimeLeft] = useState({
@@ -173,6 +175,7 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
                 <CountdownTimer targetDate={targetDate} motto={motto} eventName={eventName} eventId={eventName} eventType={eventType} 
                   ticking={isExpanded}
                   muted={isMuted}
+                  progressLabel={t('common.progress')}
                 />
               )}
             </div>
@@ -181,11 +184,20 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
       </AnimatePresence>
 
       {isExpanded && (
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-end gap-2 mt-4">
+          {onDelete && (
+            <Button
+              variant="destructive"
+              onClick={onDelete}
+              className="flex-1"
+            >
+              {t('common.delete')}
+            </Button>
+          )}
           <Button
             variant="outline"
             onClick={onEdit}
-            className="w-full"
+            className={onDelete ? "flex-1" : "w-full"}
           >
             {eventName ? t('events.editEvent') : t('events.editLifeCountdown')}
           </Button>
