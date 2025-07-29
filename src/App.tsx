@@ -20,6 +20,22 @@ const LoadingFallback = () => (
   </div>
 );
 
+// Error boundary component
+const ErrorFallback = ({ error }: { error: Error }) => (
+  <div className="flex flex-col items-center justify-center min-h-screen p-4">
+    <div className="text-center">
+      <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
+      <p className="text-gray-600 mb-4">Please try refreshing the page</p>
+      <button 
+        onClick={() => window.location.reload()} 
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Refresh
+      </button>
+    </div>
+  </div>
+);
+
 const App: React.FC = () => {
   const endMeasure = measurePerformance('App Initial Render');
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
@@ -32,6 +48,7 @@ const App: React.FC = () => {
   });
   const audioRef = useRef<HTMLAudioElement>(null);
   const [audioStarted, setAudioStarted] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     const setLanguage = async () => {
@@ -107,7 +124,9 @@ const App: React.FC = () => {
     const startAudio = () => {
       if (!audioStarted && audioRef.current) {
         audioRef.current.volume = 0.6;
-        audioRef.current.play().catch(() => {});
+        audioRef.current.play().catch((error) => {
+          console.warn('Audio playback failed:', error);
+        });
         setAudioStarted(true);
       }
     };
@@ -143,6 +162,22 @@ const App: React.FC = () => {
     }
   };
 
+  // Global error handler
+  useEffect(() => {
+    const handleError = (error: ErrorEvent) => {
+      console.error('Global error caught:', error);
+      setHasError(true);
+    };
+
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+
+  // Show error fallback if there's an error
+  if (hasError) {
+    return <ErrorFallback error={new Error('Application error')} />;
+  }
+
   // Show loading while language is being initialized
   if (!isLanguageInitialized) {
     return <LoadingFallback />;
@@ -173,10 +208,9 @@ const App: React.FC = () => {
         loop
         preload="auto"
         style={{ display: 'none' }}
-        onError={() => console.error('Audio failed to load or play')}
+        onError={(e) => console.error('Audio failed to load or play:', e)}
         onPlay={() => console.log('Audio playback started')}
       />
-      {/* Radio static audio removed - file doesn't exist */}
       {/* Main app content */}
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
@@ -199,6 +233,10 @@ const App: React.FC = () => {
               objectFit: 'contain',
               borderRadius: 24,
               boxShadow: '0 4px 32px rgba(0,0,0,0.08)',
+            }}
+            onError={(e) => {
+              console.error('Splash image failed to load:', e);
+              setSplashVisible(false);
             }}
           />
         </div>

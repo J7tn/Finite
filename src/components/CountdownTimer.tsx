@@ -174,10 +174,23 @@ const CountdownTimer = ({
 
     const tick = async () => {
       await calculateAndUpdate();
-      if (ticking && tickingRef.current) {
-        tickingRef.current.currentTime = 0;
-        tickingRef.current.volume = TICKING_VOLUME;
-        tickingRef.current.play().catch(() => {});
+      console.log(`Tick function called - ticking: ${ticking}, muted: ${muted}, eventName: ${eventName}, eventType: ${eventType}`);
+      if (ticking && tickingRef.current && !muted) {
+        console.log(`Attempting to play ticking sound for ${eventName || 'custom event'}`);
+        console.log(`Audio readyState: ${tickingRef.current.readyState}, paused: ${tickingRef.current.paused}`);
+        
+        // Ensure audio is ready
+        if (tickingRef.current.readyState >= 2) { // HAVE_CURRENT_DATA
+          tickingRef.current.currentTime = 0;
+          tickingRef.current.volume = TICKING_VOLUME;
+          tickingRef.current.play().catch((error) => {
+            console.error('Failed to play ticking sound:', error);
+          });
+        } else {
+          console.log('Audio not ready yet, readyState:', tickingRef.current.readyState);
+        }
+      } else {
+        console.log(`Not playing ticking sound - ticking: ${ticking}, muted: ${muted}, audioRef: ${!!tickingRef.current}`);
       }
     };
 
@@ -202,14 +215,14 @@ const CountdownTimer = ({
       }
     };
   // Only rerun if these change
-  }, [birthDate, targetDate, startDate, eventName, eventId, eventType, ticking]);
+  }, [birthDate, targetDate, startDate, eventName, eventId, eventType, ticking, muted]);
 
   // Play minute tick sound when minute changes (unchanged)
   useEffect(() => {
     if (!minuteTickRef.current) return;
     const currentMinute = timeRemaining.minutes;
     if (didMountRef.current && prevMinuteRef.current !== null && currentMinute !== prevMinuteRef.current) {
-      if (hasPlayedMinuteTickRef.current) {
+      if (hasPlayedMinuteTickRef.current && !muted) {
         minuteTickRef.current.currentTime = 0;
         minuteTickRef.current.volume = 0.3;
         minuteTickRef.current.play().catch(() => {});
@@ -218,18 +231,26 @@ const CountdownTimer = ({
       }
     }
     prevMinuteRef.current = currentMinute;
-  }, [timeRemaining.minutes]);
+  }, [timeRemaining.minutes, muted]);
 
   // Set didMountRef.current to true after first render (unchanged)
   useEffect(() => {
     didMountRef.current = true;
     hasPlayedMinuteTickRef.current = false;
-  }, []);
+    
+    // Debug audio element creation
+    console.log(`CountdownTimer mounted - tickingRef: ${!!tickingRef.current}, eventName: ${eventName}, eventType: ${eventType}`);
+    if (tickingRef.current) {
+      tickingRef.current.addEventListener('loadstart', () => console.log('Ticking audio loadstart'));
+      tickingRef.current.addEventListener('canplay', () => console.log('Ticking audio canplay'));
+      tickingRef.current.addEventListener('error', (e) => console.error('Ticking audio error:', e));
+    }
+  }, [eventName, eventType]);
 
   // Mute/unmute all sounds (unchanged)
   useEffect(() => {
-    if (tickingRef.current) tickingRef.current.muted = muted;
     if (minuteTickRef.current) minuteTickRef.current.muted = muted;
+    // Don't mute tickingRef here as we control it via volume in the tick function
   }, [muted]);
 
   // Helper to check if this is a life countdown (should keep counting after 0)
@@ -247,12 +268,18 @@ const CountdownTimer = ({
         src="/clockSecondsTicking.mp3"
         preload="auto"
         style={{ display: 'none' }}
+        onLoadStart={() => console.log('Ticking audio loadstart')}
+        onCanPlay={() => console.log('Ticking audio canplay')}
+        onError={(e) => console.error('Ticking audio error:', e)}
       />
       <audio
         ref={minuteTickRef}
         src="/clockMinuteTick.mp3"
         preload="auto"
         style={{ display: 'none' }}
+        onLoadStart={() => console.log('Minute tick audio loadstart')}
+        onCanPlay={() => console.log('Minute tick audio canplay')}
+        onError={(e) => console.error('Minute tick audio error:', e)}
       />
       <Card className="flex flex-col w-full h-full bg-card">
         <CardContent className="flex-1 w-full flex flex-col justify-center items-center p-6">

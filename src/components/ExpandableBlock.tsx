@@ -151,6 +151,7 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
             className="overflow-hidden"
           >
             <div className="mt-4 space-y-4">
+              {(() => { console.log(`ExpandableBlock - eventName: ${eventName}, eventType: ${eventType}, isExpanded: ${isExpanded}, isMuted: ${isMuted}`); return null; })()}
               {eventName === t('events.lifeCountdown') ? (
                 <CountdownTimer
                   birthDate={targetDate}

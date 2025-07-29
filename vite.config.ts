@@ -36,7 +36,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: false, // Keep console logs for debugging
         drop_debugger: true,
       },
     },
@@ -54,5 +54,6 @@ export default defineConfig({
   server: {
     // @ts-ignore
     allowedHosts: true,
-  }
+  },
+  assetsInclude: ['**/*.mp3', '**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.gif', '**/*.svg'],
 });

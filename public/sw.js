@@ -1,8 +1,14 @@
-const CACHE_NAME = 'finite-cache-v1';
+const CACHE_NAME = 'finite-cache-v4';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/assets/index.css',
+  '/assets/index-DmRrfCcy.css',
+  '/assets/index-DNUQPJSL.js',
+  '/assets/react-vendor-B-AEH8Cq.js',
+  '/assets/capacitor-BfyQfm6Z.js',
+  '/meditation-ambient-music-354473.mp3',
+  '/clockMinuteTick.mp3',
+  '/clockSecondsTicking.mp3'
 ];
 
 self.addEventListener('install', (event) => {
@@ -30,6 +36,13 @@ self.addEventListener('fetch', (event) => {
                 cache.put(event.request, responseToCache);
               });
             return response;
+          })
+          .catch(() => {
+            // Return a fallback response for failed requests
+            if (event.request.destination === 'image') {
+              return new Response('', { status: 404 });
+            }
+            return new Response('Network error', { status: 503 });
           });
       })
   );
