@@ -52,114 +52,16 @@ const CountdownTimer = ({
   const didMountRef = useRef(false);
   const hasPlayedMinuteTickRef = useRef(false);
   
-  // Simple ticking sound management
-  const tickingRef = useRef<HTMLAudioElement>(null);
-  const isTickingPlaying = useRef(false);
-  const fadeInterval = useRef<NodeJS.Timeout | null>(null);
+  // Second tick sound management (similar to minute tick)
+  const secondTickOneRef = useRef<HTMLAudioElement>(null);
+  const secondTickTwoRef = useRef<HTMLAudioElement>(null);
+  const prevSecondRef = useRef<number | null>(null);
+  const hasPlayedSecondTickRef = useRef(false);
+  const useSecondTickOneRef = useRef(true); // Track which sound to play next
 
-  const startTicking = () => {
-    if (!tickingRef.current || muted || !ticking) return;
-    
-    console.log('AUDIO: Starting ticking for', eventName || eventId);
-    
-    try {
-      tickingRef.current.currentTime = 0;
-      tickingRef.current.volume = 0;
-      tickingRef.current.play().then(() => {
-        isTickingPlaying.current = true;
-        fadeIn();
-      }).catch((error) => {
-        console.error('AUDIO: Failed to start ticking:', error);
-      });
-    } catch (error) {
-      console.error('AUDIO: Error starting ticking:', error);
-    }
-  };
 
-  const stopTicking = () => {
-    if (!tickingRef.current || !isTickingPlaying.current) return;
-    
-    console.log('AUDIO: Stopping ticking for', eventName || eventId);
-    
-    if (fadeInterval.current) {
-      clearInterval(fadeInterval.current);
-      fadeInterval.current = null;
-    }
-    
-    fadeOut();
-  };
 
-  const fadeIn = () => {
-    if (!tickingRef.current) return;
-    
-    let volume = 0;
-    const targetVolume = 0.25;
-    const step = 0.01;
-    
-    if (fadeInterval.current) {
-      clearInterval(fadeInterval.current);
-    }
-    
-    fadeInterval.current = setInterval(() => {
-      volume += step;
-      if (volume >= targetVolume) {
-        volume = targetVolume;
-        if (fadeInterval.current) {
-          clearInterval(fadeInterval.current);
-          fadeInterval.current = null;
-        }
-      }
-      tickingRef.current!.volume = volume;
-    }, 50);
-  };
 
-  const fadeOut = () => {
-    if (!tickingRef.current) return;
-    
-    let volume = tickingRef.current.volume;
-    const step = 0.01;
-    
-    if (fadeInterval.current) {
-      clearInterval(fadeInterval.current);
-    }
-    
-    fadeInterval.current = setInterval(() => {
-      volume -= step;
-      if (volume <= 0) {
-        volume = 0;
-        tickingRef.current!.pause();
-        isTickingPlaying.current = false;
-        if (fadeInterval.current) {
-          clearInterval(fadeInterval.current);
-          fadeInterval.current = null;
-        }
-      }
-      tickingRef.current!.volume = volume;
-    }, 50);
-  };
-
-  // Handle ticking state changes
-  useEffect(() => {
-    console.log('AUDIO: Ticking state changed:', { ticking, muted, eventName, eventId });
-    
-    if (ticking && !muted) {
-      startTicking();
-    } else {
-      stopTicking();
-    }
-    
-    // Cleanup on unmount
-    return () => {
-      if (fadeInterval.current) {
-        clearInterval(fadeInterval.current);
-      }
-      if (tickingRef.current) {
-        tickingRef.current.pause();
-        tickingRef.current.volume = 0;
-      }
-      isTickingPlaying.current = false;
-    };
-  }, [ticking, muted]);
 
   // Unified timer for ticking sound and countdown update
   useEffect(() => {
@@ -302,16 +204,39 @@ const CountdownTimer = ({
     prevMinuteRef.current = currentMinute;
   }, [timeRemaining.minutes, muted]);
 
+  // Play second tick sound when second changes (similar to minute tick)
+  useEffect(() => {
+    if (!secondTickOneRef.current || !secondTickTwoRef.current || !ticking) return;
+    const currentSecond = timeRemaining.seconds;
+    if (didMountRef.current && prevSecondRef.current !== null && currentSecond !== prevSecondRef.current) {
+      if (hasPlayedSecondTickRef.current && !muted) {
+        // Alternate between the two tick sounds
+        const currentTickRef = useSecondTickOneRef.current ? secondTickOneRef : secondTickTwoRef;
+        currentTickRef.current!.currentTime = 0;
+        currentTickRef.current!.volume = 0.2;
+        currentTickRef.current!.play().catch(() => {});
+        
+        // Switch to the other sound for next time
+        useSecondTickOneRef.current = !useSecondTickOneRef.current;
+      } else {
+        hasPlayedSecondTickRef.current = true;
+      }
+    }
+    prevSecondRef.current = currentSecond;
+  }, [timeRemaining.seconds, ticking, muted]);
+
   // Set didMountRef.current to true after first render
   useEffect(() => {
     didMountRef.current = true;
     hasPlayedMinuteTickRef.current = false;
+    hasPlayedSecondTickRef.current = false;
   }, []);
 
   // Mute/unmute all sounds
   useEffect(() => {
     if (minuteTickRef.current) minuteTickRef.current.muted = muted;
-    if (tickingRef.current) tickingRef.current.muted = muted;
+    if (secondTickOneRef.current) secondTickOneRef.current.muted = muted;
+    if (secondTickTwoRef.current) secondTickTwoRef.current.muted = muted;
   }, [muted]);
 
   // Helper to check if this is a life countdown (should keep counting after 0)
@@ -331,10 +256,15 @@ const CountdownTimer = ({
         style={{ display: 'none' }}
       />
       <audio
-        ref={tickingRef}
-        src="/clockSecondsTicking.mp3"
+        ref={secondTickOneRef}
+        src="/secondTickingOne.mp3"
         preload="auto"
-        loop
+        style={{ display: 'none' }}
+      />
+      <audio
+        ref={secondTickTwoRef}
+        src="/secondTickingTwo.mp3"
+        preload="auto"
         style={{ display: 'none' }}
       />
       <Card className="flex flex-col w-full h-full bg-card">
