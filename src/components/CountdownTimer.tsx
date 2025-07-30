@@ -58,6 +58,72 @@ const CountdownTimer = ({
   const prevSecondRef = useRef<number | null>(null);
   const hasPlayedSecondTickRef = useRef(false);
   const useSecondTickOneRef = useRef(true); // Track which sound to play next
+  
+  // Fade management for tick sounds
+  const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const fadeDuration = 150; // Fade duration in milliseconds
+  const targetVolume = 0.2; // Target volume for tick sounds
+
+  // Fade in function for tick sounds
+  const fadeInTick = (audioRef: React.RefObject<HTMLAudioElement>) => {
+    if (!audioRef.current) return;
+    
+    // Clear any existing fade interval
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current);
+    }
+    
+    // Start at 0 volume
+    audioRef.current.volume = 0;
+    
+    const step = targetVolume / (fadeDuration / 16); // 60fps = ~16ms intervals
+    let currentVolume = 0;
+    
+    fadeIntervalRef.current = setInterval(() => {
+      currentVolume += step;
+      if (currentVolume >= targetVolume) {
+        currentVolume = targetVolume;
+        if (fadeIntervalRef.current) {
+          clearInterval(fadeIntervalRef.current);
+          fadeIntervalRef.current = null;
+        }
+      }
+      if (audioRef.current) {
+        audioRef.current.volume = currentVolume;
+      }
+    }, 16);
+  };
+
+  // Fade out function for tick sounds
+  const fadeOutTick = (audioRef: React.RefObject<HTMLAudioElement>) => {
+    if (!audioRef.current) return;
+    
+    // Clear any existing fade interval
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current);
+    }
+    
+    const startVolume = audioRef.current.volume;
+    const step = startVolume / (fadeDuration / 16); // 60fps = ~16ms intervals
+    let currentVolume = startVolume;
+    
+    fadeIntervalRef.current = setInterval(() => {
+      currentVolume -= step;
+      if (currentVolume <= 0) {
+        currentVolume = 0;
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
+        if (fadeIntervalRef.current) {
+          clearInterval(fadeIntervalRef.current);
+          fadeIntervalRef.current = null;
+        }
+      }
+      if (audioRef.current) {
+        audioRef.current.volume = currentVolume;
+      }
+    }, 16);
+  };
 
 
 
@@ -132,7 +198,6 @@ const CountdownTimer = ({
         const minutes = Math.floor(remaining / 60);
         const seconds = Math.floor(remaining - minutes * 60);
         tr = { years, months, days, hours, minutes, seconds, isNegative };
-        percent = Math.min(100, Math.max(0, 100 - (diff / (targetDate.getTime() - now.getTime())) * 100));
       } else {
         const ageInMilliseconds = now.getTime() - birthDate.getTime();
         const ageInYears = ageInMilliseconds / (1000 * 60 * 60 * 24 * 365.25);
@@ -167,6 +232,12 @@ const CountdownTimer = ({
 
     const tick = async () => {
       await calculateAndUpdate();
+      
+      // Drift correction: recalculate next second boundary
+      if (!stopped) {
+        const msToNextSecond = 1000 - (Date.now() % 1000);
+        timeout = setTimeout(tick, msToNextSecond);
+      }
     };
 
     // Initial update
@@ -174,11 +245,7 @@ const CountdownTimer = ({
 
     // Calculate ms until next second boundary
     const msToNextSecond = 1000 - (Date.now() % 1000);
-    timeout = setTimeout(() => {
-      if (stopped) return;
-      tick();
-      interval = setInterval(tick, 1000);
-    }, msToNextSecond);
+    timeout = setTimeout(tick, msToNextSecond);
 
     return () => {
       stopped = true;
@@ -212,9 +279,16 @@ const CountdownTimer = ({
       if (hasPlayedSecondTickRef.current && !muted) {
         // Alternate between the two tick sounds
         const currentTickRef = useSecondTickOneRef.current ? secondTickOneRef : secondTickTwoRef;
+        
+        // Reset and start the audio with immediate volume
         currentTickRef.current!.currentTime = 0;
-        currentTickRef.current!.volume = 0.2;
-        currentTickRef.current!.play().catch(() => {});
+        currentTickRef.current!.volume = targetVolume; // Set volume immediately
+        currentTickRef.current!.play().then(() => {
+          // Apply fade out after a longer duration
+          setTimeout(() => {
+            fadeOutTick(currentTickRef);
+          }, 600); // Fade out 400ms before next tick
+        }).catch(() => {});
         
         // Switch to the other sound for next time
         useSecondTickOneRef.current = !useSecondTickOneRef.current;
@@ -230,6 +304,14 @@ const CountdownTimer = ({
     didMountRef.current = true;
     hasPlayedMinuteTickRef.current = false;
     hasPlayedSecondTickRef.current = false;
+    
+    // Cleanup function to clear fade intervals
+    return () => {
+      if (fadeIntervalRef.current) {
+        clearInterval(fadeIntervalRef.current);
+        fadeIntervalRef.current = null;
+      }
+    };
   }, []);
 
   // Mute/unmute all sounds
@@ -238,6 +320,25 @@ const CountdownTimer = ({
     if (secondTickOneRef.current) secondTickOneRef.current.muted = muted;
     if (secondTickTwoRef.current) secondTickTwoRef.current.muted = muted;
   }, [muted]);
+
+  // Cleanup fade intervals when ticking is disabled
+  useEffect(() => {
+    if (!ticking) {
+      if (fadeIntervalRef.current) {
+        clearInterval(fadeIntervalRef.current);
+        fadeIntervalRef.current = null;
+      }
+      // Stop any playing audio
+      if (secondTickOneRef.current) {
+        secondTickOneRef.current.pause();
+        secondTickOneRef.current.volume = 0;
+      }
+      if (secondTickTwoRef.current) {
+        secondTickTwoRef.current.pause();
+        secondTickTwoRef.current.volume = 0;
+      }
+    }
+  }, [ticking]);
 
   // Helper to check if this is a life countdown (should keep counting after 0)
   const isLifeCountdown = eventType === 'lifeCountdown' || eventName === 'Life Countdown';

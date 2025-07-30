@@ -51,6 +51,9 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
   });
 
   useEffect(() => {
+    let timeout: NodeJS.Timeout | null = null;
+    let stopped = false;
+
     const calculateTimeLeft = () => {
       const now = new Date();
       const target = new Date(targetDate);
@@ -94,10 +97,27 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
       setTimeLeft({ years, months, days, hours, minutes, seconds });
     };
 
-    calculateTimeLeft();
-    const timer = setInterval(calculateTimeLeft, 1000);
+    const tick = () => {
+      calculateTimeLeft();
+      
+      // Drift correction: recalculate next second boundary
+      if (!stopped) {
+        const msToNextSecond = 1000 - (Date.now() % 1000);
+        timeout = setTimeout(tick, msToNextSecond);
+      }
+    };
 
-    return () => clearInterval(timer);
+    // Initial update
+    calculateTimeLeft();
+
+    // Calculate ms until next second boundary
+    const msToNextSecond = 1000 - (Date.now() % 1000);
+    timeout = setTimeout(tick, msToNextSecond);
+
+    return () => {
+      stopped = true;
+      if (timeout) clearTimeout(timeout);
+    };
   }, [targetDate]);
 
   const calculateLifeProgress = () => {

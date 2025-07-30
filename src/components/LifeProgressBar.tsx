@@ -11,6 +11,9 @@ export function LifeProgressBar({ birthDate, expectedLifespan = 80, progressLabe
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    let timeout: NodeJS.Timeout | null = null;
+    let stopped = false;
+
     const calculateProgress = () => {
       const now = new Date();
       const ageInMilliseconds = now.getTime() - birthDate.getTime();
@@ -19,10 +22,27 @@ export function LifeProgressBar({ birthDate, expectedLifespan = 80, progressLabe
       setProgress(Math.min(progressPercentage, 100));
     };
 
-    calculateProgress();
-    const interval = setInterval(calculateProgress, 1000); // Update every second
+    const tick = () => {
+      calculateProgress();
+      
+      // Drift correction: recalculate next second boundary
+      if (!stopped) {
+        const msToNextSecond = 1000 - (Date.now() % 1000);
+        timeout = setTimeout(tick, msToNextSecond);
+      }
+    };
 
-    return () => clearInterval(interval);
+    // Initial update
+    calculateProgress();
+
+    // Calculate ms until next second boundary
+    const msToNextSecond = 1000 - (Date.now() % 1000);
+    timeout = setTimeout(tick, msToNextSecond);
+
+    return () => {
+      stopped = true;
+      if (timeout) clearTimeout(timeout);
+    };
   }, [birthDate, expectedLifespan]);
 
   return (
