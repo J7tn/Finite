@@ -25,6 +25,7 @@ interface ExpandableBlockProps {
   onEdit: () => void;
   onDelete?: () => void;
   isMuted?: boolean;
+  eventId?: string;
 }
 
 const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
@@ -37,7 +38,8 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
   onExpand,
   onEdit,
   onDelete,
-  isMuted
+  isMuted,
+  eventId
 }) => {
   const [timeLeft, setTimeLeft] = useState({
     years: 0,
@@ -151,7 +153,6 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
             className="overflow-hidden"
           >
             <div className="mt-4 space-y-4">
-              {(() => { console.log(`ExpandableBlock - eventName: ${eventName}, eventType: ${eventType}, isExpanded: ${isExpanded}, isMuted: ${isMuted}`); return null; })()}
               {eventName === t('events.lifeCountdown') ? (
                 <CountdownTimer
                   birthDate={targetDate}
@@ -173,7 +174,7 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
                   muted={isMuted}
                 />
               ) : (
-                <CountdownTimer targetDate={targetDate} motto={motto} eventName={eventName} eventId={eventName} eventType={eventType} 
+                <CountdownTimer targetDate={targetDate} motto={motto} eventName={eventName} eventId={eventId || eventName} eventType={eventType} 
                   ticking={isExpanded}
                   muted={isMuted}
                   progressLabel={t('common.progress')}

@@ -226,6 +226,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
             onEdit={() => setEditingEvent(event)}
             onDelete={() => handleDeleteEvent(event.id)}
             isMuted={isMuted}
+            eventId={event.id}
           />
         ))}
 

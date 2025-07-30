@@ -53,6 +53,9 @@ const CountdownTimer = ({
   const prevMinuteRef = useRef<number | null>(null);
   const didMountRef = useRef(false);
   const hasPlayedMinuteTickRef = useRef(false);
+  
+  // Separate ticking sound for custom events
+  const customTickingRef = useRef<HTMLAudioElement>(null);
 
   const fadeTicking = (to: number, duration = 1000) => {
     if (!tickingRef.current) return;
@@ -65,6 +68,21 @@ const CountdownTimer = ({
       tickingRef.current!.volume = from + (to * TICKING_VOLUME - from) * (currentStep / steps);
       if (currentStep < steps) setTimeout(fade, stepTime);
       else tickingRef.current!.volume = to * TICKING_VOLUME;
+    };
+    fade();
+  };
+
+  const fadeCustomTicking = (to: number, duration = 1000) => {
+    if (!customTickingRef.current) return;
+    const from = customTickingRef.current.volume;
+    const steps = 20;
+    const stepTime = duration / steps;
+    let currentStep = 0;
+    const fade = () => {
+      currentStep++;
+      customTickingRef.current!.volume = from + (to * TICKING_VOLUME - from) * (currentStep / steps);
+      if (currentStep < steps) setTimeout(fade, stepTime);
+      else customTickingRef.current!.volume = to * TICKING_VOLUME;
     };
     fade();
   };
@@ -174,23 +192,38 @@ const CountdownTimer = ({
 
     const tick = async () => {
       await calculateAndUpdate();
-      console.log(`Tick function called - ticking: ${ticking}, muted: ${muted}, eventName: ${eventName}, eventType: ${eventType}`);
-      if (ticking && tickingRef.current && !muted) {
-        console.log(`Attempting to play ticking sound for ${eventName || 'custom event'}`);
-        console.log(`Audio readyState: ${tickingRef.current.readyState}, paused: ${tickingRef.current.paused}`);
-        
-        // Ensure audio is ready
-        if (tickingRef.current.readyState >= 2) { // HAVE_CURRENT_DATA
-          tickingRef.current.currentTime = 0;
-          tickingRef.current.volume = TICKING_VOLUME;
-          tickingRef.current.play().catch((error) => {
-            console.error('Failed to play ticking sound:', error);
-          });
+      
+      // Separate ticking logic for different event types
+      const isCustomEvent = eventType === 'custom';
+      
+      if (ticking && !muted) {
+        if (isCustomEvent) {
+          // Custom event ticking logic
+          console.log(`Custom event tick - eventName: ${eventName}, customTickingRef: ${!!customTickingRef.current}, readyState: ${customTickingRef.current?.readyState}`);
+          if (customTickingRef.current && customTickingRef.current.readyState >= 2) {
+            customTickingRef.current.currentTime = 0;
+            customTickingRef.current.volume = TICKING_VOLUME;
+            customTickingRef.current.play().catch((error) => {
+              console.error('Custom event ticking failed:', error);
+            });
+          } else {
+            console.log('Custom event audio not ready - readyState:', customTickingRef.current?.readyState);
+          }
         } else {
-          console.log('Audio not ready yet, readyState:', tickingRef.current.readyState);
+          // Life countdown ticking logic (original logic)
+          console.log(`Life countdown tick - eventName: ${eventName}, tickingRef: ${!!tickingRef.current}, readyState: ${tickingRef.current?.readyState}`);
+          if (tickingRef.current && tickingRef.current.readyState >= 2) {
+            tickingRef.current.currentTime = 0;
+            tickingRef.current.volume = TICKING_VOLUME;
+            tickingRef.current.play().catch((error) => {
+              console.error('Life countdown ticking failed:', error);
+            });
+          } else {
+            console.log('Life countdown audio not ready - readyState:', tickingRef.current?.readyState);
+          }
         }
       } else {
-        console.log(`Not playing ticking sound - ticking: ${ticking}, muted: ${muted}, audioRef: ${!!tickingRef.current}`);
+        console.log(`Not ticking - ticking: ${ticking}, muted: ${muted}, eventName: ${eventName}, eventType: ${eventType}`);
       }
     };
 
@@ -213,6 +246,10 @@ const CountdownTimer = ({
         tickingRef.current.pause();
         tickingRef.current.volume = 0;
       }
+      if (customTickingRef.current) {
+        customTickingRef.current.pause();
+        customTickingRef.current.volume = 0;
+      }
     };
   // Only rerun if these change
   }, [birthDate, targetDate, startDate, eventName, eventId, eventType, ticking, muted]);
@@ -233,24 +270,32 @@ const CountdownTimer = ({
     prevMinuteRef.current = currentMinute;
   }, [timeRemaining.minutes, muted]);
 
-  // Set didMountRef.current to true after first render (unchanged)
+  // Set didMountRef.current to true after first render
   useEffect(() => {
     didMountRef.current = true;
     hasPlayedMinuteTickRef.current = false;
     
-    // Debug audio element creation
-    console.log(`CountdownTimer mounted - tickingRef: ${!!tickingRef.current}, eventName: ${eventName}, eventType: ${eventType}`);
+    console.log(`CountdownTimer mounted - eventName: ${eventName}, eventType: ${eventType}`);
+    console.log(`tickingRef: ${!!tickingRef.current}, customTickingRef: ${!!customTickingRef.current}`);
+    
+    // Add event listeners to debug audio loading
     if (tickingRef.current) {
-      tickingRef.current.addEventListener('loadstart', () => console.log('Ticking audio loadstart'));
-      tickingRef.current.addEventListener('canplay', () => console.log('Ticking audio canplay'));
-      tickingRef.current.addEventListener('error', (e) => console.error('Ticking audio error:', e));
+      tickingRef.current.addEventListener('loadstart', () => console.log('Life countdown audio loadstart'));
+      tickingRef.current.addEventListener('canplay', () => console.log('Life countdown audio canplay'));
+      tickingRef.current.addEventListener('error', (e) => console.error('Life countdown audio error:', e));
+    }
+    
+    if (customTickingRef.current) {
+      customTickingRef.current.addEventListener('loadstart', () => console.log('Custom event audio loadstart'));
+      customTickingRef.current.addEventListener('canplay', () => console.log('Custom event audio canplay'));
+      customTickingRef.current.addEventListener('error', (e) => console.error('Custom event audio error:', e));
     }
   }, [eventName, eventType]);
 
-  // Mute/unmute all sounds (unchanged)
+  // Mute/unmute all sounds
   useEffect(() => {
     if (minuteTickRef.current) minuteTickRef.current.muted = muted;
-    // Don't mute tickingRef here as we control it via volume in the tick function
+    // Don't mute tickingRef or customTickingRef here as we control them via volume in the tick function
   }, [muted]);
 
   // Helper to check if this is a life countdown (should keep counting after 0)
@@ -267,19 +312,21 @@ const CountdownTimer = ({
         ref={tickingRef}
         src="/clockSecondsTicking.mp3"
         preload="auto"
+        loop
         style={{ display: 'none' }}
-        onLoadStart={() => console.log('Ticking audio loadstart')}
-        onCanPlay={() => console.log('Ticking audio canplay')}
-        onError={(e) => console.error('Ticking audio error:', e)}
+      />
+      <audio
+        ref={customTickingRef}
+        src="/clockSecondsTicking.mp3"
+        preload="auto"
+        loop
+        style={{ display: 'none' }}
       />
       <audio
         ref={minuteTickRef}
         src="/clockMinuteTick.mp3"
         preload="auto"
         style={{ display: 'none' }}
-        onLoadStart={() => console.log('Minute tick audio loadstart')}
-        onCanPlay={() => console.log('Minute tick audio canplay')}
-        onError={(e) => console.error('Minute tick audio error:', e)}
       />
       <Card className="flex flex-col w-full h-full bg-card">
         <CardContent className="flex-1 w-full flex flex-col justify-center items-center p-6">
