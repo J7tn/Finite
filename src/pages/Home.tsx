@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { t } from '@/services/translation';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import { notificationService } from '@/services/notificationService';
 
 interface Event {
   id: string;
@@ -84,6 +85,16 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
     }
     setLocalStorageItem('motto', motto);
     setLocalStorageItem('lifeNotificationFrequency', notificationFrequency);
+    
+    // Start reminders with current settings when they change
+    const reminderSettings = {
+      frequency: notificationFrequency as 'daily' | 'weekly' | 'monthly' | 'yearly',
+      message: motto,
+      enabled: true
+    };
+    
+    // Start the reminder system
+    notificationService.startReminders(reminderSettings, birthDate, 80);
   }, [birthDate, motto, notificationFrequency]);
 
   useEffect(() => {
@@ -242,7 +253,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
 
         {/* Life Countdown Edit Dialog */}
         <Dialog open={isEditingLife} onOpenChange={setIsEditingLife}>
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
             <div className="space-y-4">
               <h2 className="text-lg font-semibold">{t('lifeCountdown.edit')}</h2>
               <div className="space-y-2">
@@ -334,6 +345,17 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
                     setBirthDate(tempBirthDate);
                     setMotto(tempMotto);
                     setNotificationFrequency(tempNotificationFrequency);
+                    
+                    // Start reminders based on the selected frequency
+                    const reminderSettings = {
+                      frequency: tempNotificationFrequency as 'daily' | 'weekly' | 'monthly' | 'yearly',
+                      message: tempMotto,
+                      enabled: true
+                    };
+                    
+                    // Start the reminder system
+                    notificationService.startReminders(reminderSettings, tempBirthDate, 80);
+                    
                     setIsEditingLife(false);
                   }}
                 >
@@ -477,6 +499,26 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
                     }}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label>{t('lifeCountdown.reminderFrequency')}</Label>
+                  <Select
+                    value={editingEvent.notificationFrequency || 'monthly'}
+                    onValueChange={(value) => {
+                      if (editingEvent) {
+                        setEditingEvent({ ...editingEvent, notificationFrequency: value });
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('lifeCountdown.reminderFrequency')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">{t('lifeCountdown.frequencies.daily')}</SelectItem>
+                      <SelectItem value="monthly">{t('lifeCountdown.frequencies.monthly')}</SelectItem>
+                      <SelectItem value="yearly">{t('lifeCountdown.frequencies.yearly')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div className="flex justify-end gap-4">
                   <Button
                     variant="outline"
@@ -492,6 +534,19 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
                         );
                         setEvents(updatedEvents);
                         localStorage.setItem('events', JSON.stringify(updatedEvents));
+                        
+                        // Start reminders for custom life countdown events
+                        if (editingEvent.type === 'lifeCountdown') {
+                          const reminderSettings = {
+                            frequency: editingEvent.notificationFrequency as 'daily' | 'weekly' | 'monthly' | 'yearly',
+                            message: editingEvent.motto,
+                            enabled: true
+                          };
+                          
+                          // Start the reminder system for this custom event
+                          notificationService.startReminders(reminderSettings, editingEvent.date, editingEvent.lifeExpectancy || 80);
+                        }
+                        
                         setEditingEvent(null);
                       }
                     }}

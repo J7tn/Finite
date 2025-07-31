@@ -4,38 +4,6 @@
     "darkMode": "Dark Mode",
     "lightMode": "Light Mode"
   },
-  "onboarding": {
-    "welcome": {
-      "title": "Welcome.",
-      "subtitle": "Time is the most honest thing we have. It doesn't lie, pause, or negotiate. And yours is ticking.",
-      "timeMessage": "This app isn't here to alarm you—it's here to awaken you."
-    },
-    "reality": {
-      "title": "The Reality",
-      "subtitle": "Each minute slipping by is one you'll never touch again. So what will you do with what's left?",
-      "daysMessage": "days in an average human life"
-    },
-    "truth": {
-      "title": "The Truth",
-      "subtitle": "Every single day, people lie to themselves—'I'll do it tomorrow.' But tomorrow is not promised. You've been sold a lie: That there's always more time.",
-      "lieMessage": "The truth is harsh and unyielding. Every second you wait is gone forever."
-    },
-    "action": {
-      "title": "Live Intentionally",
-      "subtitle": "This isn't about pressure. It's about clarity. Because at the end, only two questions will matter: Did you pay attention? Did it mean something?",
-      "liveIntentionally": "Live Intentionally",
-      "loveDeliberately": "Love Deliberately",
-      "chooseBoldly": "Choose Boldly"
-    },
-    "begin": {
-      "title": "Time Doesn't Wait",
-      "message": "Right now, someone else is doing the work you've delayed. They're building the life you're still dreaming about.",
-      "subtitle": "Whatever brought you here, this app is a mirror. A timer. A wake-up call. It doesn't just count down life—it counts what you do with it."
-    },
-    "skip": "Skip",
-    "next": "Next",
-    "start": "Begin Now"
-  },
   "settings": {
     "title": "Settings",
     "language": "Language",

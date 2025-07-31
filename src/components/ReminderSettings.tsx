@@ -17,7 +17,7 @@ interface ReminderSettingsProps {
 }
 
 export interface ReminderSettings {
-  frequency: 'daily' | 'weekly' | 'monthly';
+  frequency: 'daily' | 'weekly' | 'monthly' | 'yearly';
   message: string;
   enabled: boolean;
 }

@@ -36,7 +36,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, fadeInAudio
   }, [visibleCount]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
         <CardContent className="p-8">
           <div className="space-y-8 text-center h-[60vh] flex flex-col justify-center relative">
@@ -47,7 +47,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, fadeInAudio
                   initial={{ opacity: 0 }}
                   animate={{ opacity: visibleCount > idx ? 1 : 0 }}
                   transition={{ duration: 1.5 }}
-                  className="text-lg italic text-gray-700 dark:text-gray-300 leading-relaxed mb-2 min-h-[2.5rem]"
+                  className="text-lg italic text-gray-700 leading-relaxed mb-2 min-h-[2.5rem]"
                   style={{ minHeight: '2.5rem' }}
                 >
                   {sentence}
@@ -65,7 +65,7 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, fadeInAudio
                     transition={{ duration: 3.0 }}
                     style={{ position: 'absolute', left: 0, right: 0, top: 0, display: 'flex', justifyContent: 'center' }}
                   >
-                    <Button onClick={onComplete} variant="default" className="px-8 py-2 text-lg bg-white text-black">
+                    <Button onClick={onComplete} variant="default" className="px-8 py-2 text-lg bg-gray-800 text-white hover:bg-gray-700">
                       Begin
                     </Button>
                   </motion.div>
