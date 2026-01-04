@@ -1,9 +1,9 @@
 import React, { Suspense, lazy, useEffect, useState, useRef } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Device } from '@capacitor/device';
-import { measurePerformance } from '@/utils/performance';
-import { initializeLanguage } from './services/translation';
+import { TranslationProvider } from './contexts/TranslationContext';
 import OnboardingFlow from './components/OnboardingFlow';
+import MotivationalSplash from './components/MotivationalSplash';
 import { SplashScreen } from '@capacitor/splash-screen';
 import splashImg from './splash.png';
 import { StatusBar, Style } from '@capacitor/status-bar';
@@ -37,65 +37,62 @@ const ErrorFallback = ({ error }: { error: Error }) => (
 );
 
 const App: React.FC = () => {
-  const endMeasure = measurePerformance('App Initial Render');
   const [showOnboarding, setShowOnboarding] = useState<boolean | null>(null);
-  const [isLanguageInitialized, setIsLanguageInitialized] = useState(false);
+  const [showMotivationalSplash, setShowMotivationalSplash] = useState(false);
   const [splashVisible, setSplashVisible] = useState(true);
   const [splashFade, setSplashFade] = useState(false);
   const [isMuted, setIsMuted] = useState(() => {
     const stored = localStorage.getItem('isMuted');
     return stored === 'true';
   });
+  const [volume, setVolume] = useState(() => {
+    const stored = localStorage.getItem('volume');
+    let volumeValue = 0.25; // Default to 25%
+
+    if (stored) {
+      const storedValue = parseFloat(stored);
+      // If user had old high volume (like 0.6, or 0.1), migrate to 25%
+      if (storedValue > 0.25) {
+        volumeValue = 0.25;
+        localStorage.setItem('volume', '0.25');
+      } else {
+        volumeValue = storedValue;
+      }
+    } else {
+      // No stored value, use default 25%
+      localStorage.setItem('volume', '0.25');
+    }
+
+    return volumeValue;
+  });
+
+  const [countdownVolume, setCountdownVolume] = useState(() => {
+    const stored = localStorage.getItem('countdownVolume');
+    let volumeValue = 0.1; // Default to 10%
+
+    if (stored) {
+      const storedValue = parseFloat(stored);
+      // Keep user's existing volume preference
+      volumeValue = storedValue;
+    } else {
+      // No stored value, use default 10%
+      localStorage.setItem('countdownVolume', '0.1');
+    }
+
+    return volumeValue;
+  });
+  const [onboardingCheckTrigger, setOnboardingCheckTrigger] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   const [audioStarted, setAudioStarted] = useState(false);
   const [hasError, setHasError] = useState(false);
 
-  useEffect(() => {
-    const setLanguage = async () => {
-      try {
-        const lang = await Device.getLanguageCode();
-        console.log('Device language detected:', lang.value);
-        
-        const supportedLanguages = ['en', 'es', 'fr', 'de', 'zh', 'ja', 'ko', 'pt', 'it'];
-        const languageToSet = supportedLanguages.includes(lang.value) ? lang.value : 'en';
-        console.log('Setting language to:', languageToSet);
-        
-        await initializeLanguage(languageToSet);
-        console.log('Language initialization complete');
-        setIsLanguageInitialized(true);
-      } catch (error) {
-        console.error('Failed to get device language, trying browser language.', error);
-        try {
-          // Fallback to browser language
-          const browserLang = navigator.language.split('-')[0];
-          console.log('Browser language detected:', browserLang);
-          
-          const supportedLanguages = ['en', 'es', 'fr', 'de', 'zh', 'ja', 'ko', 'pt', 'it'];
-          const languageToSet = supportedLanguages.includes(browserLang) ? browserLang : 'en';
-          console.log('Setting language to (fallback):', languageToSet);
-          
-          await initializeLanguage(languageToSet);
-          console.log('Language initialization complete (fallback)');
-          setIsLanguageInitialized(true);
-        } catch (fallbackError) {
-          console.error('Failed to get browser language, defaulting to English.', fallbackError);
-          await initializeLanguage('en');
-          setIsLanguageInitialized(true);
-        }
-      }
-      endMeasure();
-    };
-
-    setLanguage();
-  }, []);
-
   // Splash fade logic
   useEffect(() => {
-    if (isLanguageInitialized && showOnboarding !== null) {
+    if (showOnboarding !== null) {
       // Wait a bit, then fade out splash
       setTimeout(() => setSplashFade(true), 400); // Start fade after 400ms
     }
-  }, [isLanguageInitialized, showOnboarding]);
+  }, [showOnboarding]);
 
   // Remove splash overlay after fade-out transition ends
   const handleSplashTransitionEnd = () => {
@@ -106,24 +103,58 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    if (isLanguageInitialized) {
-      // Check if user has seen onboarding before
-      const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
-      setShowOnboarding(hasSeenOnboarding !== 'true');
+    // Check if user has seen onboarding before
+    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+    const shouldShowOnboarding = hasSeenOnboarding !== 'true';
+
+    if (shouldShowOnboarding) {
+      setShowOnboarding(true);
+      setShowMotivationalSplash(false);
+    } else {
+      setShowOnboarding(false);
+      setShowMotivationalSplash(true); // Show motivational splash for returning users
     }
-  }, [isLanguageInitialized]);
+  }, [onboardingCheckTrigger]);
+
+  // Initial onboarding check on mount
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+    const shouldShowOnboarding = hasSeenOnboarding !== 'true';
+
+    if (shouldShowOnboarding) {
+      setShowOnboarding(true);
+      setShowMotivationalSplash(false);
+    } else {
+      setShowOnboarding(false);
+      setShowMotivationalSplash(true);
+    }
+  }, []); // Empty dependency array - runs once on mount
+
+  // Global function for resetting onboarding (used by settings)
+  useEffect(() => {
+    (window as any).resetOnboarding = () => {
+      localStorage.removeItem('hasSeenOnboarding');
+      localStorage.removeItem('showLifeCountdownEdit');
+      setOnboardingCheckTrigger(prev => prev + 1);
+    };
+  }, []);
 
   const handleOnboardingComplete = () => {
     localStorage.setItem('hasSeenOnboarding', 'true');
     localStorage.setItem('showLifeCountdownEdit', 'true'); // trigger edit dialog for new users
     setShowOnboarding(false);
+    setShowMotivationalSplash(true); // Show motivational splash after onboarding
   };
 
-  // Start audio after first user gesture (required by browsers)
+  const handleMotivationalSplashComplete = () => {
+    setShowMotivationalSplash(false);
+  };
+
+  // Start audio after first user gesture (required by browsers) - only if on home page
   useEffect(() => {
     const startAudio = () => {
-      if (!audioStarted && audioRef.current) {
-        audioRef.current.volume = 0.6;
+      if (!audioStarted && audioRef.current && showOnboarding === false && showMotivationalSplash === false) {
+        audioRef.current.volume = volume;
         audioRef.current.play().catch((error) => {
           console.warn('Audio playback failed:', error);
         });
@@ -132,7 +163,14 @@ const App: React.FC = () => {
     };
     window.addEventListener('pointerdown', startAudio, { once: true });
     return () => window.removeEventListener('pointerdown', startAudio);
-  }, [audioStarted]);
+  }, [audioStarted, showOnboarding, showMotivationalSplash, volume]);
+
+  // Set initial volume on audio element when it becomes available
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [audioRef.current, volume]);
 
   // Mute/unmute logic
   useEffect(() => {
@@ -142,18 +180,58 @@ const App: React.FC = () => {
     localStorage.setItem('isMuted', isMuted ? 'true' : 'false');
   }, [isMuted]);
 
-  // Fade in audio volume from 0 to 0.6 over 2 seconds
+  // Music volume control logic
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+    // Only save to localStorage if volume is different from default (25%)
+    if (volume !== 0.25) {
+      localStorage.setItem('volume', volume.toString());
+    } else {
+      localStorage.removeItem('volume'); // Remove stored value when at default
+    }
+  }, [volume]);
+
+  // Countdown volume persistence
+  useEffect(() => {
+    // Only save to localStorage if volume is different from default (10%)
+    if (countdownVolume !== 0.1) {
+      localStorage.setItem('countdownVolume', countdownVolume.toString());
+    } else {
+      localStorage.removeItem('countdownVolume'); // Remove stored value when at default
+    }
+  }, [countdownVolume]);
+
+  // Control audio playback based on current page
+  useEffect(() => {
+    if (audioRef.current) {
+      const shouldPlayAudio = showOnboarding === false && showMotivationalSplash === false;
+
+      if (shouldPlayAudio && !isMuted) {
+        audioRef.current.volume = volume;
+        audioRef.current.play().catch((error) => {
+          console.warn('Audio playback failed:', error);
+        });
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [showOnboarding, showMotivationalSplash, isMuted, volume]);
+
+  // Fade in audio volume from 0 to target volume over 2 seconds
   const fadeInAudio = () => {
     if (audioRef.current) {
       audioRef.current.volume = 0;
-      const targetVolume = 0.6;
+      const targetVolume = 0.25; // Always fade to 25%
       const duration = 2000; // ms
       const steps = 20;
       const stepTime = duration / steps;
       let currentStep = 0;
       const fade = () => {
         currentStep++;
-        audioRef.current!.volume = Math.min(targetVolume, (currentStep / steps) * targetVolume);
+        const newVolume = Math.min(targetVolume, (currentStep / steps) * targetVolume);
+        audioRef.current!.volume = newVolume;
         if (currentStep < steps) {
           setTimeout(fade, stepTime);
         }
@@ -178,18 +256,13 @@ const App: React.FC = () => {
     return <ErrorFallback error={new Error('Application error')} />;
   }
 
-  // Show loading while language is being initialized
-  if (!isLanguageInitialized) {
+  // Show loading while determining app state
+  if (showOnboarding === null) {
     return <LoadingFallback />;
   }
 
-  // Show onboarding for first-time users
-  if (showOnboarding) {
-    return <OnboardingFlow onComplete={handleOnboardingComplete} fadeInAudio={fadeInAudio} />;
-  }
-
   return (
-    <>
+    <TranslationProvider>
       {/* Black status bar background */}
       <div style={{
         position: 'fixed',
@@ -201,6 +274,37 @@ const App: React.FC = () => {
         zIndex: 9999,
         pointerEvents: 'none',
       }} />
+
+      {/* Onboarding overlay when needed - FULL SCREEN */}
+      {showOnboarding && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: 10000,
+          background: 'var(--background)'
+        }}>
+          <OnboardingFlow onComplete={handleOnboardingComplete} fadeInAudio={fadeInAudio} />
+        </div>
+      )}
+
+      {/* Motivational splash overlay for returning users */}
+      {showMotivationalSplash && !showOnboarding && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: 10000,
+          background: 'var(--background)'
+        }}>
+          <MotivationalSplash onComplete={handleMotivationalSplashComplete} />
+        </div>
+      )}
+
       {/* Ambience audio (debug: visible, with error/play handlers) */}
       <audio
         ref={audioRef}
@@ -209,39 +313,43 @@ const App: React.FC = () => {
         preload="auto"
         style={{ display: 'none' }}
         onError={(e) => console.error('Audio failed to load or play:', e)}
-        onPlay={() => console.log('Audio playback started')}
       />
-      {/* Main app content */}
-      <Suspense fallback={<LoadingFallback />}>
-        <Routes>
-          <Route path="/" element={<Home isMuted={isMuted} setIsMuted={setIsMuted} />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/settings" element={<Settings />} />
-        </Routes>
-      </Suspense>
-      {splashVisible && (
-        <div
-          className={`splash-overlay${splashFade ? ' splash-fade-out' : ''}`}
-          onTransitionEnd={handleSplashTransitionEnd}
-        >
-          <img
-            src={splashImg}
-            alt="Splash"
-            style={{
-              maxWidth: '80vw',
-              maxHeight: '80vh',
-              objectFit: 'contain',
-              borderRadius: 24,
-              boxShadow: '0 4px 32px rgba(0,0,0,0.08)',
-            }}
-            onError={(e) => {
-              console.error('Splash image failed to load:', e);
-              setSplashVisible(false);
-            }}
-          />
-        </div>
+
+      {/* Main app content - only show when neither onboarding nor motivational splash, and onboarding state is determined */}
+      {showOnboarding === false && showMotivationalSplash === false && (
+        <>
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
+              <Route path="/" element={<Home isMuted={isMuted} setIsMuted={setIsMuted} volume={volume} setVolume={setVolume} countdownVolume={countdownVolume} setCountdownVolume={setCountdownVolume} />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/settings" element={<Settings volume={volume} setVolume={setVolume} countdownVolume={countdownVolume} setCountdownVolume={setCountdownVolume} />} />
+            </Routes>
+          </Suspense>
+          {splashVisible && (
+            <div
+              className={`splash-overlay${splashFade ? ' splash-fade-out' : ''}`}
+              onTransitionEnd={handleSplashTransitionEnd}
+            >
+              <img
+                src={splashImg}
+                alt="Splash"
+                style={{
+                  maxWidth: '80vw',
+                  maxHeight: '80vh',
+                  objectFit: 'contain',
+                  borderRadius: 24,
+                  boxShadow: '0 4px 32px rgba(0,0,0,0.08)',
+                }}
+                onError={(e) => {
+                  console.error('Splash image failed to load:', e);
+                  setSplashVisible(false);
+                }}
+              />
+            </div>
+          )}
+        </>
       )}
-    </>
+    </TranslationProvider>
   );
 };
 

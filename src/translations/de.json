@@ -8,7 +8,23 @@
     "title": "Einstellungen",
     "language": "Sprache",
     "selectLanguage": "Sprache auswählen",
-    "saveChanges": "Änderungen speichern"
+    "saveChanges": "Änderungen speichern",
+    "needSuggestions": "Brauchen Sie Vorschläge?",
+    "contact": "Kontakt",
+    "contactDescription": "Wenn Sie Fragen, Kommentare oder Bedenken haben, zögern Sie nicht, mich zu kontaktieren unter",
+    "audioVolume": "Audio Lautstärke",
+    "volumeLevel": "Lautstärke",
+    "countdownVolume": "Countdown-Töne Lautstärke",
+    "countdownVolumeLevel": "Countdown Lautstärke"
+  },
+  "onboarding": {
+    "messages": [
+      "Das Leben ist endlich und wir sollten jeden Moment unseres Lebens bewusst leben.",
+      "Manchmal vergessen wir und stolpern auf dem Weg.",
+      "Wenn Sie das tun, verwenden Sie diese App als Erinnerung."
+    ],
+    "begin": "Beginnen",
+    "tapToContinue": "Tippen zum Fortfahren..."
   },
   "lifeCountdown": {
     "title": "Lebens-Countdown",
@@ -50,6 +66,25 @@
     },
     "lifeExpectancy": "Lebenserwartung (Jahre)",
     "errorSameDay": "Das Ereignisdatum kann nicht heute sein. Bitte wählen Sie ein zukünftiges Datum.",
+    "timeRemaining": "Verbleibende Zeit",
+    "lifespanNote": "Basierend auf der durchschnittlichen globalen Lebenserwartung von 73,5 Jahren.",
+    "motivationalMessages": [
+      "Jeder Moment ist ein Geschenk. Lass ihn zählen.",
+      "Ihre Zeit ist kostbar. Nutzen Sie sie weise.",
+      "Das Leben ist endlich. Leben Sie es voll aus.",
+      "Heute ist eine Seite Ihrer Geschichte. Schreiben Sie sie gut.",
+      "Die Uhr tickt. Was werden Sie mit diesem Moment tun?",
+      "Umarmen Sie die Gegenwart. Gestalten Sie Ihre Zukunft.",
+      "Die Zeit vergeht. Machen Sie sie bedeutungsvoll.",
+      "Ihre Reise zählt. Machen Sie den nächsten Schritt.",
+      "Leben Sie mit Absicht. Lieben Sie mit Leidenschaft.",
+      "Jede Sekunde zählt. Machen Sie sie außergewöhnlich.",
+      "Ihre Zeit ist Ihr wertvollster Vermögenswert.",
+      "Machen Sie heute bemerkenswert.",
+      "Das Leben ist das, was Sie daraus machen. Machen Sie es schön.",
+      "Jeder Tag ist eine neue Gelegenheit.",
+      "Schätzen Sie die Zeit, die Sie haben."
+    ],
     "suggestions": {
       "title": "Brauchen Sie Inspiration?",
       "subtitle": "Hier sind einige Ideen für Ihren Countdown:",

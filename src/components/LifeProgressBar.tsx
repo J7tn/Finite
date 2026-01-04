@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Progress } from "@/components/ui/progress";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 interface LifeProgressBarProps {
   birthDate: Date;
@@ -7,7 +8,8 @@ interface LifeProgressBarProps {
   progressLabel?: string; // new prop for editable label
 }
 
-export function LifeProgressBar({ birthDate, expectedLifespan = 80, progressLabel = "Life Progress" }: LifeProgressBarProps) {
+export function LifeProgressBar({ birthDate, expectedLifespan = 80, progressLabel }: LifeProgressBarProps) {
+  const { t } = useTranslation();
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export function LifeProgressBar({ birthDate, expectedLifespan = 80, progressLabe
   return (
     <div className="w-full space-y-2">
       <div className="flex justify-between items-center">
-        <span className="text-sm font-medium">{progressLabel}</span>
+        <span className="text-sm font-medium">{progressLabel || t("events.lifeProgress")}</span>
         <span className="text-sm font-medium">{progress.toFixed(1)}%</span>
       </div>
       <Progress value={progress} className="h-2" />

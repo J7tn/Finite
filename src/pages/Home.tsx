@@ -10,8 +10,8 @@ import ExpandableBlock from '@/components/ExpandableBlock';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { t } from '@/services/translation';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { v4 as uuidv4 } from 'uuid';
 import { notificationService } from '@/services/notificationService';
 
@@ -46,10 +46,15 @@ const setLocalStorageItem = (key: string, value: any) => {
 interface HomeProps {
   isMuted: boolean;
   setIsMuted: (muted: boolean) => void;
+  volume: number;
+  setVolume: (volume: number) => void;
+  countdownVolume: number;
+  setCountdownVolume: (volume: number) => void;
 }
 
-const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
+const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, countdownVolume, setCountdownVolume }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [birthDate, setBirthDate] = useState<Date>(() => {
     const savedDate = getLocalStorageItem('birthDate', null);
     const date = savedDate ? new Date(savedDate) : new Date(1990, 0, 1);
@@ -221,6 +226,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
             setIsEditingLife(true);
           }}
           isMuted={isMuted}
+          countdownVolume={countdownVolume}
         />
 
         {/* Custom Event Blocks */}
@@ -238,6 +244,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted }) => {
             onDelete={() => handleDeleteEvent(event.id)}
             isMuted={isMuted}
             eventId={event.id}
+            countdownVolume={countdownVolume}
           />
         ))}
 

@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { LifeProgressBar } from "./LifeProgressBar";
 import { notificationService } from "@/services/notificationService";
+import { useTranslation } from "@/contexts/TranslationContext";
 
 interface CountdownTimerProps {
   birthDate?: Date;
@@ -18,6 +19,7 @@ interface CountdownTimerProps {
   ticking?: boolean; // Whether to play ticking sound
   showLifeExpectancyNote?: boolean; // Whether to show the lifespan note
   muted?: boolean; // Whether to mute all sounds
+  volume?: number; // Volume for countdown sounds (0.0 to 1.0)
 }
 
 const CountdownTimer = ({
@@ -34,7 +36,9 @@ const CountdownTimer = ({
   ticking = false,
   showLifeExpectancyNote = true,
   muted = false,
+  volume = 0.1,
 }: CountdownTimerProps) => {
+  const { t } = useTranslation();
   const [timeRemaining, setTimeRemaining] = useState({
     years: 0,
     months: 0,
@@ -57,12 +61,11 @@ const CountdownTimer = ({
   const secondTickTwoRef = useRef<HTMLAudioElement>(null);
   const prevSecondRef = useRef<number | null>(null);
   const hasPlayedSecondTickRef = useRef(false);
-  const useSecondTickOneRef = useRef(true); // Track which sound to play next
   
   // Fade management for tick sounds
   const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const fadeDuration = 150; // Fade duration in milliseconds
-  const targetVolume = 0.2; // Target volume for tick sounds
+  const targetVolume = volume; // Target volume for tick sounds
 
   // Fade in function for tick sounds
   const fadeInTick = (audioRef: React.RefObject<HTMLAudioElement>) => {
@@ -262,24 +265,24 @@ const CountdownTimer = ({
     if (didMountRef.current && prevMinuteRef.current !== null && currentMinute !== prevMinuteRef.current) {
       if (hasPlayedMinuteTickRef.current && !muted) {
         minuteTickRef.current.currentTime = 0;
-        minuteTickRef.current.volume = 0.3;
+        minuteTickRef.current.volume = volume;
         minuteTickRef.current.play().catch(() => {});
       } else {
         hasPlayedMinuteTickRef.current = true;
       }
     }
     prevMinuteRef.current = currentMinute;
-  }, [timeRemaining.minutes, muted]);
+  }, [timeRemaining.minutes, muted, volume]);
 
-  // Play second tick sound when second changes (similar to minute tick)
+  // Play second tick sound when second changes (plays every second)
   useEffect(() => {
-    if (!secondTickOneRef.current || !secondTickTwoRef.current || !ticking) return;
+    if (!secondTickOneRef.current || !ticking) return;
     const currentSecond = timeRemaining.seconds;
     if (didMountRef.current && prevSecondRef.current !== null && currentSecond !== prevSecondRef.current) {
       if (hasPlayedSecondTickRef.current && !muted) {
-        // Alternate between the two tick sounds
-        const currentTickRef = useSecondTickOneRef.current ? secondTickOneRef : secondTickTwoRef;
-        
+        // Play tick sound every second using the first sound file
+        const currentTickRef = secondTickOneRef;
+
         // Reset and start the audio with immediate volume
         currentTickRef.current!.currentTime = 0;
         currentTickRef.current!.volume = targetVolume; // Set volume immediately
@@ -289,15 +292,12 @@ const CountdownTimer = ({
             fadeOutTick(currentTickRef);
           }, 600); // Fade out 400ms before next tick
         }).catch(() => {});
-        
-        // Switch to the other sound for next time
-        useSecondTickOneRef.current = !useSecondTickOneRef.current;
       } else {
         hasPlayedSecondTickRef.current = true;
       }
     }
     prevSecondRef.current = currentSecond;
-  }, [timeRemaining.seconds, ticking, muted]);
+  }, [timeRemaining.seconds, ticking, muted, volume]);
 
   // Set didMountRef.current to true after first render
   useEffect(() => {
@@ -314,11 +314,34 @@ const CountdownTimer = ({
     };
   }, []);
 
+  // Update volume for all sounds when volume prop changes
+  useEffect(() => {
+    // Use a small delay to ensure audio elements are loaded
+    const updateVolumes = () => {
+      if (minuteTickRef.current) {
+        minuteTickRef.current.volume = volume;
+      }
+      if (secondTickOneRef.current) {
+        secondTickOneRef.current.volume = volume;
+      }
+      if (secondTickTwoRef.current) {
+        secondTickTwoRef.current.volume = volume;
+      }
+    };
+    
+    // Update immediately
+    updateVolumes();
+    
+    // Also update after a short delay to catch any late-loading audio elements
+    const timeoutId = setTimeout(updateVolumes, 100);
+    
+    return () => clearTimeout(timeoutId);
+  }, [volume]);
+
   // Mute/unmute all sounds
   useEffect(() => {
     if (minuteTickRef.current) minuteTickRef.current.muted = muted;
     if (secondTickOneRef.current) secondTickOneRef.current.muted = muted;
-    if (secondTickTwoRef.current) secondTickTwoRef.current.muted = muted;
   }, [muted]);
 
   // Cleanup fade intervals when ticking is disabled
@@ -332,10 +355,6 @@ const CountdownTimer = ({
       if (secondTickOneRef.current) {
         secondTickOneRef.current.pause();
         secondTickOneRef.current.volume = 0;
-      }
-      if (secondTickTwoRef.current) {
-        secondTickTwoRef.current.pause();
-        secondTickTwoRef.current.volume = 0;
       }
     }
   }, [ticking]);
@@ -371,17 +390,17 @@ const CountdownTimer = ({
       <Card className="flex flex-col w-full h-full bg-card">
         <CardContent className="flex-1 w-full flex flex-col justify-center items-center p-6">
           <h2 className="text-2xl font-bold text-center mb-6 text-foreground font-mono">
-            {expired && !isLifeCountdown ? (eventName ? `${eventName} has arrived!` : "Event has arrived!") : "Time Remaining"}
+            {expired && !isLifeCountdown ? (eventName ? `${eventName} has arrived!` : "Event has arrived!") : t("events.timeRemaining")}
           </h2>
 
           {!expired || isLifeCountdown ? (
             <div className="grid grid-cols-3 gap-4 mb-6">
-              <TimeUnit value={timeRemaining.years} label="Years" isNegative={timeRemaining.isNegative} />
-              <TimeUnit value={timeRemaining.months} label="Months" isNegative={timeRemaining.isNegative} />
-              <TimeUnit value={timeRemaining.days} label="Days" isNegative={timeRemaining.isNegative} />
-              <TimeUnit value={timeRemaining.hours} label="Hours" isNegative={timeRemaining.isNegative} />
-              <TimeUnit value={timeRemaining.minutes} label="Minutes" isNegative={timeRemaining.isNegative} />
-              <TimeUnit value={timeRemaining.seconds} label="Seconds" highlight isNegative={timeRemaining.isNegative} />
+              <TimeUnit value={timeRemaining.years} label={t("common.years")} isNegative={timeRemaining.isNegative} />
+              <TimeUnit value={timeRemaining.months} label={t("common.months")} isNegative={timeRemaining.isNegative} />
+              <TimeUnit value={timeRemaining.days} label={t("common.days")} isNegative={timeRemaining.isNegative} />
+              <TimeUnit value={timeRemaining.hours} label={t("common.hours")} isNegative={timeRemaining.isNegative} />
+              <TimeUnit value={timeRemaining.minutes} label={t("common.minutes")} isNegative={timeRemaining.isNegative} />
+              <TimeUnit value={timeRemaining.seconds} label={t("common.seconds")} highlight isNegative={timeRemaining.isNegative} />
             </div>
           ) : (
             <div className="text-xl text-green-600 dark:text-green-400 font-semibold mb-6">
@@ -396,7 +415,7 @@ const CountdownTimer = ({
           />
           {isLifeCountdown && showLifeExpectancyNote && (
             <div className="text-xs italic text-muted-foreground mt-2 text-center">
-              Based on the average global lifespan of 73.5 years.
+              {t("events.lifespanNote")}
             </div>
           )}
 

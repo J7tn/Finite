@@ -8,7 +8,23 @@
     "title": "Configuración",
     "language": "Idioma",
     "selectLanguage": "Seleccionar Idioma",
-    "saveChanges": "Guardar Cambios"
+    "saveChanges": "Guardar Cambios",
+    "needSuggestions": "¿Necesitas sugerencias?",
+    "contact": "Contacto",
+    "contactDescription": "Si tienes alguna pregunta, comentario o inquietud, no dudes en contactarme en",
+    "audioVolume": "Volumen de Audio",
+    "volumeLevel": "Nivel de Volumen",
+    "countdownVolume": "Volumen de Sonidos de Cuenta Regresiva",
+    "countdownVolumeLevel": "Nivel de Volumen de Cuenta Regresiva"
+  },
+  "onboarding": {
+    "messages": [
+      "La vida es finita y debemos vivir cada momento de nuestras vidas intencionalmente.",
+      "A veces olvidamos y tropezamos en el camino.",
+      "Cuando lo hagas, usa esta app como recordatorio."
+    ],
+    "begin": "Comenzar",
+    "tapToContinue": "Toca para continuar..."
   },
   "lifeCountdown": {
     "title": "Cuenta Regresiva de Vida",
@@ -50,6 +66,25 @@
     },
     "lifeExpectancy": "Esperanza de Vida (años)",
     "errorSameDay": "La fecha del evento no puede ser hoy. Por favor selecciona una fecha futura.",
+    "timeRemaining": "Tiempo Restante",
+    "lifespanNote": "Basado en la esperanza de vida global promedio de 73.5 años.",
+    "motivationalMessages": [
+      "Cada momento es un regalo. Haz que cuente.",
+      "Tu tiempo es precioso. Úsalo sabiamente.",
+      "La vida es finita. Vívela plenamente.",
+      "Hoy es una página de tu historia. Escríbela bien.",
+      "El reloj está ticking. ¿Qué harás con este momento?",
+      "Abraza el presente. Da forma a tu futuro.",
+      "El tiempo vuela. Hazlo significativo.",
+      "Tu viaje importa. Da el siguiente paso.",
+      "Vive con propósito. Ama con pasión.",
+      "Cada segundo cuenta. Hazlos extraordinarios.",
+      "Tu tiempo es tu activo más valioso.",
+      "Haz que hoy sea notable.",
+      "La vida es lo que haces de ella. Hazla hermosa.",
+      "Cada día es una nueva oportunidad.",
+      "Valora el tiempo que tienes."
+    ],
     "suggestions": {
       "title": "¿Necesitas inspiración?",
       "subtitle": "Aquí tienes algunas ideas para tu cuenta regresiva:",

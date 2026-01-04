@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Save, X, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
+import { Slider } from '@/components/ui/slider';
+import { Save, X, ChevronDown, ChevronUp, Volume2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { setLanguage, getCurrentLanguage } from '@/services/translation';
-import { t } from '@/services/translation';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 type Language = 'en' | 'es' | 'fr' | 'de' | 'zh' | 'ja' | 'ko' | 'pt' | 'it';
 
@@ -21,10 +21,23 @@ const languageNames: Record<Language, string> = {
   it: 'Italiano'
 };
 
-const Settings: React.FC = () => {
+interface SettingsProps {
+  volume: number;
+  setVolume: (volume: number) => void;
+  countdownVolume: number;
+  setCountdownVolume: (volume: number) => void;
+}
+
+const Settings: React.FC<SettingsProps> = ({ volume, setVolume, countdownVolume, setCountdownVolume }) => {
   const navigate = useNavigate();
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>(getCurrentLanguage() as Language);
+  const { language, setLanguage, t } = useTranslation();
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>(language);
   const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Use smaller font sizes for CJK languages
+  const isCJKLanguage = ['ja', 'ko', 'zh'].includes(language);
+  const textSizeClass = isCJKLanguage ? 'text-xs' : 'text-sm';
+  const titleSizeClass = isCJKLanguage ? 'text-sm' : 'text-base';
   const [showContact, setShowContact] = useState(false);
 
   const handleLanguageChange = (value: Language) => {
@@ -38,12 +51,6 @@ const Settings: React.FC = () => {
 
   const handleCancel = () => {
     navigate('/');
-  };
-
-  const handleResetOnboarding = () => {
-    localStorage.removeItem('hasSeenOnboarding');
-    navigate('/');
-    window.location.reload(); // Force reload to show onboarding
   };
 
   return (
@@ -72,9 +79,73 @@ const Settings: React.FC = () => {
         </Card>
 
         <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Volume2 className="h-5 w-5" />
+              {t('settings.audioVolume') || 'Audio Volume'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">
+                  {t('settings.volumeLevel') || 'Volume Level'}
+                </span>
+                <span className="text-sm font-medium">{Math.round(volume * 100)}%</span>
+              </div>
+              <Slider
+                value={[volume]}
+                onValueChange={(value) => setVolume(value[0])}
+                max={1}
+                min={0}
+                step={0.01}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0%</span>
+                <span>50%</span>
+                <span>100%</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Volume2 className="h-5 w-5" />
+              {t('settings.countdownVolume') || 'Countdown Sounds Volume'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">
+                  {t('settings.countdownVolumeLevel') || 'Countdown Volume Level'}
+                </span>
+                <span className="text-sm font-medium">{Math.round(countdownVolume * 100)}%</span>
+              </div>
+              <Slider
+                value={[countdownVolume]}
+                onValueChange={(value) => setCountdownVolume(value[0])}
+                max={1}
+                min={0}
+                step={0.01}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0%</span>
+                <span>50%</span>
+                <span>100%</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
           <div className="cursor-pointer" onClick={() => setShowSuggestions((prev) => !prev)}>
             <CardHeader className="flex flex-row items-center justify-between p-4">
-              <CardTitle className="text-base">Need suggestions?</CardTitle>
+              <CardTitle className={titleSizeClass}>{t("settings.needSuggestions")}</CardTitle>
               {showSuggestions ? (
                 <ChevronUp className="h-5 w-5 text-muted-foreground" />
               ) : (
@@ -83,17 +154,21 @@ const Settings: React.FC = () => {
             </CardHeader>
             {showSuggestions && (
               <CardContent>
-                <ul className="mt-1 space-y-2 text-sm">
-                  <li>Spouse's Birthday</li>
-                  <li>Wedding Anniversary</li>
-                  <li>Special Day</li>
-                  <li>Next Vacation</li>
-                  <li>Retirement</li>
-                  <li>Graduation</li>
-                  <li>Milestone Birthday</li>
-                  <li>Favorite Holiday</li>
-                  <li>A countdown for your pet's life</li>
-                </ul>
+                <div className={`mt-1 space-y-2 ${textSizeClass}`}>
+                  <p className={`${textSizeClass} font-medium text-muted-foreground mb-3`}>
+                    {t("events.suggestions.subtitle")}
+                  </p>
+                  <ul className="space-y-2">
+                    <li className={textSizeClass}>{t("events.suggestions.spouseBirthday")}</li>
+                    <li className={textSizeClass}>{t("events.suggestions.spouseAnniversary")}</li>
+                    <li className={textSizeClass}>{t("events.suggestions.specialDay")}</li>
+                    <li className={textSizeClass}>{t("events.suggestions.vacation")}</li>
+                    <li className={textSizeClass}>{t("events.suggestions.retirement")}</li>
+                    <li className={textSizeClass}>{t("events.suggestions.graduation")}</li>
+                    <li className={textSizeClass}>{t("events.suggestions.milestone")}</li>
+                    <li className={textSizeClass}>{t("events.suggestions.holiday")}</li>
+                  </ul>
+                </div>
               </CardContent>
             )}
           </div>
@@ -102,7 +177,7 @@ const Settings: React.FC = () => {
         <Card>
           <div className="cursor-pointer" onClick={() => setShowContact((prev) => !prev)}>
             <CardHeader className="flex flex-row items-center justify-between p-4">
-              <CardTitle className="text-base">Contact</CardTitle>
+              <CardTitle className="text-base">{t("settings.contact")}</CardTitle>
               {showContact ? (
                 <ChevronUp className="h-5 w-5 text-muted-foreground" />
               ) : (
@@ -112,7 +187,7 @@ const Settings: React.FC = () => {
             {showContact && (
               <CardContent>
                 <p className="mt-1 text-sm">
-                  If you have any questions, comments, or concerns, feel free to reach out to me at <a href="mailto:jntnnn4@gmail.com" className="underline text-blue-600">jntnnn4@gmail.com</a>
+                  {t("settings.contactDescription")} <a href="mailto:jntnnn4@gmail.com" className="underline text-blue-600">jntnnn4@gmail.com</a>
                 </p>
               </CardContent>
             )}

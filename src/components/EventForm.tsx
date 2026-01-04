@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { t } from "@/services/translation";
+import { useTranslation } from "@/contexts/TranslationContext";
 import { Label } from "@/components/ui/label";
 // Removed: import EventSuggestions from "./EventSuggestions";
 
@@ -36,6 +36,7 @@ const EventForm: React.FC<EventFormProps> = ({
   onDelete,
   initialData
 }) => {
+  const { t } = useTranslation();
   const [name, setName] = useState(initialData?.name || '');
   const [motto, setMotto] = useState(initialData?.motto || '');
   const [notificationFrequency, setNotificationFrequency] = useState(initialData?.notificationFrequency || 'monthly');

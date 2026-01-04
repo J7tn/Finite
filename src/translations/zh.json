@@ -8,7 +8,23 @@
     "title": "设置",
     "language": "语言",
     "selectLanguage": "选择语言",
-    "saveChanges": "保存更改"
+    "saveChanges": "保存更改",
+    "needSuggestions": "需要建议吗？",
+    "contact": "联系方式",
+    "contactDescription": "如果您有任何问题、意见或疑虑，请随时通过以下方式联系我",
+    "audioVolume": "音频音量",
+    "volumeLevel": "音量级别",
+    "countdownVolume": "倒计时声音音量",
+    "countdownVolumeLevel": "倒计时音量级别"
+  },
+  "onboarding": {
+    "messages": [
+      "生命是有限的，我们应该有意地度过生命中的每一刻。",
+      "有时我们会忘记并在路上跌倒。",
+      "当你这样做时，使用这个应用程序作为提醒。"
+    ],
+    "begin": "开始",
+    "tapToContinue": "点击继续..."
   },
   "lifeCountdown": {
     "title": "生命倒计时",
@@ -50,6 +66,25 @@
     },
     "lifeExpectancy": "预期寿命（年）",
     "errorSameDay": "事件日期不能是今天。请选择未来的日期。",
+    "timeRemaining": "剩余时间",
+    "lifespanNote": "基于全球平均预期寿命73.5年。",
+    "motivationalMessages": [
+      "每一个时刻都是礼物。让它有价值。",
+      "你的时间是宝贵的。明智地使用它。",
+      "生命是有限的。充分地生活。",
+      "今天是你故事的一页。写得很好。",
+      "时钟在滴答。 你会如何度过这一刻？",
+      "拥抱现在。塑造你的未来。",
+      "时光飞逝。让它有意义。",
+      "你的旅程很重要。迈出下一步。",
+      "带着目的生活。用激情去爱。",
+      "每一秒都很重要。让它们非凡。",
+      "你的时间是你最宝贵的资产。",
+      "让今天非凡。",
+      "生活就是你所做的。让它美丽。",
+      "每一天都是新的机会。",
+      "珍惜你拥有的时间。"
+    ],
     "suggestions": {
       "title": "需要灵感？",
       "subtitle": "以下是一些倒计时建议：",

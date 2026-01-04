@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import CountdownTimer from './CountdownTimer';
 import { LifeProgressBar } from './LifeProgressBar';
-import { t } from '@/services/translation';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 interface Event {
   id: string;
@@ -26,6 +26,7 @@ interface ExpandableBlockProps {
   onDelete?: () => void;
   isMuted?: boolean;
   eventId?: string;
+  countdownVolume?: number;
 }
 
 const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
@@ -39,8 +40,10 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
   onEdit,
   onDelete,
   isMuted,
-  eventId
+  eventId,
+  countdownVolume = 0.5
 }) => {
+  const { t } = useTranslation();
   const [timeLeft, setTimeLeft] = useState({
     years: 0,
     months: 0,
@@ -181,6 +184,7 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
                   eventType={eventType}
                   ticking={isExpanded}
                   muted={isMuted}
+                  volume={countdownVolume}
                 />
               ) : eventType === 'lifeCountdown' ? (
                 <CountdownTimer
@@ -192,11 +196,13 @@ const ExpandableBlock: React.FC<ExpandableBlockProps> = ({
                   ticking={isExpanded}
                   showLifeExpectancyNote={false}
                   muted={isMuted}
+                  volume={countdownVolume}
                 />
               ) : (
-                <CountdownTimer targetDate={targetDate} motto={motto} eventName={eventName} eventId={eventId || eventName} eventType={eventType} 
+                <CountdownTimer targetDate={targetDate} motto={motto} eventName={eventName} eventId={eventId || eventName} eventType={eventType}
                   ticking={isExpanded}
                   muted={isMuted}
+                  volume={countdownVolume}
                   progressLabel={t('common.progress')}
                 />
               )}
