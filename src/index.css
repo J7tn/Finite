@@ -110,7 +110,7 @@
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background: #fff;
+  background: hsl(var(--background));
   display: flex;
   align-items: center;
   justify-content: center;

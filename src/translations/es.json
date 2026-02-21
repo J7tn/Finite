@@ -67,23 +67,34 @@
     "lifeExpectancy": "Esperanza de Vida (años)",
     "errorSameDay": "La fecha del evento no puede ser hoy. Por favor selecciona una fecha futura.",
     "timeRemaining": "Tiempo Restante",
-    "lifespanNote": "Basado en la esperanza de vida global promedio de 73.5 años.",
+    "lifespanNote": "Basado en estimaciones de esperanza de vida promedio.",
+    "hasArrived": "¡ha llegado!",
+    "noEvents": "Sin eventos aún",
+    "noEventsDescription": "Toca el botón de abajo para agregar tu primera cuenta regresiva",
+    "errorNameRequired": "Por favor ingresa un nombre de evento",
+    "errorInvalidExpectancy": "La esperanza de vida debe estar entre 1 y 150",
+    "errorPastDate": "Por favor selecciona una fecha futura",
     "motivationalMessages": [
-      "Cada momento es un regalo. Haz que cuente.",
-      "Tu tiempo es precioso. Úsalo sabiamente.",
-      "La vida es finita. Vívela plenamente.",
-      "Hoy es una página de tu historia. Escríbela bien.",
-      "El reloj está ticking. ¿Qué harás con este momento?",
-      "Abraza el presente. Da forma a tu futuro.",
-      "El tiempo vuela. Hazlo significativo.",
-      "Tu viaje importa. Da el siguiente paso.",
-      "Vive con propósito. Ama con pasión.",
-      "Cada segundo cuenta. Hazlos extraordinarios.",
-      "Tu tiempo es tu activo más valioso.",
-      "Haz que hoy sea notable.",
-      "La vida es lo que haces de ella. Hazla hermosa.",
-      "Cada día es una nueva oportunidad.",
-      "Valora el tiempo que tienes."
+      "El tiempo es oro, pero tú eres diamante.",
+      "Vive como si cada día fuera el último capítulo.",
+      "El reloj no para, pero tú sí puedes elegir tu ritmo.",
+      "La vida no se mide por los años, sino por los momentos.",
+      "Cada amanecer es una nueva oportunidad para ser mejor.",
+      "El tiempo vuela, pero el amor permanece.",
+      "Haz que cada segundo cuente en tu historia personal.",
+      "La eternidad comienza hoy, no mañana.",
+      "Tu tiempo vale más que cualquier tesoro.",
+      "Vive con intensidad, ama con libertad.",
+      "Cada momento es una página en blanco para escribir tu legado.",
+      "El futuro se construye con las decisiones del presente.",
+      "La vida es un regalo precioso, ábrelo con gratitud.",
+      "Cada respiración es una oportunidad para empezar de nuevo.",
+      "El tiempo es el mejor maestro, pero también el más exigente.",
+      "Vive para los momentos que te hacen sentir vivo.",
+      "Tu historia no termina, solo cambia de capítulo.",
+      "Cada día es un lienzo en blanco para pintar tu felicidad.",
+      "El amor por la vida se mide en momentos compartidos.",
+      "Haz que tu tiempo aquí valga la pena para siempre."
     ],
     "suggestions": {
       "title": "¿Necesitas inspiración?",
@@ -98,6 +109,12 @@
       "holiday": "¿Cuenta regresiva para tu festividad favorita?",
       "dismiss": "No gracias"
     }
+  },
+  "notifications": {
+    "lifeProgressReminder": "Recordatorio de Progreso de Vida",
+    "eventArrived": "Evento Llegó",
+    "timeRemaining": "Te quedan {time}.",
+    "personalMessage": "Mensaje personal: {message}"
   },
   "common": {
     "years": "Años",
@@ -115,6 +132,11 @@
     "month": "Mes",
     "day": "Día",
     "language": "Idioma",
-    "progress": "Progreso"
+    "progress": "Progreso",
+    "defaultMotto": "Haz que cada segundo cuente",
+    "confirmDelete": "¿Estás seguro?",
+    "confirmDeleteMessage": "Este evento se eliminará permanentemente.",
+    "confirm": "Confirmar",
+    "back": "Volver"
   }
 } 

@@ -19,9 +19,9 @@
   },
   "onboarding": {
     "messages": [
-      "La vie est finie et nous devrions vivre chaque moment de nos vies intentionnellement.",
-      "Parfois nous oublions et trébuchons en chemin.",
-      "Quand vous le faites, utilisez cette app comme rappel."
+      "La vie est limitée et nous devons vivre chaque instant consciemment.",
+      "Parfois nous oublions et trébuchons sur le chemin.",
+      "Dans ces moments-là, utilise cette app comme rappel."
     ],
     "begin": "Commencer",
     "tapToContinue": "Appuyez pour continuer..."
@@ -67,23 +67,34 @@
     "lifeExpectancy": "Espérance de Vie (années)",
     "errorSameDay": "La date de l'événement ne peut pas être aujourd'hui. Veuillez sélectionner une date future.",
     "timeRemaining": "Temps Restant",
-    "lifespanNote": "Basé sur l'espérance de vie mondiale moyenne de 73,5 ans.",
+    "lifespanNote": "Basé sur les estimations d'espérance de vie moyenne.",
+    "hasArrived": "est arrivé !",
+    "noEvents": "Pas encore d'événements",
+    "noEventsDescription": "Appuyez sur le bouton ci-dessous pour ajouter votre premier compte à rebours",
+    "errorNameRequired": "Veuillez entrer un nom d'événement",
+    "errorInvalidExpectancy": "L'espérance de vie doit être entre 1 et 150",
+    "errorPastDate": "Veuillez sélectionner une date future",
     "motivationalMessages": [
-      "Chaque moment est un cadeau. Faites-le compter.",
-      "Votre temps est précieux. Utilisez-le sagement.",
-      "La vie est finie. Vivez-la pleinement.",
-      "Aujourd'hui est une page de votre histoire. Écrivez-la bien.",
-      "L'horloge tic-tac. Que ferez-vous de ce moment ?",
-      "Embrassez le présent. Façonnez votre avenir.",
-      "Le temps file. Rendez-le significatif.",
-      "Votre voyage compte. Faites le prochain pas.",
-      "Vivez avec un but. Aimez avec passion.",
-      "Chaque seconde compte. Rendez-les extraordinaires.",
-      "Votre temps est votre atout le plus précieux.",
-      "Rendez aujourd'hui remarquable.",
-      "La vie est ce que vous en faites. Rendez-la belle.",
-      "Chaque jour est une nouvelle opportunité.",
-      "Chérissez le temps que vous avez."
+      "Le temps est un cadeau, chaque instant une opportunité.",
+      "Vivez comme si demain n'existait pas, aimez comme si c'était éternel.",
+      "L'horloge tourne, mais votre cœur bat au rythme de vos choix.",
+      "La vie n'est pas éternelle, mais vos souvenirs peuvent l'être.",
+      "Chaque lever de soleil est une renaissance possible.",
+      "Le temps passe, mais l'amour reste gravé dans les cœurs.",
+      "Faites de chaque seconde une note de musique dans votre symphonie.",
+      "L'éternité commence aujourd'hui, pas dans un avenir lointain.",
+      "Votre temps vaut plus que tous les trésors du monde.",
+      "Vivez intensément, aimez librement, rêvez grandement.",
+      "Chaque moment est une page vierge pour écrire votre légende.",
+      "Le futur se bâtit avec les décisions du présent.",
+      "La vie est un présent précieux, ouvrez-le avec gratitude.",
+      "Chaque respiration est une chance de tout recommencer.",
+      "Le temps est le plus sage des conseillers, écoutez-le attentivement.",
+      "Vivez pour les instants qui vous font sentir vivant.",
+      "Votre histoire ne s'arrête pas, elle change simplement de chapitre.",
+      "Chaque jour est une toile vierge pour peindre votre bonheur.",
+      "L'amour pour la vie se mesure aux moments partagés.",
+      "Rendez votre passage ici inoubliable pour l'éternité."
     ],
     "suggestions": {
       "title": "Besoin d'inspiration ?",
@@ -98,6 +109,12 @@
       "holiday": "Compte à rebours vers votre fête préférée ?",
       "dismiss": "Non merci"
     }
+  },
+  "notifications": {
+    "lifeProgressReminder": "Rappel de Progrès de Vie",
+    "eventArrived": "Événement Arrivé",
+    "timeRemaining": "Il vous reste {time}.",
+    "personalMessage": "Message personnel : {message}"
   },
   "common": {
     "years": "Années",
@@ -115,6 +132,11 @@
     "month": "Mois",
     "day": "Jour",
     "language": "Langue",
-    "progress": "Progression"
+    "progress": "Progression",
+    "defaultMotto": "Faites que chaque seconde compte",
+    "confirmDelete": "Êtes-vous sûr ?",
+    "confirmDeleteMessage": "Cet événement sera supprimé définitivement.",
+    "confirm": "Confirmer",
+    "back": "Retour"
   }
 } 

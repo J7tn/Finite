@@ -1,10 +1,15 @@
-import { ReminderSettings } from '@/components/ReminderSettings';
+import { ReminderSettings } from '@/types';
 import { calculateRemainingTime, formatRemainingTime } from '@/utils/timeCalculations';
 import { LocalNotifications } from '@capacitor/local-notifications';
 
+interface NotificationStrings {
+  title: string;
+  bodyPrefix: string;
+  personalMessageLabel: string;
+}
+
 class NotificationService {
   private static instance: NotificationService;
-  private reminderInterval: number | null = null;
 
   private constructor() {}
 
@@ -25,13 +30,15 @@ class NotificationService {
     }
   }
 
-  private async scheduleReminder(settings: ReminderSettings, birthDate: Date, expectedLifespan: number) {
-    // Cancel all previous notifications
+  private async scheduleReminder(
+    settings: ReminderSettings,
+    birthDate: Date,
+    expectedLifespan: number,
+    strings: NotificationStrings
+  ) {
     await LocalNotifications.cancel({ notifications: [] });
 
-    if (!settings.enabled) {
-      return;
-    }
+    if (!settings.enabled) return;
 
     const intervalMap = {
       daily: 'day',
@@ -42,40 +49,38 @@ class NotificationService {
 
     const remainingTime = calculateRemainingTime(birthDate, expectedLifespan);
     const formattedTime = formatRemainingTime(remainingTime);
-    const now = Date.now();
-    const notificationBody = `You have ${formattedTime} left.\n\nPersonal message: ${settings.message}`;
-
-    // Schedule recurring notification
-    const notifications = [
-      {
-        id: 1,
-        title: 'Life Progress Reminder',
-        body: notificationBody,
-        schedule: {
-          on: {
-            hour: 9,
-            minute: 0
-          },
-          every: intervalMap[settings.frequency]
-        },
-        sound: null,
-        attachments: null,
-        actionTypeId: '',
-        extra: null,
-      },
-    ];
+    const body = `${strings.bodyPrefix.replace('{time}', formattedTime)}\n\n${strings.personalMessageLabel.replace('{message}', settings.message)}`;
 
     try {
-      await LocalNotifications.schedule({ notifications });
+      await LocalNotifications.schedule({
+        notifications: [{
+          id: 1,
+          title: strings.title,
+          body,
+          schedule: {
+            on: { hour: 9, minute: 0 },
+            every: intervalMap[settings.frequency]
+          },
+          sound: undefined,
+          attachments: undefined,
+          actionTypeId: '',
+          extra: null,
+        }],
+      });
     } catch (error) {
       console.error('Error scheduling notification:', error);
     }
   }
 
-  startReminders(settings: ReminderSettings, birthDate: Date, expectedLifespan: number) {
-    this.requestPermission().then(permissionGranted => {
-      if (permissionGranted) {
-        this.scheduleReminder(settings, birthDate, expectedLifespan);
+  startReminders(
+    settings: ReminderSettings,
+    birthDate: Date,
+    expectedLifespan: number,
+    strings: NotificationStrings
+  ) {
+    this.requestPermission().then(granted => {
+      if (granted) {
+        this.scheduleReminder(settings, birthDate, expectedLifespan, strings);
       }
     });
   }
@@ -84,17 +89,15 @@ class NotificationService {
     LocalNotifications.cancel({ notifications: [] });
   }
 
-  async sendEventArrivedNotification(eventName: string) {
+  async sendEventArrivedNotification(title: string, body: string) {
     try {
       await LocalNotifications.schedule({
-        notifications: [
-          {
-            id: 9999,
-            title: 'Event Arrived',
-            body: `Your event "${eventName}" has arrived!`,
-            schedule: null, // null means show immediately
-          },
-        ],
+        notifications: [{
+          id: 9999,
+          title,
+          body,
+          schedule: undefined,
+        }],
       });
     } catch (error) {
       console.error('Error sending event arrived notification:', error);
@@ -103,23 +106,19 @@ class NotificationService {
 
   async testNotification() {
     try {
-      const permissionGranted = await this.requestPermission();
-
-      if (permissionGranted) {
+      const granted = await this.requestPermission();
+      if (granted) {
         await LocalNotifications.schedule({
-          notifications: [
-            {
-              id: 9998,
-              title: 'Test Notification',
-              body: 'This is a test notification to verify that notifications are working!',
-              schedule: null, // Show immediately
-            },
-          ],
+          notifications: [{
+            id: 9998,
+            title: 'Test Notification',
+            body: 'Notifications are working!',
+            schedule: undefined,
+          }],
         });
         return true;
-      } else {
-        return false;
       }
+      return false;
     } catch (error) {
       console.error('Error testing notification:', error);
       return false;
@@ -127,34 +126,4 @@ class NotificationService {
   }
 }
 
-// Make testNotification available globally for testing
-declare global {
-  interface Window {
-    testNotifications: () => Promise<void>;
-  }
-}
-
-window.testNotifications = async () => {
-  try {
-    // Test permission
-    const hasPermission = await NotificationService.getInstance().requestPermission();
-
-    if (hasPermission) {
-      // Test immediate notification
-      await NotificationService.getInstance().sendEventArrivedNotification('Test Event');
-
-      // Test recurring notification
-      NotificationService.getInstance().startReminders({
-        frequency: 'daily',
-        message: 'Test daily reminder',
-        enabled: true
-      }, new Date('1990-01-01'), 80);
-    }
-  } catch (error) {
-    console.error('❌ Notification test failed:', error);
-  }
-};
-
-// Notification testing available via window.testNotifications()
-
-export const notificationService = NotificationService.getInstance(); 
+export const notificationService = NotificationService.getInstance();

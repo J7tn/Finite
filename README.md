@@ -1,30 +1,50 @@
-# React + TypeScript + Vite
+# Finite - Life Countdown
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A reflective life countdown app that helps you visualize the time you have left and live more intentionally.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Life Countdown** — Enter your birth date and see a real-time countdown of your remaining time, with a progress bar showing how much of your expected lifespan you've lived.
+- **Custom Event Countdowns** — Add countdowns to any future date: birthdays, anniversaries, vacations, retirement, and more.
+- **Motivational Splash** — Each time you open the app, a typewriter-style motivational quote greets you.
+- **Onboarding Flow** — A gentle introduction for first-time users.
+- **Ambient Audio** — Optional looping meditation track with adjustable volume.
+- **Countdown Tick Sounds** — Optional ticking sounds when a countdown is expanded.
+- **Local Notifications** — Scheduled reminders (daily/monthly/yearly) with your custom motto.
+- **Dark Mode** — Toggle between light and dark themes.
+- **9 Languages** — English, Spanish, French, German, Chinese, Japanese, Korean, Portuguese, and Italian.
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **React 18** + **TypeScript** + **Vite** (SWC)
+- **Capacitor 8** for Android native features (notifications, splash screen, status bar)
+- **Tailwind CSS** + **Radix UI** (shadcn/ui) for the component library
+- **Framer Motion** for animations
+- **react-router-dom** (HashRouter) for routing
 
-- Configure the top-level `parserOptions` property like this:
+## Getting Started
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```bash
+npm install
+npm run dev
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+### Android Build
+
+```bash
+npm run android:build   # Build web + sync to Android
+npx cap open android    # Open in Android Studio
+```
+
+## Project Structure
+
+```
+src/
+├── components/       # UI components (CountdownTimer, ExpandableBlock, etc.)
+├── contexts/         # React contexts (Translation, Audio)
+├── pages/            # Route pages (Home, Settings, About)
+├── services/         # NotificationService (Capacitor local notifications)
+├── translations/     # i18n JSON files (9 languages)
+├── types/            # Shared TypeScript interfaces
+└── utils/            # Time calculation utilities
+```

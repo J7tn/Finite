@@ -67,7 +67,13 @@
     "lifeExpectancy": "Life Expectancy (years)",
     "errorSameDay": "Event date cannot be today. Please select a future date.",
     "timeRemaining": "Time Remaining",
-    "lifespanNote": "Based on the average global lifespan of 73.5 years.",
+    "lifespanNote": "Based on average life expectancy estimates.",
+    "hasArrived": "has arrived!",
+    "noEvents": "No events yet",
+    "noEventsDescription": "Tap the button below to add your first countdown",
+    "errorNameRequired": "Please enter an event name",
+    "errorInvalidExpectancy": "Life expectancy must be between 1 and 150",
+    "errorPastDate": "Please select a future date",
     "motivationalMessages": [
       "Every moment is a gift. Make it count.",
       "Your time is precious. Use it wisely.",
@@ -150,6 +156,12 @@
       "dismiss": "No thanks"
     }
   },
+  "notifications": {
+    "lifeProgressReminder": "Life Progress Reminder",
+    "eventArrived": "Event Arrived",
+    "timeRemaining": "You have {time} left.",
+    "personalMessage": "Personal message: {message}"
+  },
   "common": {
     "years": "Years",
     "months": "Months",
@@ -166,6 +178,11 @@
     "month": "Month",
     "day": "Day",
     "language": "Language",
-    "progress": "Progress"
+    "progress": "Progress",
+    "defaultMotto": "Make every second count",
+    "confirmDelete": "Are you sure?",
+    "confirmDeleteMessage": "This event will be permanently deleted.",
+    "confirm": "Confirm",
+    "back": "Back"
   }
 } 

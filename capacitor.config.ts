@@ -14,14 +14,7 @@ const config: CapacitorConfig = {
       sound: "beep.wav"
     }
   },
-  android: {
-    buildOptions: {
-      keystorePath: undefined,
-      keystorePassword: undefined,
-      keystoreAlias: undefined,
-      keystoreAliasPassword: undefined
-    }
-  }
+  android: {}
 };
 
 export default config;

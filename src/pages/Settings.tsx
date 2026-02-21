@@ -3,9 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Save, X, ChevronDown, ChevronUp, Volume2 } from 'lucide-react';
+import { X, ChevronDown, ChevronUp, Volume2, RotateCcw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/contexts/TranslationContext';
+import { useAudio } from '@/contexts/AudioContext';
 
 type Language = 'en' | 'es' | 'fr' | 'de' | 'zh' | 'ja' | 'ko' | 'pt' | 'it';
 
@@ -21,37 +22,16 @@ const languageNames: Record<Language, string> = {
   it: 'Italiano'
 };
 
-interface SettingsProps {
-  volume: number;
-  setVolume: (volume: number) => void;
-  countdownVolume: number;
-  setCountdownVolume: (volume: number) => void;
-}
-
-const Settings: React.FC<SettingsProps> = ({ volume, setVolume, countdownVolume, setCountdownVolume }) => {
+const Settings: React.FC = () => {
   const navigate = useNavigate();
   const { language, setLanguage, t } = useTranslation();
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>(language);
+  const { volume, setVolume, countdownVolume, setCountdownVolume } = useAudio();
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
-  // Use smaller font sizes for CJK languages
   const isCJKLanguage = ['ja', 'ko', 'zh'].includes(language);
   const textSizeClass = isCJKLanguage ? 'text-xs' : 'text-sm';
   const titleSizeClass = isCJKLanguage ? 'text-sm' : 'text-base';
-  const [showContact, setShowContact] = useState(false);
-
-  const handleLanguageChange = (value: Language) => {
-    setSelectedLanguage(value);
-  };
-
-  const handleSave = () => {
-    setLanguage(selectedLanguage);
-    navigate('/');
-  };
-
-  const handleCancel = () => {
-    navigate('/');
-  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -63,15 +43,13 @@ const Settings: React.FC<SettingsProps> = ({ volume, setVolume, countdownVolume,
             <CardTitle>{t('settings.language')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
+            <Select value={language} onValueChange={(v: string) => setLanguage(v as Language)}>
               <SelectTrigger>
                 <SelectValue placeholder={t('settings.selectLanguage')} />
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(languageNames).map(([code, name]) => (
-                  <SelectItem key={code} value={code}>
-                    {name}
-                  </SelectItem>
+                  <SelectItem key={code} value={code}>{name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -82,25 +60,16 @@ const Settings: React.FC<SettingsProps> = ({ volume, setVolume, countdownVolume,
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Volume2 className="h-5 w-5" />
-              {t('settings.audioVolume') || 'Audio Volume'}
+              {t('settings.audioVolume')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  {t('settings.volumeLevel') || 'Volume Level'}
-                </span>
+                <span className="text-sm text-muted-foreground">{t('settings.volumeLevel')}</span>
                 <span className="text-sm font-medium">{Math.round(volume * 100)}%</span>
               </div>
-              <Slider
-                value={[volume]}
-                onValueChange={(value) => setVolume(value[0])}
-                max={1}
-                min={0}
-                step={0.01}
-                className="w-full"
-              />
+              <Slider value={[volume]} onValueChange={(value) => setVolume(value[0])} max={1} min={0} step={0.01} className="w-full" />
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>0%</span>
                 <span>50%</span>
@@ -114,25 +83,16 @@ const Settings: React.FC<SettingsProps> = ({ volume, setVolume, countdownVolume,
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Volume2 className="h-5 w-5" />
-              {t('settings.countdownVolume') || 'Countdown Sounds Volume'}
+              {t('settings.countdownVolume')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  {t('settings.countdownVolumeLevel') || 'Countdown Volume Level'}
-                </span>
+                <span className="text-sm text-muted-foreground">{t('settings.countdownVolumeLevel')}</span>
                 <span className="text-sm font-medium">{Math.round(countdownVolume * 100)}%</span>
               </div>
-              <Slider
-                value={[countdownVolume]}
-                onValueChange={(value) => setCountdownVolume(value[0])}
-                max={1}
-                min={0}
-                step={0.01}
-                className="w-full"
-              />
+              <Slider value={[countdownVolume]} onValueChange={(value) => setCountdownVolume(value[0])} max={1} min={0} step={0.01} className="w-full" />
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>0%</span>
                 <span>50%</span>
@@ -146,18 +106,12 @@ const Settings: React.FC<SettingsProps> = ({ volume, setVolume, countdownVolume,
           <div className="cursor-pointer" onClick={() => setShowSuggestions((prev) => !prev)}>
             <CardHeader className="flex flex-row items-center justify-between p-4">
               <CardTitle className={titleSizeClass}>{t("settings.needSuggestions")}</CardTitle>
-              {showSuggestions ? (
-                <ChevronUp className="h-5 w-5 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="h-5 w-5 text-muted-foreground" />
-              )}
+              {showSuggestions ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
             </CardHeader>
             {showSuggestions && (
               <CardContent>
                 <div className={`mt-1 space-y-2 ${textSizeClass}`}>
-                  <p className={`${textSizeClass} font-medium text-muted-foreground mb-3`}>
-                    {t("events.suggestions.subtitle")}
-                  </p>
+                  <p className={`${textSizeClass} font-medium text-muted-foreground mb-3`}>{t("events.suggestions.subtitle")}</p>
                   <ul className="space-y-2">
                     <li className={textSizeClass}>{t("events.suggestions.spouseBirthday")}</li>
                     <li className={textSizeClass}>{t("events.suggestions.spouseAnniversary")}</li>
@@ -178,11 +132,7 @@ const Settings: React.FC<SettingsProps> = ({ volume, setVolume, countdownVolume,
           <div className="cursor-pointer" onClick={() => setShowContact((prev) => !prev)}>
             <CardHeader className="flex flex-row items-center justify-between p-4">
               <CardTitle className="text-base">{t("settings.contact")}</CardTitle>
-              {showContact ? (
-                <ChevronUp className="h-5 w-5 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="h-5 w-5 text-muted-foreground" />
-              )}
+              {showContact ? <ChevronUp className="h-5 w-5 text-muted-foreground" /> : <ChevronDown className="h-5 w-5 text-muted-foreground" />}
             </CardHeader>
             {showContact && (
               <CardContent>
@@ -194,14 +144,31 @@ const Settings: React.FC<SettingsProps> = ({ volume, setVolume, countdownVolume,
           </div>
         </Card>
 
-        <div className="flex justify-end gap-4">
-          <Button variant="outline" onClick={handleCancel} className="flex items-center gap-2">
+        {import.meta.env.DEV && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-orange-600 dark:text-orange-400">Development Tools</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">Testing and development utilities.</p>
+                <Button
+                  variant="outline"
+                  onClick={() => window.resetOnboarding?.()}
+                  className="w-full flex items-center gap-2"
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  Reset Onboarding Flow
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <div className="flex justify-end">
+          <Button onClick={() => navigate('/')} className="flex items-center gap-2">
             <X className="h-4 w-4" />
-            {t('common.cancel')}
-          </Button>
-          <Button onClick={handleSave} className="flex items-center gap-2">
-            <Save className="h-4 w-4" />
-            {t('settings.saveChanges')}
+            {t('common.back')}
           </Button>
         </div>
       </div>
@@ -209,4 +176,4 @@ const Settings: React.FC<SettingsProps> = ({ volume, setVolume, countdownVolume,
   );
 };
 
-export default Settings; 
+export default Settings;

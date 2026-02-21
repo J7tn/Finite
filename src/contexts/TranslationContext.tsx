@@ -9,56 +9,36 @@ import ko from '../translations/ko.json';
 import pt from '../translations/pt.json';
 import it from '../translations/it.json';
 
-type TranslationKey = keyof typeof en;
 type Language = 'en' | 'es' | 'fr' | 'de' | 'zh' | 'ja' | 'ko' | 'pt' | 'it';
 
-const translations = {
-  en,
-  es,
-  fr,
-  de,
-  zh,
-  ja,
-  ko,
-  pt,
-  it,
-};
+const translations: Record<Language, unknown> = { en, es, fr, de, zh, ja, ko, pt, it };
+
+const SUPPORTED_LANGUAGES: Language[] = ['en', 'es', 'fr', 'de', 'zh', 'ja', 'ko', 'pt', 'it'];
 
 interface TranslationContextType {
   language: Language;
   setLanguage: (language: Language) => void;
   t: (key: string) => string;
+  tArray: (key: string) => string[];
 }
 
 const TranslationContext = createContext<TranslationContextType | undefined>(undefined);
 
-interface TranslationProviderProps {
-  children: ReactNode;
-}
-
-export const TranslationProvider: React.FC<TranslationProviderProps> = ({ children }) => {
+export const TranslationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>('en');
 
-  // Initialize language on mount
   useEffect(() => {
-    const initializeLanguage = () => {
-      const savedLanguage = localStorage.getItem('language') as Language;
-      const supportedLanguages: Language[] = ['en', 'es', 'fr', 'de', 'zh', 'ja', 'ko', 'pt', 'it'];
-
-      if (savedLanguage && supportedLanguages.includes(savedLanguage)) {
-        setLanguageState(savedLanguage);
-      } else {
-        // Get device language
-        const deviceLanguage = navigator.language.split('-')[0];
-        const initialLanguage = supportedLanguages.includes(deviceLanguage as Language)
-          ? deviceLanguage as Language
-          : 'en';
-        setLanguageState(initialLanguage);
-        localStorage.setItem('language', initialLanguage);
-      }
-    };
-
-    initializeLanguage();
+    const savedLanguage = localStorage.getItem('language') as Language;
+    if (savedLanguage && SUPPORTED_LANGUAGES.includes(savedLanguage)) {
+      setLanguageState(savedLanguage);
+    } else {
+      const deviceLanguage = navigator.language.split('-')[0];
+      const initialLanguage = SUPPORTED_LANGUAGES.includes(deviceLanguage as Language)
+        ? deviceLanguage as Language
+        : 'en';
+      setLanguageState(initialLanguage);
+      localStorage.setItem('language', initialLanguage);
+    }
   }, []);
 
   const setLanguage = (newLanguage: Language) => {
@@ -66,39 +46,44 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
     localStorage.setItem('language', newLanguage);
   };
 
-  const t = (key: string): any => {
+  const resolve = (key: string): unknown => {
     const keys = key.split('.');
-    let value: any = translations[language];
-
+    let value: unknown = translations[language];
     for (const k of keys) {
-      if (value && typeof value === 'object' && k in value) {
-        value = value[k];
+      if (value && typeof value === 'object' && k in (value as Record<string, unknown>)) {
+        value = (value as Record<string, unknown>)[k];
       } else {
         console.warn(`Translation key not found: ${key} for language: ${language}`);
-        return key;
+        return undefined;
       }
     }
-
     return value;
   };
 
+  const t = (key: string): string => {
+    const value = resolve(key);
+    if (typeof value === 'string') return value;
+    if (value === undefined) return key;
+    return key;
+  };
+
+  const tArray = (key: string): string[] => {
+    const value = resolve(key);
+    if (Array.isArray(value) && value.every(v => typeof v === 'string')) return value;
+    return [];
+  };
+
   return (
-    <TranslationContext.Provider value={{ language, setLanguage, t }}>
+    <TranslationContext.Provider value={{ language, setLanguage, t, tArray }}>
       {children}
     </TranslationContext.Provider>
   );
 };
 
-export const useTranslation = (): TranslationContextType => {
+export const useTranslation = () => {
   const context = useContext(TranslationContext);
   if (context === undefined) {
     throw new Error('useTranslation must be used within a TranslationProvider');
   }
   return context;
-};
-
-// Export t function for backward compatibility
-export const t = (key: string): string => {
-  console.warn('Using deprecated t function. Use useTranslation hook instead.');
-  return key;
 };

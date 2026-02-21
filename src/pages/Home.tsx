@@ -1,29 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import CountdownTimer from '@/components/CountdownTimer';
 import { Button } from '@/components/ui/button';
-import { Moon, Plus, ChevronDown, ChevronUp, Settings, Volume2, VolumeX } from 'lucide-react';
+import { Moon, Plus, Settings, Volume2, VolumeX } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import EventForm from '@/components/EventForm';
-import { Card, CardContent } from '@/components/ui/card';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import ExpandableBlock from '@/components/ExpandableBlock';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from '@/contexts/TranslationContext';
-import { v4 as uuidv4 } from 'uuid';
+import { useAudio } from '@/contexts/AudioContext';
 import { notificationService } from '@/services/notificationService';
-
-interface Event {
-  id: string;
-  name: string;
-  date: Date;
-  motto: string;
-  notificationFrequency: string;
-  type: string;
-  lifeExpectancy?: number;
-}
+import { Event, DEFAULT_LIFE_EXPECTANCY } from '@/types';
 
 const getLocalStorageItem = (key: string, defaultValue: any) => {
   try {
@@ -43,25 +34,23 @@ const setLocalStorageItem = (key: string, value: any) => {
   }
 };
 
-interface HomeProps {
-  isMuted: boolean;
-  setIsMuted: (muted: boolean) => void;
-  volume: number;
-  setVolume: (volume: number) => void;
-  countdownVolume: number;
-  setCountdownVolume: (volume: number) => void;
-}
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
 
-const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, countdownVolume, setCountdownVolume }) => {
+const Home: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isMuted, setIsMuted } = useAudio();
+
   const [birthDate, setBirthDate] = useState<Date>(() => {
     const savedDate = getLocalStorageItem('birthDate', null);
     const date = savedDate ? new Date(savedDate) : new Date(1990, 0, 1);
     return date instanceof Date && !isNaN(date.getTime()) ? date : new Date(1990, 0, 1);
   });
   const [motto, setMotto] = useState<string>(() => {
-    return getLocalStorageItem('motto', 'Make every second count');
+    return getLocalStorageItem('motto', t('common.defaultMotto'));
   });
   const [notificationFrequency, setNotificationFrequency] = useState<string>(() => {
     return getLocalStorageItem('lifeNotificationFrequency', 'monthly');
@@ -72,9 +61,19 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
   const [showEventForm, setShowEventForm] = useState(false);
   const [events, setEvents] = useState<Event[]>(() => {
     const rawEvents = getLocalStorageItem('events', []);
+
+    if (!import.meta.env.DEV) {
+      const hasCompletedOnboarding = localStorage.getItem('hasSeenOnboarding') === 'true';
+      if (!hasCompletedOnboarding) {
+        localStorage.removeItem('events');
+        return [];
+      }
+    }
+
     return rawEvents.map((event: any) => ({
       ...event,
       date: event.date ? new Date(event.date) : new Date(),
+      createdAt: event.createdAt ? new Date(event.createdAt) : new Date(),
     }));
   });
   const [expandedBlocks, setExpandedBlocks] = useState<Set<string>>(new Set(['life']));
@@ -83,6 +82,13 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
   const [tempBirthDate, setTempBirthDate] = useState<Date>(birthDate);
   const [tempMotto, setTempMotto] = useState<string>(motto);
   const [tempNotificationFrequency, setTempNotificationFrequency] = useState<string>(notificationFrequency);
+  const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
+
+  const getNotificationStrings = () => ({
+    title: t('notifications.lifeProgressReminder'),
+    bodyPrefix: t('notifications.timeRemaining'),
+    personalMessageLabel: t('notifications.personalMessage'),
+  });
 
   useEffect(() => {
     if (birthDate instanceof Date && !isNaN(birthDate.getTime())) {
@@ -90,23 +96,19 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
     }
     setLocalStorageItem('motto', motto);
     setLocalStorageItem('lifeNotificationFrequency', notificationFrequency);
-    
-    // Start reminders with current settings when they change
-    const reminderSettings = {
-      frequency: notificationFrequency as 'daily' | 'weekly' | 'monthly' | 'yearly',
-      message: motto,
-      enabled: true
-    };
-    
-    // Start the reminder system
-    notificationService.startReminders(reminderSettings, birthDate, 80);
+
+    notificationService.startReminders(
+      { frequency: notificationFrequency as 'daily' | 'weekly' | 'monthly' | 'yearly', message: motto, enabled: true },
+      birthDate,
+      DEFAULT_LIFE_EXPECTANCY,
+      getNotificationStrings()
+    );
   }, [birthDate, motto, notificationFrequency]);
 
   useEffect(() => {
     setLocalStorageItem('events', events);
   }, [events]);
 
-  // Open life countdown edit dialog if flagged by onboarding
   useEffect(() => {
     if (localStorage.getItem('showLifeCountdownEdit') === 'true') {
       setIsEditingLife(true);
@@ -123,10 +125,6 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
     setLocalStorageItem('darkMode', isDarkMode);
   }, [isDarkMode]);
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(prev => !prev);
-  };
-
   const handleAddEvent = (eventData: {
     name: string;
     date: Date;
@@ -136,31 +134,30 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
     lifeExpectancy?: number;
   }) => {
     const newEvent: Event = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       name: eventData.name,
       date: eventData.date,
       motto: eventData.motto,
       notificationFrequency: eventData.notificationFrequency,
       type: eventData.type,
       lifeExpectancy: eventData.lifeExpectancy,
+      createdAt: new Date(),
     };
     setEvents([...events, newEvent]);
     setShowEventForm(false);
   };
 
-  const handleDeleteEvent = (eventId: string) => {
-    const updatedEvents = events.filter(event => event.id !== eventId);
+  const confirmDeleteEvent = () => {
+    if (!deletingEventId) return;
+    const updatedEvents = events.filter(event => event.id !== deletingEventId);
     setEvents(updatedEvents);
-    localStorage.setItem('events', JSON.stringify(updatedEvents));
+    setDeletingEventId(null);
   };
 
   const toggleBlock = (id: string) => {
     setExpandedBlocks(prev => {
       const newSet = new Set<string>();
-      if (prev.has(id)) {
-        return newSet;
-      }
-      newSet.add(id);
+      if (!prev.has(id)) newSet.add(id);
       return newSet;
     });
   };
@@ -174,9 +171,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
     return years;
   };
 
-  const generateMonthOptions = () => {
-    return Array.from({ length: 12 }, (_, i) => i + 1);
-  };
+  const generateMonthOptions = () => Array.from({ length: 12 }, (_, i) => i + 1);
 
   const generateDayOptions = (year: number, month: number) => {
     const daysInMonth = new Date(year, month, 0).getDate();
@@ -185,13 +180,9 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
 
   const handleDateChange = (type: 'year' | 'month' | 'day', value: number) => {
     const newDate = new Date(tempBirthDate);
-    if (type === 'year') {
-      newDate.setFullYear(value);
-    } else if (type === 'month') {
-      newDate.setMonth(value - 1);
-    } else if (type === 'day') {
-      newDate.setDate(value);
-    }
+    if (type === 'year') newDate.setFullYear(value);
+    else if (type === 'month') newDate.setMonth(value - 1);
+    else if (type === 'day') newDate.setDate(value);
     setTempBirthDate(newDate);
   };
 
@@ -199,7 +190,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
     <div className="container mx-auto px-4 py-8" style={{ minHeight: '100vh' }}>
       <div className="max-w-2xl mx-auto space-y-6">
         <div className="flex justify-end gap-2 pt-2" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 4px)' }}>
-          <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
+          <Button variant="ghost" size="icon" onClick={() => setIsDarkMode((prev: boolean) => !prev)}>
             <Moon className="h-5 w-5" />
           </Button>
           <Button variant="ghost" size="icon" onClick={() => setIsMuted(!isMuted)} aria-label={isMuted ? 'Unmute ambience' : 'Mute ambience'}>
@@ -209,14 +200,13 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
             <Settings className="h-5 w-5" />
           </Button>
         </div>
-        
-        {/* Life Progress Block */}
+
         <ExpandableBlock
           eventName={t('events.lifeCountdown')}
           motto={motto}
           targetDate={birthDate}
           eventType="lifeCountdown"
-          lifeExpectancy={80}
+          lifeExpectancy={DEFAULT_LIFE_EXPECTANCY}
           isExpanded={expandedBlocks.has('life')}
           onExpand={() => toggleBlock('life')}
           onEdit={() => {
@@ -225,11 +215,8 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
             setTempNotificationFrequency(notificationFrequency);
             setIsEditingLife(true);
           }}
-          isMuted={isMuted}
-          countdownVolume={countdownVolume}
         />
 
-        {/* Custom Event Blocks */}
         {events.map((event) => (
           <ExpandableBlock
             key={event.id}
@@ -238,17 +225,22 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
             targetDate={event.date}
             eventType={event.type}
             lifeExpectancy={event.lifeExpectancy}
+            createdAt={event.createdAt}
             isExpanded={expandedBlocks.has(event.id)}
             onExpand={() => toggleBlock(event.id)}
             onEdit={() => setEditingEvent(event)}
-            onDelete={() => handleDeleteEvent(event.id)}
-            isMuted={isMuted}
+            onDelete={() => setDeletingEventId(event.id)}
             eventId={event.id}
-            countdownVolume={countdownVolume}
           />
         ))}
 
-        {/* Add New Event Button */}
+        {events.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <p className="text-lg mb-1">{t('events.noEvents')}</p>
+            <p className="text-sm">{t('events.noEventsDescription')}</p>
+          </div>
+        )}
+
         <Button
           variant="outline"
           className="w-full flex items-center justify-center gap-2"
@@ -257,6 +249,20 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
           <Plus className="h-5 w-5" />
           {t('events.addNew')}
         </Button>
+
+        {/* Delete confirmation dialog */}
+        <AlertDialog open={!!deletingEventId} onOpenChange={(open) => { if (!open) setDeletingEventId(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{t('common.confirmDelete')}</AlertDialogTitle>
+              <AlertDialogDescription>{t('common.confirmDeleteMessage')}</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+              <AlertDialogAction onClick={confirmDeleteEvent}>{t('common.confirm')}</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Life Countdown Edit Dialog */}
         <Dialog open={isEditingLife} onOpenChange={setIsEditingLife}>
@@ -275,9 +281,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
                     </SelectTrigger>
                     <SelectContent>
                       {generateYearOptions().map((year) => (
-                        <SelectItem key={year} value={year.toString()}>
-                          {year}
-                        </SelectItem>
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -291,9 +295,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
                     </SelectTrigger>
                     <SelectContent>
                       {generateMonthOptions().map((month) => (
-                        <SelectItem key={month} value={month.toString()}>
-                          {month}
-                        </SelectItem>
+                        <SelectItem key={month} value={month.toString()}>{MONTH_NAMES[month - 1]}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -306,13 +308,8 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
                       <SelectValue placeholder={t('common.day')} />
                     </SelectTrigger>
                     <SelectContent>
-                      {generateDayOptions(
-                        tempBirthDate.getFullYear(),
-                        tempBirthDate.getMonth() + 1
-                      ).map((day) => (
-                        <SelectItem key={day} value={day.toString()}>
-                          {day}
-                        </SelectItem>
+                      {generateDayOptions(tempBirthDate.getFullYear(), tempBirthDate.getMonth() + 1).map((day) => (
+                        <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -320,19 +317,11 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
               </div>
               <div className="space-y-2">
                 <Label htmlFor="motto">{t('lifeCountdown.motto')}</Label>
-                <Input
-                  id="motto"
-                  value={tempMotto}
-                  onChange={(e) => setTempMotto(e.target.value)}
-                  placeholder={t('lifeCountdown.motto')}
-                />
+                <Input id="motto" value={tempMotto} onChange={(e) => setTempMotto(e.target.value)} placeholder={t('lifeCountdown.motto')} />
               </div>
               <div className="space-y-2">
                 <Label>{t('lifeCountdown.reminderFrequency')}</Label>
-                <Select
-                  value={tempNotificationFrequency}
-                  onValueChange={setTempNotificationFrequency}
-                >
+                <Select value={tempNotificationFrequency} onValueChange={setTempNotificationFrequency}>
                   <SelectTrigger>
                     <SelectValue placeholder={t('lifeCountdown.reminderFrequency')} />
                   </SelectTrigger>
@@ -352,17 +341,12 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
                     setBirthDate(tempBirthDate);
                     setMotto(tempMotto);
                     setNotificationFrequency(tempNotificationFrequency);
-                    
-                    // Start reminders based on the selected frequency
-                    const reminderSettings = {
-                      frequency: tempNotificationFrequency as 'daily' | 'weekly' | 'monthly' | 'yearly',
-                      message: tempMotto,
-                      enabled: true
-                    };
-                    
-                    // Start the reminder system
-                    notificationService.startReminders(reminderSettings, tempBirthDate, 80);
-                    
+                    notificationService.startReminders(
+                      { frequency: tempNotificationFrequency as 'daily' | 'weekly' | 'monthly' | 'yearly', message: tempMotto, enabled: true },
+                      tempBirthDate,
+                      DEFAULT_LIFE_EXPECTANCY,
+                      getNotificationStrings()
+                    );
                     setIsEditingLife(false);
                   }}
                 >
@@ -376,10 +360,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
         {/* Event Form Dialog */}
         <Dialog open={showEventForm} onOpenChange={setShowEventForm}>
           <DialogContent hideClose={true} className="max-h-[90vh] overflow-y-auto">
-            <EventForm
-              onSubmit={handleAddEvent}
-              onCancel={() => setShowEventForm(false)}
-            />
+            <EventForm onSubmit={handleAddEvent} onCancel={() => setShowEventForm(false)} />
           </DialogContent>
         </Dialog>
 
@@ -388,7 +369,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>
-                {editingEvent?.type === 'lifeCountdown' 
+                {editingEvent?.type === 'lifeCountdown'
                   ? t('events.editLifeCountdown')
                   : t('events.editEvent')}
               </DialogTitle>
@@ -416,14 +397,10 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
                         }
                       }}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('common.year')} />
-                      </SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder={t('common.year')} /></SelectTrigger>
                       <SelectContent>
                         {generateYearOptions().map((year) => (
-                          <SelectItem key={year} value={year.toString()}>
-                            {year}
-                          </SelectItem>
+                          <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -438,14 +415,10 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
                         }
                       }}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('common.month')} />
-                      </SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder={t('common.month')} /></SelectTrigger>
                       <SelectContent>
                         {generateMonthOptions().map((month) => (
-                          <SelectItem key={month} value={month.toString()}>
-                            {month}
-                          </SelectItem>
+                          <SelectItem key={month} value={month.toString()}>{MONTH_NAMES[month - 1]}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -460,17 +433,13 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
                         }
                       }}
                     >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t('common.day')} />
-                      </SelectTrigger>
+                      <SelectTrigger><SelectValue placeholder={t('common.day')} /></SelectTrigger>
                       <SelectContent>
                         {generateDayOptions(
                           editingEvent?.date ? editingEvent.date.getFullYear() : new Date().getFullYear(),
                           editingEvent?.date ? editingEvent.date.getMonth() + 1 : new Date().getMonth() + 1
                         ).map((day) => (
-                          <SelectItem key={day} value={day.toString()}>
-                            {day}
-                          </SelectItem>
+                          <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -483,12 +452,12 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
                     type="number"
                     min="1"
                     max="150"
-                    value={editingEvent.lifeExpectancy || 80}
+                    value={editingEvent.lifeExpectancy || DEFAULT_LIFE_EXPECTANCY}
                     onChange={(e) => {
                       if (editingEvent) {
                         setEditingEvent({
                           ...editingEvent,
-                          lifeExpectancy: parseInt(e.target.value) || 80
+                          lifeExpectancy: parseInt(e.target.value) || DEFAULT_LIFE_EXPECTANCY
                         });
                       }
                     }}
@@ -500,9 +469,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
                     id="motto"
                     value={editingEvent.motto || ''}
                     onChange={(e) => {
-                      if (editingEvent) {
-                        setEditingEvent({ ...editingEvent, motto: e.target.value });
-                      }
+                      if (editingEvent) setEditingEvent({ ...editingEvent, motto: e.target.value });
                     }}
                   />
                 </div>
@@ -511,14 +478,10 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
                   <Select
                     value={editingEvent.notificationFrequency || 'monthly'}
                     onValueChange={(value) => {
-                      if (editingEvent) {
-                        setEditingEvent({ ...editingEvent, notificationFrequency: value });
-                      }
+                      if (editingEvent) setEditingEvent({ ...editingEvent, notificationFrequency: value });
                     }}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder={t('lifeCountdown.reminderFrequency')} />
-                    </SelectTrigger>
+                    <SelectTrigger><SelectValue placeholder={t('lifeCountdown.reminderFrequency')} /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="daily">{t('lifeCountdown.frequencies.daily')}</SelectItem>
                       <SelectItem value="monthly">{t('lifeCountdown.frequencies.monthly')}</SelectItem>
@@ -527,12 +490,7 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
                   </Select>
                 </div>
                 <div className="flex justify-end gap-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setEditingEvent(null)}
-                  >
-                    {t('common.cancel')}
-                  </Button>
+                  <Button variant="outline" onClick={() => setEditingEvent(null)}>{t('common.cancel')}</Button>
                   <Button
                     onClick={() => {
                       if (editingEvent) {
@@ -540,20 +498,14 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
                           event.id === editingEvent.id ? editingEvent : event
                         );
                         setEvents(updatedEvents);
-                        localStorage.setItem('events', JSON.stringify(updatedEvents));
-                        
-                        // Start reminders for custom life countdown events
                         if (editingEvent.type === 'lifeCountdown') {
-                          const reminderSettings = {
-                            frequency: editingEvent.notificationFrequency as 'daily' | 'weekly' | 'monthly' | 'yearly',
-                            message: editingEvent.motto,
-                            enabled: true
-                          };
-                          
-                          // Start the reminder system for this custom event
-                          notificationService.startReminders(reminderSettings, editingEvent.date, editingEvent.lifeExpectancy || 80);
+                          notificationService.startReminders(
+                            { frequency: editingEvent.notificationFrequency as 'daily' | 'weekly' | 'monthly' | 'yearly', message: editingEvent.motto, enabled: true },
+                            editingEvent.date,
+                            editingEvent.lifeExpectancy || DEFAULT_LIFE_EXPECTANCY,
+                            getNotificationStrings()
+                          );
                         }
-                        
                         setEditingEvent(null);
                       }
                     }}
@@ -564,23 +516,20 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
               </div>
             ) : (
               <EventForm
-                initialData={editingEvent}
+                initialData={editingEvent ? { ...editingEvent } : undefined}
                 onSubmit={(data) => {
                   if (editingEvent) {
                     const updatedEvents = events.map(event =>
                       event.id === editingEvent.id ? { ...event, ...data } : event
                     );
                     setEvents(updatedEvents);
-                    localStorage.setItem('events', JSON.stringify(updatedEvents));
                     setEditingEvent(null);
                   }
                 }}
                 onCancel={() => setEditingEvent(null)}
                 onDelete={() => {
                   if (editingEvent) {
-                    const updatedEvents = events.filter(event => event.id !== editingEvent.id);
-                    setEvents(updatedEvents);
-                    localStorage.setItem('events', JSON.stringify(updatedEvents));
+                    setDeletingEventId(editingEvent.id);
                     setEditingEvent(null);
                   }
                 }}
@@ -593,4 +542,4 @@ const Home: React.FC<HomeProps> = ({ isMuted, setIsMuted, volume, setVolume, cou
   );
 };
 
-export default Home; 
+export default Home;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useTranslation } from '@/contexts/TranslationContext';
 
 // Motivational messages - default English messages (translation system issues)
@@ -72,32 +73,14 @@ const DEFAULT_MOTIVATIONAL_MESSAGES = [
 ];
 
 // Motivational messages - with safe translation fallback
-const getMotivationalMessages = (t: (key: string) => any): string[] => {
-  try {
-    const translatedMessages = t("events.motivationalMessages");
-    // Check if it's an array and has content
-    if (Array.isArray(translatedMessages) && translatedMessages.length > 0) {
-      // Double-check that all items are strings
-      if (translatedMessages.every(msg => typeof msg === 'string')) {
-        return translatedMessages;
-      }
-    }
-  } catch (error) {
-    // Fall through to default messages
-  }
-
-  // Always return the safe default array
-  return DEFAULT_MOTIVATIONAL_MESSAGES;
-};
 
 interface MotivationalSplashProps {
   onComplete: () => void;
 }
 
 const MotivationalSplash: React.FC<MotivationalSplashProps> = ({ onComplete }) => {
-  const { t, language } = useTranslation();
+  const { t, tArray, language } = useTranslation();
   const [displayText, setDisplayText] = useState('');
-  const [showCursor, setShowCursor] = useState(true);
   const [isAnimationComplete, setIsAnimationComplete] = useState(false);
 
   // Adjust typing speed based on language characteristics
@@ -183,10 +166,10 @@ const MotivationalSplash: React.FC<MotivationalSplashProps> = ({ onComplete }) =
     return message.substring(0, splitIndex);
   };
 
-  // Get motivational messages - with safe fallback
   const motivationalMessages = React.useMemo(() => {
-    return getMotivationalMessages(t);
-  }, [t]);
+    const translated = tArray("events.motivationalMessages");
+    return translated.length > 0 ? translated : DEFAULT_MOTIVATIONAL_MESSAGES;
+  }, [tArray]);
 
   const [currentMessageIndex] = useState(() =>
     Math.floor(Math.random() * DEFAULT_MOTIVATIONAL_MESSAGES.length)
@@ -232,9 +215,8 @@ const MotivationalSplash: React.FC<MotivationalSplashProps> = ({ onComplete }) =
 
         timeoutId = setTimeout(typeChar, adaptiveDelay);
       } else {
-        // Message complete - stop cursor blinking after a brief pause
+        // Message complete - pause for reading
         setTimeout(() => {
-          setShowCursor(false);
           setIsAnimationComplete(true);
         }, 1500); // Longer pause for reading
       }
@@ -243,16 +225,9 @@ const MotivationalSplash: React.FC<MotivationalSplashProps> = ({ onComplete }) =
     // Start typing after a brief delay
     const startDelay = setTimeout(typeChar, 600);
 
-    // Cursor blinking effect - adaptive to typing speed
-    const cursorBlinkInterval = baseTypingSpeed * 12; // Slower blinking
-    const cursorInterval = setInterval(() => {
-      setShowCursor(prev => !prev);
-    }, cursorBlinkInterval);
-
     return () => {
       clearTimeout(startDelay);
       clearTimeout(timeoutId);
-      clearInterval(cursorInterval);
     };
   }, [currentMessageIndex, motivationalMessages, baseTypingSpeed, isCJKLanguage]);
 
@@ -279,45 +254,32 @@ const MotivationalSplash: React.FC<MotivationalSplashProps> = ({ onComplete }) =
         <div className={`mb-8 w-full flex items-center justify-center ${containerPadding} ${
           language === 'ja' ? 'min-h-[16rem] md:min-h-[20rem] lg:min-h-[24rem]' : 'min-h-[12rem] md:min-h-[16rem] lg:min-h-[20rem]'
         }`}>
-          <div className="w-full" style={{ width: '100%', maxWidth: isCJKLanguage ? '100%' : '72rem', margin: '0 auto' }}>
-            <div
-              className="relative flex items-center justify-center w-full"
+          <div className="w-full max-w-5xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="w-full flex items-center justify-center"
               style={{
                 minHeight: isCJKLanguage ? '10rem' : '8rem',
-                position: 'relative',
-                width: '100%'
               }}
             >
-              <div
-                className="absolute inset-0 flex items-center justify-center pointer-events-none"
+              <p
+                className={`${fontSizeClass} font-light text-foreground leading-relaxed text-center ${
+                  isCJKLanguage ? 'break-words hyphens-auto overflow-wrap-anywhere tracking-wide' : 'break-words'
+                }`}
                 style={{
-                  transform: 'translateZ(0)', // Force hardware acceleration
-                  backfaceVisibility: 'hidden',
-                  width: '100%',
-                  padding: isCJKLanguage ? '0 8px' : '0'
+                  lineHeight: isCJKLanguage ? '1.7' : '1.5',
+                  wordBreak: isCJKLanguage ? 'break-word' : 'normal',
+                  overflowWrap: isCJKLanguage ? 'anywhere' : 'break-word',
+                  whiteSpace: 'pre-wrap',
+                  maxWidth: '100%',
+                  opacity: 1,
                 }}
               >
-                <p
-                  className={`${fontSizeClass} font-light text-foreground leading-relaxed text-center transition-opacity duration-1000 break-words hyphens-auto overflow-wrap-anywhere ${
-                    isCJKLanguage ? 'tracking-wide' : ''
-                  }`}
-                  style={{
-                    lineHeight: isCJKLanguage ? '1.7' : '1.5',
-                    wordBreak: 'break-word',
-                    overflowWrap: 'anywhere',
-                    whiteSpace: 'pre-wrap',
-                    width: isCJKLanguage ? '100%' : 'auto',
-                    maxWidth: isCJKLanguage ? 'none' : '100%',
-                    opacity: 1,
-                    transform: 'translateZ(0)', // Force hardware acceleration
-                    backfaceVisibility: 'hidden'
-                  }}
-                >
-                  {displayText}
-                  {showCursor && <span className="animate-pulse inline-block ml-1">|</span>}
-                </p>
-              </div>
-            </div>
+                {displayText}
+              </p>
+            </motion.div>
           </div>
         </div>
 

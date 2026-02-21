@@ -67,23 +67,34 @@
     "lifeExpectancy": "Lebenserwartung (Jahre)",
     "errorSameDay": "Das Ereignisdatum kann nicht heute sein. Bitte wählen Sie ein zukünftiges Datum.",
     "timeRemaining": "Verbleibende Zeit",
-    "lifespanNote": "Basierend auf der durchschnittlichen globalen Lebenserwartung von 73,5 Jahren.",
+    "lifespanNote": "Basierend auf Schätzungen der durchschnittlichen Lebenserwartung.",
+    "hasArrived": "ist angekommen!",
+    "noEvents": "Noch keine Ereignisse",
+    "noEventsDescription": "Tippen Sie auf die Schaltfläche unten, um Ihren ersten Countdown hinzuzufügen",
+    "errorNameRequired": "Bitte geben Sie einen Ereignisnamen ein",
+    "errorInvalidExpectancy": "Die Lebenserwartung muss zwischen 1 und 150 liegen",
+    "errorPastDate": "Bitte wählen Sie ein zukünftiges Datum",
     "motivationalMessages": [
-      "Jeder Moment ist ein Geschenk. Lass ihn zählen.",
-      "Ihre Zeit ist kostbar. Nutzen Sie sie weise.",
-      "Das Leben ist endlich. Leben Sie es voll aus.",
-      "Heute ist eine Seite Ihrer Geschichte. Schreiben Sie sie gut.",
-      "Die Uhr tickt. Was werden Sie mit diesem Moment tun?",
-      "Umarmen Sie die Gegenwart. Gestalten Sie Ihre Zukunft.",
-      "Die Zeit vergeht. Machen Sie sie bedeutungsvoll.",
-      "Ihre Reise zählt. Machen Sie den nächsten Schritt.",
-      "Leben Sie mit Absicht. Lieben Sie mit Leidenschaft.",
-      "Jede Sekunde zählt. Machen Sie sie außergewöhnlich.",
-      "Ihre Zeit ist Ihr wertvollster Vermögenswert.",
-      "Machen Sie heute bemerkenswert.",
-      "Das Leben ist das, was Sie daraus machen. Machen Sie es schön.",
-      "Jeder Tag ist eine neue Gelegenheit.",
-      "Schätzen Sie die Zeit, die Sie haben."
+      "Zeit ist das wertvollste Geschenk, das du dir selbst machen kannst.",
+      "Lebe, als wäre jeder Tag dein letzter, aber plane, als würdest du ewig leben.",
+      "Die Uhr tickt, aber dein Herz schlägt im Rhythmus deiner Träume.",
+      "Das Leben ist endlich, aber deine Spuren können unvergänglich sein.",
+      "Jeder Sonnenaufgang ist eine neue Chance, dein Leben zu bereichern.",
+      "Die Zeit vergeht, aber die Liebe bleibt in den Herzen eingeschrieben.",
+      "Mache jede Sekunde zu einem Meisterwerk deiner persönlichen Geschichte.",
+      "Die Ewigkeit beginnt heute, nicht erst in ferner Zukunft.",
+      "Deine Zeit ist wertvoller als alle Schätze dieser Welt.",
+      "Lebe intensiv, liebe frei, träume groß.",
+      "Jeder Moment ist eine leere Seite, um dein Vermächtnis zu schreiben.",
+      "Die Zukunft wird aus den Entscheidungen der Gegenwart gebaut.",
+      "Das Leben ist ein kostbares Geschenk – öffne es mit Dankbarkeit.",
+      "Jeder Atemzug ist eine Gelegenheit, noch einmal von vorne zu beginnen.",
+      "Die Zeit ist der weiseste Ratgeber, aber auch der strengste Lehrer.",
+      "Lebe für die Momente, die dich wirklich lebendig fühlen lassen.",
+      "Deine Geschichte endet nicht, sie wechselt nur das Kapitel.",
+      "Jeder Tag ist eine leere Leinwand, um dein Glück zu malen.",
+      "Die Liebe zum Leben misst sich an den geteilten Momenten.",
+      "Mache deinen Aufenthalt hier unvergesslich für die Ewigkeit."
     ],
     "suggestions": {
       "title": "Brauchen Sie Inspiration?",
@@ -98,6 +109,12 @@
       "holiday": "Countdown zu Ihrem Lieblingsfeiertag?",
       "dismiss": "Nein danke"
     }
+  },
+  "notifications": {
+    "lifeProgressReminder": "Lebensfortschritt-Erinnerung",
+    "eventArrived": "Ereignis eingetroffen",
+    "timeRemaining": "Sie haben noch {time}.",
+    "personalMessage": "Persönliche Nachricht: {message}"
   },
   "common": {
     "years": "Jahre",
@@ -115,6 +132,11 @@
     "month": "Monat",
     "day": "Tag",
     "language": "Sprache",
-    "progress": "Fortschritt"
+    "progress": "Fortschritt",
+    "defaultMotto": "Mache jede Sekunde unvergesslich",
+    "confirmDelete": "Sind Sie sicher?",
+    "confirmDeleteMessage": "Dieses Ereignis wird dauerhaft gelöscht.",
+    "confirm": "Bestätigen",
+    "back": "Zurück"
   }
 } 

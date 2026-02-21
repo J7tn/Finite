@@ -5,6 +5,9 @@ import { tempo } from "tempo-devtools/dist/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+//  define: {
+//    __DEV_TOOLS_ENABLED__: JSON.stringify(true),
+//  },
   base: process.env.NODE_ENV === "development" ? "/" : process.env.VITE_BASE_PATH || "/",
   optimizeDeps: {
     entries: ["src/main.tsx", "src/tempobook/**/*"],
@@ -36,7 +39,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     terserOptions: {
       compress: {
-        drop_console: false, // Keep console logs for debugging
+        drop_console: true,
         drop_debugger: true,
       },
     },

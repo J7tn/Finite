@@ -13,7 +13,7 @@ interface OnboardingFlowProps {
 // Onboarding messages are now loaded from translations
 
 const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, fadeInAudio }) => {
-  const { t, language } = useTranslation();
+  const { t, tArray, language } = useTranslation();
   const [visibleCount, setVisibleCount] = useState(0);
   const [showButton, setShowButton] = useState(false);
 
@@ -24,22 +24,9 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, fadeInAudio
   const horizontalPadding = isCJKLanguage ? 'px-1' : 'px-4';
   const cardPadding = isCJKLanguage ? 'p-4 md:p-6 lg:p-8' : 'p-6 md:p-8 lg:p-10';
 
-  // Get onboarding messages from translations - with safe fallback
   const getOnboardingMessages = (): string[] => {
-    try {
-      const translatedMessages = t("onboarding.messages");
-      // Check if it's an array and has content
-      if (Array.isArray(translatedMessages) && translatedMessages.length > 0) {
-        // Double-check that all items are strings
-        if (translatedMessages.every(msg => typeof msg === 'string')) {
-          return translatedMessages;
-        }
-      }
-    } catch (error) {
-      // Fall through to default messages
-    }
-
-    // Default English messages
+    const translated = tArray("onboarding.messages");
+    if (translated.length > 0) return translated;
     return [
       'Life is finite and we should live each moment of our lives purposely.',
       'Sometimes we forget and stumble along the way.',
@@ -79,10 +66,12 @@ const OnboardingFlow: React.FC<OnboardingFlowProps> = ({ onComplete, fadeInAudio
                   className="w-full mb-6"
                 >
                   <p
-                    className={`${fontSizeClass} italic text-foreground leading-relaxed text-center break-words hyphens-auto overflow-wrap-anywhere ${isCJKLanguage ? 'px-0' : horizontalPadding}`}
+                    className={`${fontSizeClass} italic text-foreground leading-relaxed text-center ${
+                      isCJKLanguage ? 'break-words hyphens-auto overflow-wrap-anywhere px-0' : `break-words ${horizontalPadding}`
+                    }`}
                     style={{
-                      wordBreak: 'break-word',
-                      overflowWrap: 'anywhere',
+                      wordBreak: isCJKLanguage ? 'break-word' : 'break-word',
+                      overflowWrap: isCJKLanguage ? 'anywhere' : 'break-word',
                       maxWidth: '100%',
                       whiteSpace: 'pre-wrap'
                     }}

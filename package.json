@@ -1,5 +1,5 @@
 {
-  "name": "starter",
+  "name": "finite",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -15,13 +15,13 @@
     "android:run": "npx cap run android"
   },
   "dependencies": {
-    "@capacitor/android": "^5.7.0",
-    "@capacitor/cli": "^5.7.0",
-    "@capacitor/core": "^5.7.0",
-    "@capacitor/device": "^5.0.8",
-    "@capacitor/local-notifications": "^5.0.7",
-    "@capacitor/splash-screen": "^5.0.8",
-    "@capacitor/status-bar": "^5.0.8",
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/device": "^8.0.0",
+    "@capacitor/local-notifications": "^8.0.0",
+    "@capacitor/splash-screen": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-aspect-ratio": "^1.0.3",
